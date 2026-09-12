@@ -1,0 +1,480 @@
+/* ==========================================================================
+   RadarRings Visual Component Styles - Shared Radar Graphic
+   Theme-aware, 60fps, responsive, accessible (prefers-reduced-motion)
+   ========================================================================== */
+
+/* ─── CANVAS PARTICLE SYSTEM ───────────────────────────────────────── */
+.radar-particle-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: auto; /* enable hover grab */
+}
+
+.radar-particle-canvas canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ─── WRAPPER ─────────────────────────────────────────────────────── */
+.radar-rings {
+  position: relative;
+  width: 1200px;
+  height: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* only icons re-enable */
+}
+
+/* ─── 4 CONCENTRIC RING ORBITS (FIX #2 - HIGH CONTRAST & GLOW) ────── */
+.rr-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--bs-primary, #15803d) 55%, var(--border-color, #e5e7eb));
+  box-shadow: 0 0 30px color-mix(in srgb, var(--bs-primary, #15803d) 40%, transparent);
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Soft animated dashed inner rotation on rings */
+.rr-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1.5px dashed color-mix(in srgb, var(--bs-primary, #15803d) 45%, transparent);
+  animation: rr-ring-spin 60s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rr-ring-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Sizes and opacities matching planet layers (FIX #2) */
+.rr-ring-nucleus { width: 160px; height: 160px; opacity: 0.6; }
+.rr-ring-inner   { width: 400px; height: 400px; opacity: 0.9; }
+.rr-ring-mid     { width: 680px; height: 680px; opacity: 0.8; }
+.rr-ring-outer   { width: 960px; height: 960px; opacity: 0.65; }
+
+/* Nucleus size variants for ring */
+.nucleus-sm .rr-ring-nucleus { width: 160px; height: 160px; opacity: 0.6; }
+.nucleus-md .rr-ring-nucleus { width: 175px; height: 175px; opacity: 0.6; }
+.nucleus-lg .rr-ring-nucleus { width: 190px; height: 190px; opacity: 0.6; }
+
+/* ─── RADAR SWEEP (3px GRADIENT LINE + GLOW + CONIC TRAIL) ────────── */
+.rr-sweep-wrap {
+  position: absolute;
+  width: 960px;
+  height: 960px;
+  border-radius: 50%;
+  animation: rr-rotate 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rr-sweep-arm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--bs-primary, #15803d) 0%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 65%, transparent) 70%,
+    transparent 100%
+  );
+  transform-origin: left center;
+  opacity: 0.95;
+  border-radius: 3px;
+  box-shadow:
+    0 0 20px var(--bs-primary, #15803d),
+    0 0 40px color-mix(in srgb, var(--bs-primary, #15803d) 60%, transparent);
+}
+
+.rr-sweep-trail {
+  position: absolute;
+  width: 960px;
+  height: 960px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent) 15deg,
+    transparent 55deg
+  );
+  animation: rr-rotate 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes rr-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── AMBIENT TWINKLING STAR LAYER (FIX #3 & FIX #6) ──────────────── */
+/* Positioned above rings and sweep, but below planets and nucleus */
+.rr-stars-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.rr-star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--text-primary, #111827);
+  opacity: 0.3;
+  animation-name: rr-twinkle-home;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+[data-bs-theme="dark"] .rr-star,
+[data-theme*="dark"] .rr-star,
+[data-theme^="midnight"] .rr-star,
+[data-theme^="nebula"] .rr-star,
+[data-theme^="carbon"] .rr-star {
+  background: #ffffff;
+}
+
+/* Home Twinkle: Subtle & calm */
+@keyframes rr-twinkle-home {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.3);
+  }
+}
+
+/* Login Twinkle: Noticeably bright & lively (0.25 -> 0.90, 2s-3.5s) */
+.variant-login .rr-star,
+.login-variant .rr-star {
+  animation-name: rr-twinkle-login;
+  opacity: 0.35;
+}
+
+.variant-login .rr-star:nth-child(2n),
+.login-variant .rr-star:nth-child(2n) {
+  animation-duration: 2.1s !important;
+}
+
+.variant-login .rr-star:nth-child(3n),
+.login-variant .rr-star:nth-child(3n) {
+  animation-duration: 2.7s !important;
+}
+
+.variant-login .rr-star:nth-child(5n),
+.login-variant .rr-star:nth-child(5n) {
+  animation-duration: 3.3s !important;
+}
+
+.variant-login .rr-star:nth-child(7n),
+.login-variant .rr-star:nth-child(7n) {
+  animation-duration: 2.4s !important;
+}
+
+@keyframes rr-twinkle-login {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.90;
+    transform: scale(1.55);
+    box-shadow: 0 0 8px currentColor, 0 0 14px color-mix(in srgb, var(--bs-primary, #15803d) 60%, transparent);
+  }
+}
+
+/* ─── THREE-LAYER BULLETPROOF COUNTER-ROTATION ─────────────────────── */
+
+/* Layer A: Rotates the anchor around the nucleus along the radius */
+.rr-planet-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation: rr-orbit var(--speed) linear infinite;
+  animation-delay: 0s;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 4;
+}
+
+@keyframes rr-orbit {
+  from {
+    transform: rotate(var(--angle)) translateX(var(--radius));
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 360deg)) translateX(var(--radius));
+  }
+}
+
+/* Layer B: Counter-rotates by the exact opposite angle and speed */
+.rr-planet-counter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  animation: rr-counter var(--speed) linear infinite;
+  animation-delay: 0s;
+  will-change: transform;
+  pointer-events: none;
+}
+
+@keyframes rr-counter {
+  from {
+    transform: rotate(calc(-1 * var(--angle)));
+  }
+  to {
+    transform: rotate(calc(-1 * (var(--angle) + 360deg)));
+  }
+}
+
+/* Layer C: Static translate(-50%, -50%) positioning container */
+.rr-planet-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+/* Planet Icon Badge */
+.rr-planet-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--card-bg, #ffffff);
+  color: var(--brand-color, var(--bs-primary, #15803d));
+  border: 2px solid var(--brand-color, var(--bs-primary, #15803d));
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--brand-color, var(--bs-primary, #15803d)) 60%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--brand-color, var(--bs-primary, #15803d)) 15%, transparent);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  pointer-events: auto; /* hover interactive */
+  cursor: pointer;
+}
+
+.rr-planet-wrapper:hover .rr-planet-icon {
+  transform: scale(1.22);
+  box-shadow:
+    0 0 40px var(--brand-color, var(--bs-primary, #15803d)),
+    inset 0 0 16px color-mix(in srgb, var(--brand-color, var(--bs-primary, #15803d)) 25%, transparent);
+}
+
+/* Layer dimensions */
+.rr-layer-inner .rr-planet-icon { width: 52px; height: 52px; }
+.rr-layer-inner .rr-planet-icon svg { width: 26px; height: 26px; }
+
+.rr-layer-mid   .rr-planet-icon { width: 46px; height: 46px; }
+.rr-layer-mid   .rr-planet-icon svg { width: 22px; height: 22px; }
+
+.rr-layer-outer .rr-planet-icon { width: 40px; height: 40px; }
+.rr-layer-outer .rr-planet-icon svg { width: 19px; height: 19px; }
+
+/* Always-Horizontal Planet Label (Like a billboard orbiting a city) */
+.rr-planet-label {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 90%, transparent);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  user-select: none;
+  transform: none !important; /* strictly horizontal */
+}
+
+.rr-layer-outer .rr-planet-label {
+  font-size: 10px;
+  padding: 2px 8px;
+}
+
+/* ─── FIX #1: ENLARGED & BRIGHT NUCLEUS ("CodeLift") ──────────────── */
+.rr-nucleus {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Nucleus outer container dimensions (Outer diameter: 140-160px on Login/sm) */
+.nucleus-sm .rr-nucleus { width: 160px; height: 160px; }
+.nucleus-md .rr-nucleus { width: 175px; height: 175px; }
+.nucleus-lg .rr-nucleus { width: 190px; height: 190px; }
+
+/* Two Pulsing Halos behind the Core (0s and 1.4s delay, expanding scale 1 -> 1.45) */
+.rr-nucleus-pulse {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bs-primary, #10b981) 65%, #ffffff) 0%,
+    color-mix(in srgb, var(--bs-primary, #10b981) 35%, transparent) 55%,
+    transparent 75%
+  );
+  box-shadow: 0 0 45px color-mix(in srgb, var(--bs-primary, #10b981) 75%, #ffffff);
+  opacity: 0.45;
+  animation: rr-nucleus-pulse 2.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rr-nucleus-pulse-2 {
+  animation-delay: 1.4s;
+  animation-duration: 3.8s;
+}
+
+@keyframes rr-nucleus-pulse {
+  0%   { transform: scale(1);    opacity: 0.45; }
+  50%  { transform: scale(1.45); opacity: 0.05; }
+  100% { transform: scale(1);    opacity: 0.45; }
+}
+
+/* Core sphere & pulsing halo dimensions (Core diameter: 120-140px on Login/sm) */
+.nucleus-sm .rr-nucleus-core,
+.nucleus-sm .rr-nucleus-pulse {
+  width: 132px;
+  height: 132px;
+}
+
+.nucleus-md .rr-nucleus-core,
+.nucleus-md .rr-nucleus-pulse {
+  width: 145px;
+  height: 145px;
+}
+
+.nucleus-lg .rr-nucleus-core,
+.nucleus-lg .rr-nucleus-pulse {
+  width: 160px;
+  height: 160px;
+}
+
+/* Bright Glowing Core Sphere — Vibrant 3D sphere with radiant multi-stage bloom */
+.rr-nucleus-core {
+  position: relative;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffffff 0%,
+    color-mix(in srgb, var(--bs-primary, #10b981) 35%, #ffffff) 22%,
+    color-mix(in srgb, var(--bs-primary, #10b981) 75%, #ffffff) 48%,
+    var(--bs-primary, #10b981) 78%,
+    color-mix(in srgb, var(--bs-primary, #10b981) 80%, #064e3b) 100%
+  ) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+  box-shadow:
+    0 0 25px #ffffff,
+    0 0 50px color-mix(in srgb, var(--bs-primary, #10b981) 85%, #ffffff),
+    0 0 90px color-mix(in srgb, var(--bs-primary, #10b981) 80%, transparent),
+    0 0 140px color-mix(in srgb, var(--bs-primary, #10b981) 50%, transparent),
+    inset 0 0 25px rgba(255, 255, 255, 0.9),
+    inset 0 0 50px color-mix(in srgb, var(--bs-primary, #10b981) 50%, #ffffff) !important;
+  pointer-events: none;
+  z-index: 2;
+  animation: rr-nucleus-bright-glow 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes rr-nucleus-bright-glow {
+  0% {
+    box-shadow:
+      0 0 20px #ffffff,
+      0 0 45px color-mix(in srgb, var(--bs-primary, #10b981) 85%, #ffffff),
+      0 0 80px color-mix(in srgb, var(--bs-primary, #10b981) 75%, transparent),
+      0 0 120px color-mix(in srgb, var(--bs-primary, #10b981) 45%, transparent),
+      inset 0 0 22px rgba(255, 255, 255, 0.85),
+      inset 0 0 45px color-mix(in srgb, var(--bs-primary, #10b981) 45%, #ffffff);
+    filter: brightness(1);
+  }
+  100% {
+    box-shadow:
+      0 0 32px #ffffff,
+      0 0 65px color-mix(in srgb, var(--bs-primary, #10b981) 90%, #ffffff),
+      0 0 110px color-mix(in srgb, var(--bs-primary, #10b981) 85%, transparent),
+      0 0 160px color-mix(in srgb, var(--bs-primary, #10b981) 60%, transparent),
+      inset 0 0 30px rgba(255, 255, 255, 0.95),
+      inset 0 0 55px color-mix(in srgb, var(--bs-primary, #10b981) 60%, #ffffff);
+    filter: brightness(1.15);
+  }
+}
+
+/* Top-Left Specular Glare for 3D Glass / Energy Depth */
+.rr-nucleus-core::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.35) 32%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* "CodeLift" Logo Text — Crisp White, Extra Bold, Radiant Glow */
+.rr-nucleus-logo {
+  position: relative;
+  z-index: 3;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 900;
+  color: #ffffff !important;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.95),
+    0 0 22px color-mix(in srgb, var(--bs-primary, #10b981) 85%, #ffffff),
+    0 2px 6px rgba(0, 0, 0, 0.6);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.6px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.nucleus-sm .rr-nucleus-logo { font-size: 20px; }
+.nucleus-md .rr-nucleus-logo { font-size: 21px; }
+.nucleus-lg .rr-nucleus-logo { font-size: 22px; }
+
+/* ─── ACCESSIBILITY: PREFERS-REDUCED-MOTION ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rr-nucleus-core,
+  .rr-sweep-wrap,
+  .rr-sweep-trail,
+  .rr-planet-wrapper,
+  .rr-planet-counter,
+  .rr-nucleus-pulse,
+  .rr-ring::before,
+  .rr-star {
+    animation: none !important;
+  }
+}

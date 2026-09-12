@@ -1,0 +1,73 @@
+[
+  {
+    "id": "stu-1",
+    "name": "Rahul Sharma",
+    "email": "rahul.sharma@example.com",
+    "phone": "+91 9876543210",
+    "batchId": "batch-fswd-morning",
+    "enrolledDate": "2026-01-15",
+    "totalFee": 25000,
+    "paidFee": 25000,
+    "feeStatus": "Paid",
+    "isGraduated": false,
+    "isActive": true,
+    "completedBatchIds": [],
+    "progress": {
+      "t1": true,
+      "t2": true,
+      "t3": true,
+      "t4": true
+    }
+  },
+  {
+    "id": "stu-2",
+    "name": "Priya Patel",
+    "email": "priya.patel@example.com",
+    "phone": "+91 9876543211",
+    "batchId": "batch-da-weekend",
+    "enrolledDate": "2026-02-01",
+    "totalFee": 30000,
+    "paidFee": 15000,
+    "feeStatus": "Partial",
+    "isGraduated": false,
+    "isActive": true,
+    "completedBatchIds": [],
+    "progress": {
+      "dt1": true,
+      "dt2": true
+    }
+  },
+  {
+    "id": "stu-3",
+    "name": "Amit Verma",
+    "email": "amit.v@example.com",
+    "phone": "+91 9876543212",
+    "batchId": "batch-fswd-morning",
+    "enrolledDate": "2026-01-18",
+    "totalFee": 25000,
+    "paidFee": 25000,
+    "feeStatus": "Paid",
+    "isGraduated": false,
+    "isActive": true,
+    "completedBatchIds": [],
+    "progress": {
+      "t1": true,
+      "t2": true
+    }
+  },
+  {
+    "id": "stu-4",
+    "name": "Sneha Reddy",
+    "email": "sneha.r@example.com",
+    "phone": "+91 9876543213",
+    "batchId": "batch-fswd-evening",
+    "enrolledDate": "2026-02-10",
+    "totalFee": 25000,
+    "paidFee": 10000,
+    "feeStatus": "Partial",
+    "isGraduated": false,
+    "isActive": true,
+    "completedBatchIds": [],
+    "progress": {}
+  }
+]

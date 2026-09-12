@@ -1,0 +1,1119 @@
+import { supabase } from './supabaseClient.js';
+
+// ==============================================================================
+// TYPED CUSTOM ERRORS
+// ==============================================================================
+export class AppError extends Error {
+  constructor(message, status = 500) {
+    super(message);
+    this.name = 'AppError';
+    this.status = status;
+  }
+}
+
+export class NotFoundError extends AppError {
+  constructor(message = 'Resource not found') {
+    super(message, 404);
+    this.name = 'NotFoundError';
+  }
+}
+
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Unauthorized') {
+    super(message, 401);
+    this.name = 'UnauthorizedError';
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message = 'Conflict') {
+    super(message, 409);
+    this.name = 'ConflictError';
+  }
+}
+
+function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
+  if (!error) return;
+  console.error(`[SupabaseDataService] ${defaultMsg}:`, error);
+  if (error.code === 'PGRST116') {
+    throw new NotFoundError(error.message);
+  }
+  if (error.code === '23505') {
+    throw new ConflictError(error.message);
+  }
+  if (error.code === '42501') {
+    throw new UnauthorizedError('Access denied by Row Level Security policy');
+  }
+  throw new AppError(error.message || defaultMsg);
+}
+
+// ==============================================================================
+// COHORT & ELECTIVE COURSES RESOLUTION
+// ==============================================================================
+export async function getStaticCohortCourses() {
+  try {
+    const basePath = import.meta.env.BASE_URL || '/codelift/';
+    const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    const res = await fetch(`${cleanBase}courses/cohort/index.json`);
+    if (!res.ok) return [];
+    const cohortIndex = await res.json();
+    if (!cohortIndex?.slugs) return [];
+    const courses = await Promise.all(
+      cohortIndex.slugs.map(async (slug) => {
+        try {
+          const r = await fetch(`${cleanBase}courses/cohort/${slug}.json`);
+          if (!r.ok) return null;
+          const data = await r.json();
+          return {
+            ...data,
+            course_type: 'cohort',
+            isPublished: true,
+            isApproved: true
+          };
+        } catch (e) {
+          console.warn(`[supabaseDataService] Could not load cohort course ${slug}:`, e);
+          return null;
+        }
+      })
+    );
+    return courses.filter(Boolean);
+  } catch (err) {
+    console.warn('[supabaseDataService] Error loading static cohort courses:', err);
+    return [];
+  }
+}
+
+export async function getAllCourses() {
+  const cohortCourses = await getStaticCohortCourses();
+  const { data: electiveRaw, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('course_type', 'elective');
+
+  if (error) {
+    console.warn('[supabaseDataService] Failed to fetch elective courses from Supabase:', error);
+  }
+
+  const electiveCourses = (electiveRaw || []).map((c) => ({
+    ...c,
+    course_type: 'elective',
+    price: Number(c.price || 0),
+    isFree: Boolean(c.is_free),
+    isPublished: Boolean(c.is_published),
+    isApproved: Boolean(c.is_approved)
+  }));
+
+  return [...cohortCourses, ...electiveCourses];
+}
+
+// ==============================================================================
+// FETCH ALL DATA (PARALLEL HYDRATION)
+// ==============================================================================
+export async function fetchAllData() {
+  try {
+    const [
+      cohortCourses,
+      usersRes,
+      studentsRes,
+      categoriesRes,
+      coursesRes,
+      modulesRes,
+      topicsRes,
+      batchCoursesRes,
+      enrollmentsRes,
+      couponsRes,
+      paymentsRes,
+      batchesRes,
+      batchTestsRes,
+      feesRes,
+      testsRes,
+      questionsRes,
+      attemptsRes,
+      assignmentsRes,
+      batchAssignmentsRes,
+      submissionsRes,
+      certificatesRes,
+      templatesRes,
+      completedBatchesRes,
+      problemAttemptsRes
+    ] = await Promise.all([
+      getStaticCohortCourses(),
+      supabase.from('users').select('*').order('created_at', { ascending: false }),
+      supabase.from('students').select('*').order('created_at', { ascending: false }),
+      supabase.from('categories').select('*').order('name', { ascending: true }),
+      supabase.from('courses').select('*').order('created_at', { ascending: false }),
+      supabase.from('course_modules').select('*').order('order_index', { ascending: true }),
+      supabase.from('course_topics').select('*').order('order_index', { ascending: true }),
+      supabase.from('batch_courses').select('*'),
+      supabase.from('enrollments').select('*').order('enrolled_at', { ascending: false }),
+      supabase.from('coupons').select('*').order('created_at', { ascending: false }),
+      supabase.from('payments').select('*').order('created_at', { ascending: false }),
+      supabase.from('batches').select('*').order('created_at', { ascending: false }),
+      supabase.from('batch_tests').select('*'),
+      supabase.from('fees').select('*').order('created_at', { ascending: false }),
+      supabase.from('tests').select('*').order('created_at', { ascending: false }),
+      supabase.from('test_questions').select('*').order('order_index', { ascending: true }),
+      supabase.from('test_attempts').select('*').order('submitted_at', { ascending: false }),
+      supabase.from('assignments').select('*').order('created_at', { ascending: false }),
+      supabase.from('batch_assignments').select('*'),
+      supabase.from('submissions').select('*').order('submitted_at', { ascending: false }),
+      supabase.from('certificates').select('*').order('issued_at', { ascending: false }),
+      supabase.from('certificate_templates').select('*').order('created_at', { ascending: false }),
+      supabase.from('completed_batches').select('*').order('completed_at', { ascending: false }),
+      supabase.from('problem_attempts').select('*').order('attempted_at', { ascending: false })
+    ]);
+
+    // Check for errors (ignore empty data or RLS restrictions)
+    const rawUsers = usersRes.data || [];
+    const rawStudents = studentsRes.data || [];
+    const rawCategories = categoriesRes.data || [];
+    const rawCourses = coursesRes.data || [];
+    const rawModules = modulesRes.data || [];
+    const rawTopics = topicsRes.data || [];
+    const rawBatchCourses = batchCoursesRes.data || [];
+    const rawEnrollments = enrollmentsRes.data || [];
+    const rawCoupons = couponsRes.data || [];
+    const rawPayments = paymentsRes.data || [];
+    const rawBatches = batchesRes.data || [];
+    const rawBatchTests = batchTestsRes.data || [];
+    const rawFees = feesRes.data || [];
+    const rawTests = testsRes.data || [];
+    const rawQuestions = questionsRes.data || [];
+    const rawAttempts = attemptsRes.data || [];
+    const rawAssignments = assignmentsRes.data || [];
+    const rawBatchAssignments = batchAssignmentsRes.data || [];
+    const rawSubmissions = submissionsRes.data || [];
+    const rawCertificates = certificatesRes.data || [];
+    const rawTemplates = templatesRes.data || [];
+    const rawCompletedBatches = completedBatchesRes.data || [];
+    const rawProblemAttempts = problemAttemptsRes.data || [];
+
+    // Reassemble Batches
+    const batches = rawBatches.map((b) => {
+      const courseIds = rawBatchCourses.filter((bc) => bc.batch_id === b.id).map((bc) => bc.course_id);
+      const testIds = rawBatchTests.filter((bt) => bt.batch_id === b.id).map((bt) => bt.test_id);
+      return {
+        id: b.id,
+        name: b.name,
+        description: b.description || '',
+        capacity: Number(b.capacity || 30),
+        feeAmount: Number(b.fee_amount || 0),
+        fee: Number(b.fee_amount || 0),
+        startDate: b.start_date,
+        isActive: Boolean(b.is_active),
+        isCompleted: Boolean(b.is_completed),
+        completedAt: b.completed_at,
+        archivedStudents: b.archived_students || [],
+        courseIds,
+        testIds
+      };
+    });
+
+    // Reassemble Elective Courses from Supabase
+    const electiveCourses = rawCourses.map((c) => {
+      const courseBatchIds = rawBatchCourses.filter((bc) => bc.course_id === c.id).map((bc) => bc.batch_id);
+      const modules = rawModules
+        .filter((m) => m.course_id === c.id)
+        .map((m) => ({
+          id: m.id,
+          title: m.title,
+          topics: rawTopics
+            .filter((t) => t.module_id === m.id)
+            .map((t) => ({
+              id: t.id,
+              title: t.title,
+              contentMd: t.content_md || ''
+            }))
+        }));
+
+      return {
+        id: c.id,
+        title: c.title,
+        slug: c.slug,
+        description: c.description || '',
+        categoryId: c.category_id,
+        course_type: c.course_type || 'elective',
+        price: Number(c.price || 0),
+        isFree: Boolean(c.is_free),
+        isPublished: Boolean(c.is_published),
+        isApproved: Boolean(c.is_approved),
+        thumbnail: c.thumbnail || '',
+        promoVideo: c.promo_video || '',
+        rating: Number(c.rating || 5),
+        numReviews: Number(c.num_reviews || 0),
+        studentsEnrolled: Number(c.students_enrolled || 0),
+        createdAt: c.created_at,
+        updatedAt: c.updated_at,
+        batchIds: courseBatchIds,
+        batchId: courseBatchIds[0] || null,
+        modules
+      };
+    });
+
+    // Merge static cohort courses + dynamic elective courses
+    const courses = [...cohortCourses, ...electiveCourses];
+
+    // Reassemble Tests
+    const tests = rawTests.map((t) => {
+      const assignedBatchIds = rawBatchTests.filter((bt) => bt.test_id === t.id).map((bt) => bt.batch_id);
+      const questions = rawQuestions
+        .filter((q) => q.test_id === t.id)
+        .map((q) => ({
+          id: q.id,
+          text: q.text,
+          question: q.text,
+          options: q.options || [],
+          correctAnswer: Number(q.correct_answer),
+          explanation: q.explanation || ''
+        }));
+
+      return {
+        id: t.id,
+        title: t.title,
+        description: t.description || '',
+        timeLimit: Number(t.time_limit || 30),
+        passingPercentage: Number(t.passing_percentage || 70),
+        allowRetake: Boolean(t.allow_retake),
+        assignedBatchIds,
+        batchIds: assignedBatchIds,
+        createdAt: t.created_at,
+        questions
+      };
+    });
+
+    // Reassemble Assignments
+    const assignments = rawAssignments.map((a) => {
+      const batchIds = rawBatchAssignments.filter((ba) => ba.assignment_id === a.id).map((ba) => ba.batch_id);
+      return {
+        id: a.id,
+        title: a.title,
+        description: a.description || '',
+        deadline: a.deadline,
+        maxMarks: Number(a.max_marks || 100),
+        type: a.type || 'PROJECT',
+        batchIds,
+        createdAt: a.created_at
+      };
+    });
+
+    // Reassemble Discussions
+    const discussions = rawDiscussions.map((d) => {
+      const answers = rawAnswers
+        .filter((ans) => ans.discussion_id === d.id)
+        .map((ans) => ({
+          id: ans.id,
+          authorId: ans.author_id,
+          authorName: ans.author_name,
+          content: ans.content,
+          upvotes: Number(ans.upvotes || 0),
+          createdAt: ans.created_at
+        }));
+
+      return {
+        id: d.id,
+        courseId: d.course_id,
+        topicId: d.topic_id,
+        studentId: d.student_id,
+        studentName: d.student_name,
+        question: d.question,
+        createdAt: d.created_at,
+        answers
+      };
+    });
+
+    // Reassemble Students
+    const students = rawStudents.map((s) => ({
+      id: s.id,
+      legacyId: s.legacy_id,
+      name: s.name,
+      email: s.email,
+      phone: s.phone || '',
+      batchId: s.batch_id || '',
+      enrolledDate: s.enrolled_date,
+      totalFee: Number(s.total_fee || 0),
+      paidFee: Number(s.paid_fee || 0),
+      feeStatus: s.fee_status || 'PENDING',
+      isGraduated: Boolean(s.is_graduated),
+      isActive: Boolean(s.is_active),
+      completedBatchIds: s.completed_batch_ids || [],
+      progress: s.progress || {},
+      createdAt: s.created_at,
+      updatedAt: s.updated_at
+    }));
+
+    // Reassemble Fees
+    const fees = rawFees.map((f) => ({
+      id: f.id,
+      studentId: f.student_id,
+      amount: Number(f.amount || 0),
+      paidAt: f.paid_at,
+      dueDate: f.due_date,
+      mode: f.mode || 'UPI',
+      status: f.status || 'PENDING',
+      paymentProof: f.payment_proof || null,
+      paymentNote: f.payment_note || null,
+      createdAt: f.created_at
+    }));
+
+    // Reassemble Submissions
+    const submissions = rawSubmissions.map((sub) => ({
+      id: sub.id,
+      studentId: sub.student_id,
+      assignmentId: sub.assignment_id,
+      batchId: sub.batch_id,
+      fileUrls: sub.file_urls || [],
+      notes: sub.notes || '',
+      submittedAt: sub.submitted_at,
+      grade: sub.grade !== null ? Number(sub.grade) : null,
+      feedback: sub.feedback || null,
+      createdAt: sub.created_at
+    }));
+
+    // Reassemble Certificates
+    const certificates = rawCertificates.map((cert) => ({
+      id: cert.id,
+      studentId: cert.student_id,
+      studentName: cert.student_name,
+      courseName: cert.course_name,
+      issuedAt: cert.issued_at,
+      certificateId: cert.certificate_id,
+      isIssued: Boolean(cert.is_issued),
+      isRevoked: Boolean(cert.is_revoked),
+      instituteName: cert.institute_name || '',
+      signatoryName: cert.signatory_name || '',
+      signatoryTitle: cert.signatory_title || '',
+      certTitle: cert.cert_title || '',
+      pdfUrl: cert.pdf_url || null,
+      createdAt: cert.created_at
+    }));
+
+    // Reassemble Certificate Templates
+    const certificateTemplates = rawTemplates.map((tmpl) => ({
+      id: tmpl.id,
+      name: tmpl.name,
+      isActive: Boolean(tmpl.is_active),
+      instituteName: tmpl.institute_name || '',
+      signatoryName: tmpl.signatory_name || '',
+      signatoryTitle: tmpl.signatory_title || '',
+      certTitle: tmpl.cert_title || '',
+      design: tmpl.design || {},
+      createdAt: tmpl.created_at
+    }));
+
+    // Reassemble Test Attempts
+    const testAttempts = rawAttempts.map((att) => ({
+      id: att.id,
+      studentId: att.student_id,
+      testId: att.test_id,
+      batchId: att.batch_id,
+      answers: att.answers || [],
+      score: Number(att.score || 0),
+      totalQuestions: Number(att.total_questions || 0),
+      submittedAt: att.submitted_at,
+      createdAt: att.created_at
+    }));
+
+    // Reassemble Reviews
+    const reviews = rawReviews.map((rev) => ({
+      id: rev.id,
+      studentId: rev.student_id,
+      studentName: rev.student_name,
+      courseId: rev.course_id,
+      rating: Number(rev.rating || 5),
+      comment: rev.comment || '',
+      isPublished: Boolean(rev.is_published),
+      adminReply: rev.admin_reply || null,
+      createdAt: rev.created_at
+    }));
+
+    // Reassemble Payments
+    const payments = rawPayments.map((p) => ({
+      id: p.id,
+      enrollmentId: p.enrollment_id,
+      studentId: p.student_id,
+      studentName: p.student_name,
+      courseId: p.course_id,
+      courseTitle: p.course_title,
+      amount: Number(p.amount || 0),
+      mode: p.mode,
+      status: p.status,
+      paymentProof: p.payment_proof,
+      paymentNote: p.payment_note,
+      verifiedBy: p.verified_by,
+      verifiedAt: p.verified_at,
+      createdAt: p.created_at
+    }));
+
+    // Reassemble Enrollments
+    const enrollments = rawEnrollments.map((enr) => ({
+      id: enr.id,
+      studentId: enr.student_id,
+      courseId: enr.course_id,
+      couponId: enr.coupon_id,
+      status: enr.status,
+      paymentProof: enr.payment_proof,
+      paymentNote: enr.payment_note,
+      verifiedBy: enr.verified_by,
+      verifiedAt: enr.verified_at,
+      amount: Number(enr.amount || 0),
+      discountApplied: Number(enr.discount_applied || 0),
+      enrolledAt: enr.enrolled_at,
+      completedAt: enr.completed_at,
+      createdAt: enr.created_at
+    }));
+
+    // Reassemble Users
+    const users = rawUsers.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      phone: u.phone,
+      role: u.role,
+      isActive: Boolean(u.is_active),
+      bio: u.bio,
+      profilePicture: u.profile_picture,
+      skills: u.skills || [],
+      joinedAt: u.created_at,
+      approvedAt: u.approved_at
+    }));
+
+    // Categories
+    const categories = rawCategories.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      icon: cat.icon,
+      description: cat.description
+    }));
+
+    // Coupons
+    const coupons = rawCoupons.map((cpn) => ({
+      id: cpn.id,
+      code: cpn.code,
+      type: cpn.type,
+      value: Number(cpn.value || 0),
+      expiry: cpn.expiry,
+      usageLimit: Number(cpn.usage_limit || 100),
+      usedCount: Number(cpn.used_count || 0),
+      courseIds: cpn.course_ids || [],
+      createdBy: cpn.created_by,
+      usedBy: cpn.used_by,
+      createdAt: cpn.created_at
+    }));
+
+    // Problem Attempts
+    const problemAttempts = rawProblemAttempts.map((pa) => ({
+      id: pa.id,
+      studentId: pa.student_id,
+      problemId: pa.problem_id,
+      codeSubmitted: pa.code_submitted,
+      passed: Boolean(pa.passed),
+      score: Number(pa.score || 0),
+      testResults: pa.test_results || [],
+      attemptedAt: pa.attempted_at,
+      timeTaken: Number(pa.time_taken || 0),
+      hintsUsed: Number(pa.hints_used || 0),
+      status: pa.status,
+      createdAt: pa.created_at
+    }));
+
+    // Completed Batches
+    const completedBatches = rawCompletedBatches.map((cb) => ({
+      id: cb.id,
+      originalBatchId: cb.original_batch_id,
+      name: cb.name,
+      description: cb.description,
+      startDate: cb.start_date,
+      endDate: cb.end_date,
+      completedAt: cb.completed_at,
+      studentIds: cb.student_ids || [],
+      testIds: cb.test_ids || [],
+      assignmentIds: cb.assignment_ids || [],
+      snapshot: cb.snapshot || null
+    }));
+
+    return {
+      users,
+      students,
+      categories,
+      courses,
+      enrollments,
+      coupons,
+      payments,
+      batches,
+      fees,
+      tests,
+      testAttempts,
+      assignments,
+      submissions,
+      certificates,
+      certificateTemplates,
+      completedBatches,
+      problemAttempts
+    };
+  } catch (err) {
+    console.error('[SupabaseDataService] fetchAllData failed:', err);
+    throw err;
+  }
+}
+
+// ==============================================================================
+// STUDENT MUTATIONS
+// ==============================================================================
+export async function addStudent(studentData) {
+  const { data, error } = await supabase
+    .from('students')
+    .insert({
+      id: studentData.id,
+      legacy_id: studentData.legacyId || null,
+      name: studentData.name,
+      email: studentData.email,
+      phone: studentData.phone || '',
+      batch_id: studentData.batchId || null,
+      enrolled_date: studentData.enrolledDate || new Date().toISOString(),
+      total_fee: Number(studentData.totalFee || 0),
+      paid_fee: Number(studentData.paidFee || 0),
+      fee_status: studentData.feeStatus || 'PENDING',
+      is_graduated: Boolean(studentData.isGraduated),
+      is_active: studentData.isActive !== false,
+      completed_batch_ids: studentData.completedBatchIds || [],
+      progress: studentData.progress || {}
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to add student');
+  return data;
+}
+
+export async function updateStudent(studentId, updates) {
+  const payload = {};
+  if (updates.name !== undefined) payload.name = updates.name;
+  if (updates.email !== undefined) payload.email = updates.email;
+  if (updates.phone !== undefined) payload.phone = updates.phone;
+  if (updates.batchId !== undefined) payload.batch_id = updates.batchId;
+  if (updates.totalFee !== undefined) payload.total_fee = Number(updates.totalFee);
+  if (updates.paidFee !== undefined) payload.paid_fee = Number(updates.paidFee);
+  if (updates.feeStatus !== undefined) payload.fee_status = updates.feeStatus;
+  if (updates.isGraduated !== undefined) payload.is_graduated = Boolean(updates.isGraduated);
+  if (updates.isActive !== undefined) payload.is_active = Boolean(updates.isActive);
+  if (updates.completedBatchIds !== undefined) payload.completed_batch_ids = updates.completedBatchIds;
+  if (updates.progress !== undefined) payload.progress = updates.progress;
+
+  const { data, error } = await supabase
+    .from('students')
+    .update(payload)
+    .match(studentId.includes('-') && studentId.length === 36 ? { id: studentId } : { legacy_id: studentId })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to update student');
+  return data;
+}
+
+export async function deleteStudent(studentId) {
+  const { error } = await supabase
+    .from('students')
+    .delete()
+    .match(studentId.includes('-') && studentId.length === 36 ? { id: studentId } : { legacy_id: studentId });
+
+  if (error) handleSupabaseError(error, 'Failed to delete student');
+  return true;
+}
+
+// ==============================================================================
+// BATCH MUTATIONS
+// ==============================================================================
+export async function addBatch(batchData) {
+  const { data, error } = await supabase
+    .from('batches')
+    .insert({
+      id: batchData.id,
+      name: batchData.name,
+      description: batchData.description || '',
+      capacity: Number(batchData.capacity || 30),
+      fee_amount: Number(batchData.feeAmount || batchData.fee || 0),
+      start_date: batchData.startDate || null,
+      is_active: batchData.isActive !== false,
+      is_completed: Boolean(batchData.isCompleted),
+      completed_at: batchData.completedAt || null,
+      archived_students: batchData.archivedStudents || []
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to create batch');
+
+  // Insert linked courses if provided
+  if (Array.isArray(batchData.courseIds) && batchData.courseIds.length > 0) {
+    const rows = batchData.courseIds.map((cId) => ({ batch_id: batchData.id, course_id: cId }));
+    await supabase.from('batch_courses').insert(rows);
+  }
+
+  return data;
+}
+
+export async function updateBatch(batchId, updates) {
+  const payload = {};
+  if (updates.name !== undefined) payload.name = updates.name;
+  if (updates.description !== undefined) payload.description = updates.description;
+  if (updates.capacity !== undefined) payload.capacity = Number(updates.capacity);
+  if (updates.feeAmount !== undefined || updates.fee !== undefined) {
+    payload.fee_amount = Number(updates.feeAmount || updates.fee);
+  }
+  if (updates.startDate !== undefined) payload.start_date = updates.startDate;
+  if (updates.isActive !== undefined) payload.is_active = Boolean(updates.isActive);
+  if (updates.isCompleted !== undefined) payload.is_completed = Boolean(updates.isCompleted);
+  if (updates.completedAt !== undefined) payload.completed_at = updates.completedAt;
+  if (updates.archivedStudents !== undefined) payload.archived_students = updates.archivedStudents;
+
+  if (Object.keys(payload).length > 0) {
+    const { error } = await supabase.from('batches').update(payload).eq('id', batchId);
+    if (error) handleSupabaseError(error, 'Failed to update batch');
+  }
+
+  // Update courseIds M:N links if given
+  if (Array.isArray(updates.courseIds)) {
+    await supabase.from('batch_courses').delete().eq('batch_id', batchId);
+    if (updates.courseIds.length > 0) {
+      const rows = updates.courseIds.map((cId) => ({ batch_id: batchId, course_id: cId }));
+      await supabase.from('batch_courses').insert(rows);
+    }
+  }
+
+  // Update testIds M:N links if given
+  if (Array.isArray(updates.testIds)) {
+    await supabase.from('batch_tests').delete().eq('batch_id', batchId);
+    if (updates.testIds.length > 0) {
+      const rows = updates.testIds.map((tId) => ({ batch_id: batchId, test_id: tId }));
+      await supabase.from('batch_tests').insert(rows);
+    }
+  }
+
+  return true;
+}
+
+export async function deleteBatch(batchId) {
+  const { error } = await supabase.from('batches').delete().eq('id', batchId);
+  if (error) handleSupabaseError(error, 'Failed to delete batch');
+  return true;
+}
+
+// ==============================================================================
+// COURSE MUTATIONS
+// ==============================================================================
+export async function addCourse(courseData) {
+  const { data, error } = await supabase
+    .from('courses')
+    .insert({
+      id: courseData.id,
+      title: courseData.title,
+      slug: courseData.slug || courseData.id,
+      description: courseData.description || '',
+      category_id: courseData.categoryId || null,
+      course_type: courseData.courseType || 'elective',
+      price: Number(courseData.price || 0),
+      is_free: Boolean(courseData.isFree),
+      is_published: courseData.isPublished !== false,
+      is_approved: courseData.isApproved !== false,
+      thumbnail: courseData.thumbnail || '',
+      promo_video: courseData.promoVideo || '',
+      rating: Number(courseData.rating || 5),
+      num_reviews: Number(courseData.numReviews || 0),
+      students_enrolled: Number(courseData.studentsEnrolled || 0)
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to add course');
+
+  // Insert modules and topics
+  if (Array.isArray(courseData.modules)) {
+    for (let mIdx = 0; mIdx < courseData.modules.length; mIdx++) {
+      const mod = courseData.modules[mIdx];
+      await supabase.from('course_modules').insert({
+        id: mod.id,
+        course_id: courseData.id,
+        title: mod.title,
+        order_index: mIdx
+      });
+
+      if (Array.isArray(mod.topics)) {
+        const topicRows = mod.topics.map((t, tIdx) => ({
+          id: t.id,
+          module_id: mod.id,
+          title: t.title,
+          content_md: t.contentMd || '',
+          order_index: tIdx
+        }));
+        if (topicRows.length > 0) {
+          await supabase.from('course_topics').insert(topicRows);
+        }
+      }
+    }
+  }
+
+  // Insert batch relations
+  const batchIds = courseData.batchIds || (courseData.batchId ? [courseData.batchId] : []);
+  if (batchIds.length > 0) {
+    const rows = batchIds.map((bId) => ({ batch_id: bId, course_id: courseData.id }));
+    await supabase.from('batch_courses').insert(rows);
+  }
+
+  return data;
+}
+
+export async function updateCourse(courseId, updates) {
+  const payload = {};
+  if (updates.title !== undefined) payload.title = updates.title;
+  if (updates.slug !== undefined) payload.slug = updates.slug;
+  if (updates.description !== undefined) payload.description = updates.description;
+  if (updates.categoryId !== undefined) payload.category_id = updates.categoryId;
+  if (updates.courseType !== undefined) payload.course_type = updates.courseType;
+  if (updates.price !== undefined) payload.price = Number(updates.price);
+  if (updates.isFree !== undefined) payload.is_free = Boolean(updates.isFree);
+  if (updates.isPublished !== undefined) payload.is_published = Boolean(updates.isPublished);
+  if (updates.isApproved !== undefined) payload.is_approved = Boolean(updates.isApproved);
+  if (updates.thumbnail !== undefined) payload.thumbnail = updates.thumbnail;
+  if (updates.promoVideo !== undefined) payload.promo_video = updates.promoVideo;
+  if (updates.rating !== undefined) payload.rating = Number(updates.rating);
+  if (updates.numReviews !== undefined) payload.num_reviews = Number(updates.numReviews);
+  if (updates.studentsEnrolled !== undefined) payload.students_enrolled = Number(updates.studentsEnrolled);
+
+  if (Object.keys(payload).length > 0) {
+    const { error } = await supabase.from('courses').update(payload).eq('id', courseId);
+    if (error) handleSupabaseError(error, 'Failed to update course');
+  }
+
+  // If modules array passed, re-sync modules and topics
+  if (Array.isArray(updates.modules)) {
+    await supabase.from('course_modules').delete().eq('course_id', courseId);
+    for (let mIdx = 0; mIdx < updates.modules.length; mIdx++) {
+      const mod = updates.modules[mIdx];
+      await supabase.from('course_modules').insert({
+        id: mod.id,
+        course_id: courseId,
+        title: mod.title,
+        order_index: mIdx
+      });
+      if (Array.isArray(mod.topics) && mod.topics.length > 0) {
+        const topicRows = mod.topics.map((t, tIdx) => ({
+          id: t.id,
+          module_id: mod.id,
+          title: t.title,
+          content_md: t.contentMd || '',
+          order_index: tIdx
+        }));
+        await supabase.from('course_topics').insert(topicRows);
+      }
+    }
+  }
+
+  // Re-sync batch IDs
+  if (Array.isArray(updates.batchIds)) {
+    await supabase.from('batch_courses').delete().eq('course_id', courseId);
+    if (updates.batchIds.length > 0) {
+      const rows = updates.batchIds.map((bId) => ({ batch_id: bId, course_id: courseId }));
+      await supabase.from('batch_courses').insert(rows);
+    }
+  }
+
+  return true;
+}
+
+export async function deleteCourse(courseId) {
+  const { error } = await supabase.from('courses').delete().eq('id', courseId);
+  if (error) handleSupabaseError(error, 'Failed to delete course');
+  return true;
+}
+
+// ==============================================================================
+// FEES & PAYMENTS
+// ==============================================================================
+export async function addFee(feeData) {
+  const { data, error } = await supabase
+    .from('fees')
+    .insert({
+      id: feeData.id,
+      student_id: feeData.studentId,
+      amount: Number(feeData.amount || 0),
+      paid_at: feeData.paidAt || null,
+      due_date: feeData.dueDate || null,
+      mode: feeData.mode || 'UPI',
+      status: feeData.status || 'PENDING',
+      payment_proof: feeData.paymentProof || null,
+      payment_note: feeData.paymentNote || null
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to add fee record');
+  return data;
+}
+
+export async function updateFee(feeId, updates) {
+  const payload = {};
+  if (updates.amount !== undefined) payload.amount = Number(updates.amount);
+  if (updates.paidAt !== undefined) payload.paid_at = updates.paidAt;
+  if (updates.dueDate !== undefined) payload.due_date = updates.dueDate;
+  if (updates.mode !== undefined) payload.mode = updates.mode;
+  if (updates.status !== undefined) payload.status = updates.status;
+  if (updates.paymentProof !== undefined) payload.payment_proof = updates.paymentProof;
+  if (updates.paymentNote !== undefined) payload.payment_note = updates.paymentNote;
+
+  const { data, error } = await supabase.from('fees').update(payload).eq('id', feeId).select().single();
+  if (error) handleSupabaseError(error, 'Failed to update fee record');
+  return data;
+}
+
+export async function deleteFee(feeId) {
+  const { error } = await supabase.from('fees').delete().eq('id', feeId);
+  if (error) handleSupabaseError(error, 'Failed to delete fee record');
+  return true;
+}
+
+// ==============================================================================
+// TESTS & ATTEMPTS
+// ==============================================================================
+export async function addTest(testData) {
+  const { data, error } = await supabase
+    .from('tests')
+    .insert({
+      id: testData.id,
+      title: testData.title,
+      description: testData.description || '',
+      time_limit: Number(testData.timeLimit || 30),
+      passing_percentage: Number(testData.passingPercentage || 70),
+      allow_retake: testData.allowRetake !== false
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to add test');
+
+  if (Array.isArray(testData.questions)) {
+    const qRows = testData.questions.map((q, idx) => ({
+      id: q.id,
+      test_id: testData.id,
+      text: q.text || q.question,
+      options: q.options || [],
+      correct_answer: Number(q.correctAnswer ?? q.correctIndex ?? 0),
+      explanation: q.explanation || '',
+      order_index: idx
+    }));
+    if (qRows.length > 0) {
+      await supabase.from('test_questions').insert(qRows);
+    }
+  }
+
+  const batchIds = testData.assignedBatchIds || testData.batchIds || [];
+  if (batchIds.length > 0) {
+    const btRows = batchIds.map((bId) => ({ batch_id: bId, test_id: testData.id }));
+    await supabase.from('batch_tests').insert(btRows);
+  }
+
+  return data;
+}
+
+export async function updateTest(testId, updates) {
+  const payload = {};
+  if (updates.title !== undefined) payload.title = updates.title;
+  if (updates.description !== undefined) payload.description = updates.description;
+  if (updates.timeLimit !== undefined) payload.time_limit = Number(updates.timeLimit);
+  if (updates.passingPercentage !== undefined) payload.passing_percentage = Number(updates.passingPercentage);
+  if (updates.allowRetake !== undefined) payload.allow_retake = Boolean(updates.allowRetake);
+
+  if (Object.keys(payload).length > 0) {
+    const { error } = await supabase.from('tests').update(payload).eq('id', testId);
+    if (error) handleSupabaseError(error, 'Failed to update test');
+  }
+
+  if (Array.isArray(updates.questions)) {
+    await supabase.from('test_questions').delete().eq('test_id', testId);
+    const qRows = updates.questions.map((q, idx) => ({
+      id: q.id,
+      test_id: testId,
+      text: q.text || q.question,
+      options: q.options || [],
+      correct_answer: Number(q.correctAnswer ?? q.correctIndex ?? 0),
+      explanation: q.explanation || '',
+      order_index: idx
+    }));
+    if (qRows.length > 0) {
+      await supabase.from('test_questions').insert(qRows);
+    }
+  }
+
+  if (Array.isArray(updates.assignedBatchIds) || Array.isArray(updates.batchIds)) {
+    const batchIds = updates.assignedBatchIds || updates.batchIds;
+    await supabase.from('batch_tests').delete().eq('test_id', testId);
+    if (batchIds.length > 0) {
+      const rows = batchIds.map((bId) => ({ batch_id: bId, test_id: testId }));
+      await supabase.from('batch_tests').insert(rows);
+    }
+  }
+
+  return true;
+}
+
+export async function deleteTest(testId) {
+  const { error } = await supabase.from('tests').delete().eq('id', testId);
+  if (error) handleSupabaseError(error, 'Failed to delete test');
+  return true;
+}
+
+export async function submitTestAttempt(attemptData) {
+  const { data, error } = await supabase
+    .from('test_attempts')
+    .insert({
+      id: attemptData.id,
+      student_id: attemptData.studentId,
+      test_id: attemptData.testId,
+      batch_id: attemptData.batchId || null,
+      answers: attemptData.answers || [],
+      score: Number(attemptData.score || 0),
+      total_questions: Number(attemptData.totalQuestions || 0),
+      submitted_at: attemptData.submittedAt || new Date().toISOString()
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to record test attempt');
+  return data;
+}
+
+// ==============================================================================
+// CERTIFICATES & REVIEWS
+// ==============================================================================
+export async function issueCertificate(certData) {
+  const { data, error } = await supabase
+    .from('certificates')
+    .insert({
+      id: certData.id,
+      student_id: certData.studentId,
+      student_name: certData.studentName,
+      course_name: certData.courseName,
+      issued_at: certData.issuedAt || new Date().toISOString(),
+      certificate_id: certData.certificateId,
+      is_issued: certData.isIssued !== false,
+      is_revoked: Boolean(certData.isRevoked),
+      institute_name: certData.instituteName || '',
+      signatory_name: certData.signatoryName || '',
+      signatory_title: certData.signatoryTitle || '',
+      cert_title: certData.certTitle || '',
+      pdf_url: certData.pdfUrl || null
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to issue certificate');
+  return data;
+}
+
+export async function revokeCertificate(certId) {
+  const { data, error } = await supabase
+    .from('certificates')
+    .update({ is_revoked: true })
+    .eq('id', certId)
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to revoke certificate');
+  return data;
+}
+
+// ==============================================================================
+// BATCH ARCHIVAL & CLEANUP
+// ==============================================================================
+export async function addCompletedBatch(completedBatchData) {
+  const { data, error } = await supabase
+    .from('completed_batches')
+    .insert({
+      id: completedBatchData.id || `cb-${Date.now()}`,
+      original_batch_id: completedBatchData.originalBatchId || completedBatchData.original_batch_id,
+      name: completedBatchData.name,
+      description: completedBatchData.description || '',
+      start_date: completedBatchData.startDate || completedBatchData.start_date || null,
+      end_date: completedBatchData.endDate || completedBatchData.end_date || null,
+      completed_at: completedBatchData.completedAt || completedBatchData.completed_at || new Date().toISOString(),
+      student_ids: completedBatchData.studentIds || completedBatchData.student_ids || [],
+      test_ids: completedBatchData.testIds || completedBatchData.test_ids || [],
+      assignment_ids: completedBatchData.assignmentIds || completedBatchData.assignment_ids || [],
+      snapshot: completedBatchData.snapshot || null
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to save completed batch');
+  return data;
+}
+
+export async function deleteBatchCleanup(batchId) {
+  // 1. Storage files cleanup
+  try {
+    const { data: files } = await supabase.storage.from('submissions').list(batchId);
+    if (files && files.length > 0) {
+      const paths = files.map((f) => `${batchId}/${f.name}`);
+      await supabase.storage.from('submissions').remove(paths);
+    }
+  } catch (storageErr) {
+    console.warn('[Cleanup] Storage purge error:', storageErr);
+  }
+
+  // 2. Delete submissions for this batch
+  await supabase.from('submissions').delete().eq('batch_id', batchId);
+
+  // 3. Delete test attempts for this batch
+  await supabase.from('test_attempts').delete().eq('batch_id', batchId);
+
+  // 4. Delete batch-tests links
+  await supabase.from('batch_tests').delete().eq('batch_id', batchId);
+
+  // 5. Delete batch-courses links
+  await supabase.from('batch_courses').delete().eq('batch_id', batchId);
+
+  // 6. Delete assignments for this batch
+  await supabase.from('assignments').delete().eq('batch_id', batchId);
+
+  // 7. Delete the batch record itself
+  const { error } = await supabase.from('batches').delete().eq('id', batchId);
+  if (error) handleSupabaseError(error, 'Failed to delete batch during cleanup');
+
+  return true;
+}
+
+// ==============================================================================
+// SUBMISSIONS & ASSIGNMENTS
+// ==============================================================================
+export async function addSubmission(submissionData) {
+  const { data, error } = await supabase
+    .from('submissions')
+    .insert({
+      id: submissionData.id,
+      student_id: submissionData.studentId,
+      assignment_id: submissionData.assignmentId,
+      batch_id: submissionData.batchId || null,
+      file_urls: submissionData.fileUrls || [],
+      notes: submissionData.notes || '',
+      submitted_at: submissionData.submittedAt || new Date().toISOString(),
+      grade: submissionData.grade !== undefined ? submissionData.grade : null,
+      feedback: submissionData.feedback || null
+    })
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to add submission');
+  return data;
+}
+
+export async function gradeSubmission(submissionId, grade, feedback) {
+  const { data, error } = await supabase
+    .from('submissions')
+    .update({ grade: Number(grade), feedback })
+    .eq('id', submissionId)
+    .select()
+    .single();
+
+  if (error) handleSupabaseError(error, 'Failed to grade submission');
+  return data;
+}

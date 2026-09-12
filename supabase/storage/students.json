@@ -1,0 +1,37 @@
+[
+  {
+    "id": "std-001-rahul",
+    "email": "student@codelift.com",
+    "name": "Rahul Verma",
+    "phone": "+919876543210",
+    "batchId": "batch-alpha-2026",
+    "progress": {
+      "topic-js-async": "completed",
+      "topic-react-hooks": "completed"
+    },
+    "isActive": true,
+    "joinedAt": "2026-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "std-002-ananya",
+    "email": "ananya.sharma@example.com",
+    "name": "Ananya Sharma",
+    "phone": "+919876543211",
+    "batchId": "batch-alpha-2026",
+    "progress": {
+      "topic-js-async": "completed"
+    },
+    "isActive": true,
+    "joinedAt": "2026-02-05T11:30:00.000Z"
+  },
+  {
+    "id": "std-admin-super",
+    "email": "admin@codelift.com",
+    "name": "CodeLift Instructor",
+    "phone": "+919876500000",
+    "batchId": "batch-alpha-2026",
+    "progress": {},
+    "isActive": true,
+    "joinedAt": "2026-01-01T00:00:00.000Z"
+  }
+]

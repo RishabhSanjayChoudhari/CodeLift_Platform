@@ -1,0 +1,36 @@
+{
+  "id": "course-da",
+  "title": "Data Analytics & Engineering",
+  "slug": "data-analytics-engineering",
+  "description": "Transform raw data into actionable insights using Python, Pandas, SQL, and Matplotlib.",
+  "categoryId": "cat-data",
+  "batchId": "batch-da-weekend",
+  "price": 1999,
+  "isFree": false,
+  "isPublished": true,
+  "isApproved": true,
+  "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600",
+  "rating": 4.8,
+  "numReviews": 42,
+  "studentsEnrolled": 410,
+  "createdAt": "2026-01-15T00:00:00.000Z",
+  "updatedAt": "2026-02-10T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "dm1",
+      "title": "Python for Data Analysis",
+      "topics": [
+        {
+          "id": "dt1",
+          "title": "Python Fundamentals & Data Structures",
+          "contentMd": "# Python Fundamentals\n\nLearn core data structures: Lists, Dicts, Sets, and Tuples.\n"
+        },
+        {
+          "id": "dt2",
+          "title": "Pandas & Data Wrangling",
+          "contentMd": "# Pandas Data Wrangling\n\nClean, filter, and transform complex datasets effortlessly.\n"
+        }
+      ]
+    }
+  ]
+}

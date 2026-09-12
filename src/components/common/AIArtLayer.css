@@ -1,0 +1,77 @@
+/* ==========================================================================
+   AIArtLayer - Layered Generative AI Animation Backdrop
+   ========================================================================== */
+
+.ai-art-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Layer 1: Generative Fluid Flow Field (Atmospheric baseline) */
+.ai-art-flow-field {
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Layer 2: Breathing Neural Network (Nodes & firing connections) */
+.ai-art-neural-net {
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Layer 3: Interactive Particle Constellation */
+.ai-art-constellation {
+  z-index: 3;
+  pointer-events: auto; /* Allow hover grab and proximity repulsion */
+}
+
+/* ─── VARIANT SPECIFICS ─────────────────────────────────────────── */
+.ai-art-layer-login {
+  position: absolute;
+  inset: -60px -50px -60px -60px;
+  width: calc(100% + 110px);
+  height: calc(100% + 120px);
+  border-radius: 0;
+  /* Extremely soft feather at edges — zero hard borders or box boundaries */
+  mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 92%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, black 40%, transparent 92%);
+}
+
+.ai-art-layer-home {
+  inset: 0;
+}
+
+/* ─── RESPONSIVE RULES ──────────────────────────────────────────── */
+
+/* Tablet & Mobile (< 992px): Disable flow field to preserve GPU memory */
+@media (max-width: 991px) {
+  .ai-art-flow-field {
+    display: none !important;
+  }
+}
+
+/* Mobile (< 768px): Disable neural network; keep particles faint or hidden */
+@media (max-width: 767px) {
+  .ai-art-neural-net {
+    display: none !important;
+  }
+
+  .ai-art-layer-login {
+    display: none !important;
+  }
+}
+
+/* ─── REDUCED MOTION ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ai-art-flow-field,
+  .ai-art-neural-net,
+  .ai-art-constellation {
+    animation: none !important;
+    transition: none !important;
+  }
+}

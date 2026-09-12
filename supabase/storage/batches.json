@@ -1,0 +1,18 @@
+[
+  {
+    "id": "batch-alpha-2026",
+    "name": "Full Stack Mastery - Spring 2026",
+    "capacity": 30,
+    "fee": 5000,
+    "startDate": "2026-03-15T09:00:00.000Z",
+    "isActive": true
+  },
+  {
+    "id": "batch-beta-2026",
+    "name": "AI Systems & Python Accelerator",
+    "capacity": 25,
+    "fee": 6500,
+    "startDate": "2026-04-01T09:00:00.000Z",
+    "isActive": true
+  }
+]

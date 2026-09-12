@@ -1,0 +1,118 @@
+/* ==========================================================================
+   LoginRadar - Left-Column Radar Presentation (~800px Diameter)
+   ========================================================================== */
+
+.login-radar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Drifting ambient color glows flowing behind the radar rings */
+.login-radar::before {
+  content: '';
+  position: absolute;
+  width: 900px;
+  height: 900px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--bs-primary, #15803d) 26%, transparent) 0%, transparent 48%),
+    radial-gradient(circle at 65% 65%, color-mix(in srgb, var(--bs-warning, #f59e0b) 20%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, color-mix(in srgb, var(--bs-info, #0891b2) 16%, transparent) 0%, transparent 52%);
+  filter: blur(48px);
+  animation: login-glow-drift 26s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes login-glow-drift {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  50%  { transform: translate(calc(-50% + 25px), calc(-50% - 20px)) scale(1.08); }
+  100% { transform: translate(calc(-50% - 20px), calc(-50% + 15px)) scale(0.96); }
+}
+
+/* Radar Stage: Scaled to ~750px with left-shift for breathing room */
+.login-radar-stage {
+  position: relative;
+  width: 750px;
+  height: 750px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.login-radar-stage .radar-rings {
+  transform: scale(0.64) translateX(-35px);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* Ensure Login nucleus renders prominent & glowing (140-160px outer, 120-140px core) */
+.login-radar-stage .rr-nucleus {
+  transform: scale(1.35);
+  transform-origin: center center;
+}
+
+.login-radar-stage .rr-ring-nucleus {
+  transform: scale(1.35);
+  transform-origin: center center;
+}
+
+.login-radar-stage .rr-planet-icon {
+  pointer-events: auto; /* re-enable hover on planet icons */
+}
+
+/* ─── RESPONSIVE BREAKPOINTS ───────────────────────────────────────── */
+
+/* 1200px - 1399px */
+@media (max-width: 1399px) and (min-width: 992px) {
+  .login-radar-stage {
+    width: 760px;
+    height: 760px;
+  }
+  .login-radar-stage .radar-rings {
+    transform: scale(0.63) translateX(-35px);
+  }
+}
+
+/* Tablet (768–991px): Radar becomes faded background behind login card */
+@media (max-width: 991px) and (min-width: 768px) {
+  .login-radar {
+    position: absolute;
+    inset: 0;
+    min-height: auto;
+    opacity: 0.35;
+    z-index: 1;
+  }
+  .login-radar-stage {
+    width: 680px;
+    height: 680px;
+  }
+  .login-radar-stage .radar-rings {
+    transform: scale(0.56);
+  }
+}
+
+/* Mobile (<= 767px): Radar hidden entirely */
+@media (max-width: 767px) {
+  .login-radar {
+    display: none !important;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .login-radar::before {
+    animation: none !important;
+  }
+}

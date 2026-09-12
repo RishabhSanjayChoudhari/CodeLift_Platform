@@ -1,0 +1,771 @@
+{
+  "id": "course-python-free",
+  "title": "Python Programming - Beginner to Advanced",
+  "slug": "python-programming-starter-bootcamp",
+  "description": "A complete Python course covering fundamentals, OOP, data structures, file handling, and advanced concepts with practical examples, edge cases, interview FAQs, and MCQ assessments.",
+  "categoryId": "cat-data",
+  "batchId": "batch-fswd-morning",
+  "batchIds": [
+    "batch-fswd-morning",
+    "batch-da-weekend"
+  ],
+  "price": 0,
+  "isFree": true,
+  "isPublished": true,
+  "isApproved": true,
+  "thumbnail": "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600",
+  "rating": 4.9,
+  "numReviews": 150,
+  "studentsEnrolled": 1250,
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "updatedAt": "2026-02-15T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "pm1",
+      "title": "Module 1: Python Fundamentals",
+      "topics": [
+        {
+          "id": "pt1-1",
+          "title": "Variables and Data Types",
+          "contentMd": "# Variables and Data Types in Python\n\n## Introduction\nVariables are containers for storing data values. Python is dynamically typed, meaning you don't need to declare the type of a variable explicitly – the interpreter infers it based on the assigned value.\n\n## 1. What is a Variable?\nA variable is a name that refers to a value stored in memory.\n\n**Syntax:** `variable_name = value`\n\n**Example:**\n```python\nname = \"Alice\"   # String\nage = 25         # Integer\nheight = 5.8     # Float\nis_student = True # Boolean\n```\n\n## 2. Python Data Types\n\n### 2.1 Integers (`int`)\nWhole numbers (positive, negative, or zero).\n\n**Example:**\n```python\nx = 10\ny = -5\nz = 0\n```\n\n### 2.2 Floating-Point Numbers (`float`)\nNumbers with decimal points.\n\n**Example:**\n```python\npi = 3.14159\ntemperature = -2.5\n```\n\n### 2.3 Strings (`str`)\nSequence of characters enclosed in quotes (single, double, or triple).\n\n**Example:**\n```python\nsingle = 'Hello'\ndouble = \"World\"\ntriple = '''Multi-line\nstring'''\n```\n\n### 2.4 Booleans (`bool`)\nLogical values: `True` or `False`.\n\n**Example:**\n```python\nis_raining = True\nis_sunny = False\n```\n\n### 2.5 NoneType (`None`)\nRepresents the absence of a value or a null value.\n\n**Example:**\n```python\nresult = None\n```\n\n## 3. Type Casting (Type Conversion)\nConverting one data type to another.\n\n**Implicit Casting (Automatic):**\n```python\na = 10      # int\nb = 3.5     # float\nc = a + b   # c becomes float (13.5)\n```\n\n**Explicit Casting (Manual):**\n```python\nx = \"123\"          # String\nnum = int(x)       # Converts to integer\nflt = float(x)     # Converts to float\ns = str(num)       # Converts to string\n```\n\n## 4. Dynamic Typing\nPython allows you to change the type of a variable at any time.\n\n**Example:**\n```python\ndata = 10      # int\ndata = \"Hello\" # now str\ndata = 3.14    # now float\n```\n\n## 5. Variable Naming Rules (PEP 8)\n- Must start with a letter or underscore (`_`).\n- Can contain letters, digits, and underscores.\n- Case-sensitive (`age` and `Age` are different).\n- Cannot use reserved keywords (`if`, `for`, `while`, etc.).\n- Use `snake_case` for variable names (e.g., `student_name`).\n\n## 6. Checking Variable Type\nUse `type()` function to check the type of a variable.\n\n**Example:**\n```python\na = 10\nprint(type(a))  # <class 'int'>\n```\n\n## Edge Cases\n\n### 1. Large Numbers\nPython supports arbitrarily large integers (no overflow like in other languages).\n```python\nbig = 10**100   # 1 followed by 100 zeros\n```\n\n### 2. Floating-Point Precision\nFloats are approximate due to binary representation. Use `Decimal` for precise calculations.\n```python\nprint(0.1 + 0.2)  # 0.30000000000000004\n```\n\n### 3. Type Coercion in Mixed Operations\nInteger + Float → Float automatically.\n```python\nresult = 5 + 2.5   # 7.5 (float)\n```\n\n### 4. Invalid Type Conversion\nConverting non-numeric string to int raises `ValueError`.\n```python\nint(\"abc\")  # ❌ ValueError\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `is` and `==`?**\n- `==` checks if values are equal.\n- `is` checks if two variables point to the same object in memory.\n```python\na = [1, 2]\nb = [1, 2]\nprint(a == b)  # True (values equal)\nprint(a is b)  # False (different objects)\n```\n\n**Q2: What is mutable vs immutable?**\n- **Immutable:** Cannot be changed after creation (`int`, `str`, `float`, `bool`, `tuple`).\n- **Mutable:** Can be modified (`list`, `dict`, `set`).\n\n**Q3: How does Python handle memory for variables?**\n- Variables are references (pointers) to objects in memory.\n- Objects are garbage-collected when no references exist.\n\n**Q4: What is the difference between `None` and `False`?**\n- `None` represents the absence of a value.\n- `False` is a boolean value indicating logical false.\n\n**Q5: Can a variable be used before assignment?**\nNo. It raises `NameError`.\n```python\nprint(x)  # ❌ NameError\n```\n\n## MCQ Assessment\n\n1. What is the output of the following code?\n```python\nprint(type(10.5))\n```\nOptions: A) `<class 'int'>` B) `<class 'float'>` C) `<class 'str'>` D) `<class 'bool'>`\n**Correct Answer: B**\n\n2. Which of the following is NOT a valid variable name?\nOptions: A) `_my_var` B) `myVar` C) `2myVar` D) `my_var2`\n**Correct Answer: C**\n\n3. What will `int(\"10.5\")` produce?\nOptions: A) 10 B) 10.5 C) ValueError D) 11\n**Correct Answer: C**\n\n4. What is the output of `0.1 + 0.2 == 0.3`?\nOptions: A) True B) False C) Error D) None\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `type(10.5)`?",
+              "options": [
+                "<class 'int'>",
+                "<class 'float'>",
+                "<class 'str'>",
+                "<class 'bool'>"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which of the following is NOT a valid variable name?",
+              "options": [
+                "_my_var",
+                "myVar",
+                "2myVar",
+                "my_var2"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What will `int(\"10.5\")` produce?",
+              "options": [
+                "10",
+                "10.5",
+                "ValueError",
+                "11"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What is the output of `0.1 + 0.2 == 0.3`?",
+              "options": [
+                "True",
+                "False",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            }
+          ]
+        },
+        {
+          "id": "pt1-2",
+          "title": "Input and Output",
+          "contentMd": "# Input and Output in Python\n\n## Introduction\nInput and output (I/O) are fundamental operations that allow programs to interact with the user. Python provides simple built-in functions for input and output.\n\n## 1. The `print()` Function\n`print()` is used to display output to the console.\n\n**Basic Syntax:**\n```python\nprint(\"Hello, World!\")\n```\n\n## 2. `print()` with Multiple Arguments\nYou can pass multiple values separated by commas – they are automatically joined with a space.\n\n**Example:**\n```python\nprint(\"Name:\", \"Alice\", \"Age:\", 25)\n# Output: Name: Alice Age: 25\n```\n\n## 3. `print()` with `sep` and `end` Parameters\n- `sep` – defines the separator between multiple arguments.\n- `end` – defines what is printed at the end (default is `\\n` newline).\n\n**Example:**\n```python\nprint(\"Hello\", \"World\", sep=\"-\")  # Hello-World\nprint(\"Hello\", end=\" \")\nprint(\"World\")                    # Hello World (same line)\n```\n\n## 4. The `input()` Function\n`input()` is used to take user input from the console. It always returns a **string**.\n\n**Syntax:**\n```python\nname = input(\"Enter your name: \")\n```\n\n## 5. Converting Input to Other Types\nSince `input()` returns a string, you need to cast it to the desired type.\n\n**Example:**\n```python\nage = int(input(\"Enter your age: \"))        # Converts to int\nprice = float(input(\"Enter price: \"))      # Converts to float\n```\n\n## 6. String Formatting Techniques\n\n### 6.1 f-strings (Python 3.6+)\nMost readable and recommended.\n\n**Example:**\n```python\nname = \"Alice\"\nage = 25\nprint(f\"Hello, {name}! You are {age} years old.\")\n```\n\n### 6.2 `.format()` Method\n**Example:**\n```python\nprint(\"Hello, {}! You are {} years old.\".format(name, age))\n```\n\n### 6.3 Concatenation (`+`)\n**Example:**\n```python\nprint(\"Hello, \" + name + \"! You are \" + str(age) + \" years old.\")\n```\n\n## Edge Cases\n\n### 1. Empty Input\nThe user presses `Enter` without typing anything – `input()` returns an empty string `\"\"`.\n\n### 2. Leading/Trailing Whitespace\nUse `.strip()` to remove extra spaces from user input.\n```python\nname = input(\"Enter name: \").strip()\n```\n\n### 3. Handling Invalid Numeric Input\nIf the user enters non-numeric data, `int()` raises `ValueError`. Always use `try-except`.\n\n### 4. User Pressing EOF (Ctrl+D / Ctrl+Z)\nThis raises `EOFError`. Handle it if needed.\n\n### 5. Large Input\n`input()` reads one line at a time. For multiple lines, use a loop.\n\n## Interview FAQs\n\n**Q1: Why does `input()` always return a string?**\n- It treats all input as text. You must explicitly cast to other types.\n\n**Q2: What is the difference between `input()` and `raw_input()`?**\n- `raw_input()` was used in Python 2. In Python 3, it was renamed to `input()`.\n\n**Q3: How can you take multiple inputs in one line?**\nUse `.split()`.\n```python\na, b = input(\"Enter two numbers: \").split()\n```\n\n**Q4: How to print without a newline?**\nSet `end=\"\"` in `print()`.\n\n**Q5: How to handle large text input (multiple lines)?**\nUse a loop to read lines until a specific condition (e.g., empty line).\n\n## MCQ Assessment\n\n1. What is the output of `print(\"Hello\", \"World\", sep=\"-\")`?\nOptions: A) Hello World B) Hello-World C) HelloWorld D) Hello, World\n**Correct Answer: B**\n\n2. Which function is used to take user input in Python 3?\nOptions: A) `raw_input()` B) `input()` C) `get_input()` D) `read()`\n**Correct Answer: B**\n\n3. What is the default value of the `end` parameter in `print()`?\nOptions: A) Space B) Newline C) Tab D) Nothing\n**Correct Answer: B**\n\n4. How do you convert user input to an integer?\nOptions: A) `int(input())` B) `input(int())` C) `float(input())` D) `str(input())`\n**Correct Answer: A**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `print(\"Hello\", \"World\", sep=\"-\")`?",
+              "options": [
+                "Hello World",
+                "Hello-World",
+                "HelloWorld",
+                "Hello, World"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which function is used to take user input in Python 3?",
+              "options": [
+                "raw_input()",
+                "input()",
+                "get_input()",
+                "read()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the default value of the `end` parameter in `print()`?",
+              "options": [
+                "Space",
+                "Newline",
+                "Tab",
+                "Nothing"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "How do you convert user input to an integer?",
+              "options": [
+                "int(input())",
+                "input(int())",
+                "float(input())",
+                "str(input())"
+              ],
+              "correct": 0
+            }
+          ]
+        },
+        {
+          "id": "pt1-3",
+          "title": "Operators and Expressions",
+          "contentMd": "# Operators and Expressions in Python\n\n## Introduction\nOperators are special symbols that perform operations on operands (values or variables). Expressions combine operators and operands to produce a value.\n\n## 1. Arithmetic Operators\nUsed for mathematical calculations.\n\n| Operator | Name | Example |\n|----------|------|---------|\n| `+` | Addition | `5 + 3 = 8` |\n| `-` | Subtraction | `5 - 3 = 2` |\n| `*` | Multiplication | `5 * 3 = 15` |\n| `/` | Division | `5 / 2 = 2.5` |\n| `//` | Floor Division | `5 // 2 = 2` |\n| `%` | Modulus (Remainder) | `5 % 2 = 1` |\n| `**` | Exponentiation | `2 ** 3 = 8` |\n\n## 2. Comparison (Relational) Operators\nCompare two values and return `True` or `False`.\n\n| Operator | Description | Example |\n|----------|-------------|---------|\n| `==` | Equal to | `5 == 5` → `True` |\n| `!=` | Not equal to | `5 != 3` → `True` |\n| `>` | Greater than | `5 > 3` → `True` |\n| `<` | Less than | `5 < 3` → `False` |\n| `>=` | Greater than or equal to | `5 >= 5` → `True` |\n| `<=` | Less than or equal to | `5 <= 3` → `False` |\n\n## 3. Logical Operators\nUsed to combine conditional statements.\n\n| Operator | Description | Example |\n|----------|-------------|---------|\n| `and` | True if both are True | `True and False` → `False` |\n| `or` | True if at least one is True | `True or False` → `True` |\n| `not` | Inverts the boolean value | `not True` → `False` |\n\n## 4. Assignment Operators\nUsed to assign values to variables.\n\n| Operator | Description | Example |\n|----------|-------------|---------|\n| `=` | Assign | `x = 5` |\n| `+=` | Add and assign | `x += 3` → `x = x + 3` |\n| `-=` | Subtract and assign | `x -= 3` |\n| `*=` | Multiply and assign | `x *= 3` |\n| `/=` | Divide and assign | `x /= 3` |\n| `%=` | Modulus and assign | `x %= 3` |\n| `**=` | Exponent and assign | `x **= 3` |\n| `//=` | Floor divide and assign | `x //= 3` |\n\n## 5. Membership Operators\nUsed to test if a value is present in a sequence (string, list, tuple, dict, etc.).\n\n| Operator | Description | Example |\n|----------|-------------|---------|\n| `in` | Returns True if value is found | `'a' in 'apple'` → `True` |\n| `not in` | Returns True if value is NOT found | `'b' not in 'apple'` → `True` |\n\n## 6. Identity Operators\nCompare memory locations of two objects.\n\n| Operator | Description | Example |\n|----------|-------------|---------|\n| `is` | True if both refer to same object | `a is b` |\n| `is not` | True if they refer to different objects | `a is not b` |\n\n## 7. Operator Precedence\nOrder in which operators are evaluated (from highest to lowest):\n\n1. `()` – Parentheses\n2. `**` – Exponentiation\n3. `*`, `/`, `//`, `%` – Multiplication, Division, Floor Division, Modulus\n4. `+`, `-` – Addition, Subtraction\n5. `==`, `!=`, `>`, `<`, `>=`, `<=` – Comparisons\n6. `not` – Logical NOT\n7. `and` – Logical AND\n8. `or` – Logical OR\n\n## Edge Cases\n\n### 1. Division by Zero\nRaises `ZeroDivisionError`.\n```python\nx = 5 / 0   # ❌ ZeroDivisionError\n```\n\n### 2. Floating Point Precision\nFloats are approximate, so direct comparison can be tricky.\n```python\nprint(0.1 + 0.2 == 0.3)  # False\n```\nUse `round()` or `math.isclose()` for comparisons.\n\n### 3. Short-Circuit Evaluation\n`and` and `or` stop evaluating once the result is determined.\n```python\nFalse and print(\"This won't print\")\nTrue or print(\"This also won't print\")\n```\n\n### 4. Assignment vs Comparison\nCommon mistake: Using `=` instead of `==` in conditions.\n```python\nif x = 5:   # ❌ SyntaxError\n```\n\n### 5. String Comparison\nStrings are compared lexicographically (ASCII order).\n```python\nprint(\"apple\" < \"banana\")  # True\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `==` and `is`?**\n- `==` checks value equality.\n- `is` checks object identity (memory address).\n\n**Q2: What is short-circuit evaluation?**\n- `and` stops at the first `False`.\n- `or` stops at the first `True`.\n\n**Q3: How does Python handle operator precedence?**\n- Use parentheses `()` to make precedence explicit and improve readability.\n\n**Q4: Can we use logical operators on non-boolean values?**\n- Yes. `and` returns the last evaluated operand, `or` returns the first truthy operand.\n\n**Q5: What is the difference between `//` and `/`?**\n- `/` returns a float.\n- `//` returns an integer (floor division).\n\n## MCQ Assessment\n\n1. What is the output of `5 // 2`?\nOptions: A) 2.5 B) 2 C) 3 D) 2.0\n**Correct Answer: B**\n\n2. Which operator is used for logical AND?\nOptions: A) `&` B) `&&` C) `and` D) `AND`\n**Correct Answer: C**\n\n3. What is the output of `3 + 2 * 4`?\nOptions: A) 20 B) 11 C) 14 D) 24\n**Correct Answer: B**\n\n4. Which comparison operator checks inequality?\nOptions: A) `=` B) `==` C) `!=` D) `<>`\n**Correct Answer: C**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `5 // 2`?",
+              "options": [
+                "2.5",
+                "2",
+                "3",
+                "2.0"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which operator is used for logical AND?",
+              "options": [
+                "&",
+                "&&",
+                "and",
+                "AND"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What is the output of `3 + 2 * 4`?",
+              "options": [
+                "20",
+                "11",
+                "14",
+                "24"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which comparison operator checks inequality?",
+              "options": [
+                "=",
+                "==",
+                "!=",
+                "<>"
+              ],
+              "correct": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm2",
+      "title": "Module 2: Control Flow",
+      "topics": [
+        {
+          "id": "pt2-1",
+          "title": "Conditional Statements (if-else)",
+          "contentMd": "# Conditional Statements in Python\n\n## Introduction\nConditional statements allow you to execute different blocks of code based on whether a condition is `True` or `False`.\n\n## 1. The `if` Statement\nExecutes a block of code only if the condition is `True`.\n\n**Syntax:**\n```python\nif condition:\n    # code to execute\n```\n\n**Example:**\n```python\nage = 18\nif age >= 18:\n    print(\"You are eligible to vote.\")\n```\n\n## 2. The `if-else` Statement\nExecutes one block if condition is `True`, another if `False`.\n\n**Syntax:**\n```python\nif condition:\n    # code if True\nelse:\n    # code if False\n```\n\n**Example:**\n```python\nage = 16\nif age >= 18:\n    print(\"Eligible to vote\")\nelse:\n    print(\"Not eligible to vote\")\n```\n\n## 3. The `if-elif-else` Ladder\nUsed for multiple conditions.\n\n**Syntax:**\n```python\nif condition1:\n    # code\nelif condition2:\n    # code\nelif condition3:\n    # code\nelse:\n    # code if none are True\n```\n\n**Example:**\n```python\nscore = 85\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelif score >= 60:\n    grade = \"D\"\nelse:\n    grade = \"F\"\nprint(\"Grade:\", grade)  # B\n```\n\n## 4. Nested Conditions\nConditions inside conditions.\n\n**Example:**\n```python\nage = 25\nhas_license = True\n\nif age >= 18:\n    if has_license:\n        print(\"You can drive\")\n    else:\n        print(\"Get a license first\")\nelse:\n    print(\"Too young to drive\")\n```\n\n## 5. The `pass` Statement\nA placeholder that does nothing. Used when syntax requires a statement but you don't want any action.\n\n**Example:**\n```python\nif condition:\n    pass   # TODO: implement later\nelse:\n    print(\"Do something\")\n```\n\n## Edge Cases\n\n### 1. Indentation Errors\nIn Python, indentation defines code blocks. Wrong indentation causes errors.\n\n**Incorrect:**\n```python\nif True:\nprint(\"Indented incorrectly\")  # ❌ IndentationError\n```\n\n**Correct:**\n```python\nif True:\n    print(\"Properly indented\")\n```\n\n### 2. Truthy and Falsy Values\n- **Falsy:** `None`, `False`, `0`, `0.0`, `\"\"`, `[]`, `{}`, `set()`\n- **Truthy:** Anything else\n\n**Example:**\n```python\nif \"\":        # Falsy\n    print(\"This won't print\")\nif \"Hello\":   # Truthy\n    print(\"This will print\")\n```\n\n### 3. Empty Conditions\nIf you leave a condition empty, Python raises a `SyntaxError`.\n\n**Incorrect:**\n```python\nif :  # ❌ SyntaxError\n    pass\n```\n\n### 4. Multiple Conditions with `and`/`or`\n```python\nif age >= 18 and has_license:\n    print(\"Can drive\")\n```\n\n### 5. Comparing Different Types\nPython 3 no longer allows comparison between incompatible types.\n```python\nif 10 > \"5\":   # ❌ TypeError\n    pass\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `==` and `is`?**\n- `==` compares values.\n- `is` compares object identity (memory address).\n\n**Q2: What is the ternary operator in Python?**\nA shorter `if-else` expression:\n```python\nresult = \"Even\" if num % 2 == 0 else \"Odd\"\n```\n\n**Q3: Can we have multiple `elif` blocks?**\nYes, any number of `elif` blocks is allowed.\n\n**Q4: Is `switch-case` available in Python?**\nNo. You can use `if-elif-else` or dictionaries instead.\n\n**Q5: What is short-circuit evaluation in conditionals?**\nFor `and`, if first condition is `False`, second is not evaluated.\nFor `or`, if first condition is `True`, second is not evaluated.\n\n## MCQ Assessment\n\n1. What is the output of the following code?\n```python\nx = 5\nif x > 10:\n    print(\"A\")\nelse:\n    print(\"B\")\n```\nOptions: A) A B) B C) Error D) None\n**Correct Answer: B**\n\n2. Which keyword is used to check multiple conditions?\nOptions: A) `elif` B) `else if` C) `elseif` D) `elifse`\n**Correct Answer: A**\n\n3. What is the output?\n```python\nif 0:\n    print(\"True\")\nelse:\n    print(\"False\")\n```\nOptions: A) True B) False C) Error D) 0\n**Correct Answer: B**\n\n4. What does `pass` do?\nOptions: A) Exits the program B) Skips to next iteration C) Does nothing D) Throws an error\n**Correct Answer: C**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `x = 5; if x > 10: print(\"A\") else: print(\"B\")`?",
+              "options": [
+                "A",
+                "B",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which keyword is used to check multiple conditions?",
+              "options": [
+                "elif",
+                "else if",
+                "elseif",
+                "elifse"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What is the output of `if 0: print(\"True\") else: print(\"False\")`?",
+              "options": [
+                "True",
+                "False",
+                "Error",
+                "0"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `pass` do?",
+              "options": [
+                "Exits the program",
+                "Skips to next iteration",
+                "Does nothing",
+                "Throws an error"
+              ],
+              "correct": 2
+            }
+          ]
+        },
+        {
+          "id": "pt2-2",
+          "title": "Loops (for and while)",
+          "contentMd": "# Loops in Python\n\n## Introduction\nLoops allow you to execute a block of code repeatedly. Python has two types of loops: `for` and `while`.\n\n## 1. The `while` Loop\nExecutes a block of code **as long as** a condition is `True`.\n\n**Syntax:**\n```python\nwhile condition:\n    # code to repeat\n```\n\n**Example:**\n```python\ncount = 1\nwhile count <= 5:\n    print(count)\n    count += 1\n# Output: 1 2 3 4 5\n```\n\n## 2. The `for` Loop\nIterates over a sequence (list, tuple, string, range, etc.).\n\n**Syntax:**\n```python\nfor variable in sequence:\n    # code to repeat\n```\n\n**Example:**\n```python\nfor i in range(1, 6):\n    print(i)\n# Output: 1 2 3 4 5\n```\n\n## 3. `range()` Function\nGenerates a sequence of numbers.\n\n**Syntax:** `range(start, stop, step)`\n- `start` – optional, default is 0.\n- `stop` – required, excludes this number.\n- `step` – optional, default is 1.\n\n**Examples:**\n```python\nrange(5)        # 0, 1, 2, 3, 4\nrange(2, 6)     # 2, 3, 4, 5\nrange(1, 10, 2) # 1, 3, 5, 7, 9\n```\n\n## 4. `break` Statement\nExits the loop immediately.\n\n**Example:**\n```python\nfor i in range(1, 10):\n    if i == 5:\n        break\n    print(i)\n# Output: 1 2 3 4\n```\n\n## 5. `continue` Statement\nSkips the current iteration and moves to the next.\n\n**Example:**\n```python\nfor i in range(1, 6):\n    if i == 3:\n        continue\n    print(i)\n# Output: 1 2 4 5\n```\n\n## 6. `else` with Loops\nExecutes when the loop completes **without** a `break`.\n\n**Example:**\n```python\nfor i in range(1, 4):\n    print(i)\nelse:\n    print(\"Loop completed\")\n# Output: 1 2 3 Loop completed\n```\n\nWith `break`:\n```python\nfor i in range(1, 4):\n    if i == 2:\n        break\n    print(i)\nelse:\n    print(\"Loop completed\")  # This won't run\n# Output: 1\n```\n\n## Edge Cases\n\n### 1. Infinite Loop\nA loop that never ends.\n\n**Example:**\n```python\nwhile True:\n    print(\"Infinite\")  # Runs forever\n```\n\n### 2. Empty Loop\nA `for` loop over an empty sequence doesn't run.\n\n**Example:**\n```python\nfor i in []:\n    print(i)   # Nothing happens\n```\n\n### 3. Modifying a List While Iterating\nChanging a list while looping can cause unexpected behavior.\n\n**Example:**\n```python\nnumbers = [1, 2, 3, 4]\nfor n in numbers:\n    numbers.remove(n)   # ❌ May skip elements\n```\n\n**Solution:** Use a copy `numbers[:]`.\n\n### 4. Loop Variable Scope\nLoop variables are accessible after the loop ends.\n\n**Example:**\n```python\nfor i in range(5):\n    pass\nprint(i)   # 4 (i is still accessible)\n```\n\n### 5. `while` vs `for` – When to Use?\n- Use `for` when you know the number of iterations.\n- Use `while` when the number of iterations depends on a condition.\n\n## Interview FAQs\n\n**Q1: What is the difference between `break` and `continue`?**\n- `break` exits the entire loop.\n- `continue` skips only the current iteration.\n\n**Q2: Can we use `else` with loops?**\nYes. The `else` block runs only if the loop completes without `break`.\n\n**Q3: What is the `range()` function?**\nIt generates a sequence of numbers, commonly used with `for` loops.\n\n**Q4: How to loop through a dictionary?**\n```python\nfor key, value in dict.items():\n    print(key, value)\n```\n\n**Q5: How to loop with both index and value?**\n```python\nfor index, value in enumerate(list):\n    print(index, value)\n```\n\n## MCQ Assessment\n\n1. What is the output?\n```python\nfor i in range(3):\n    print(i, end=\" \")\n```\nOptions: A) 1 2 3 B) 0 1 2 C) 0 1 2 3 D) 1 2 3 4\n**Correct Answer: B**\n\n2. Which statement exits the loop immediately?\nOptions: A) `continue` B) `break` C) `exit` D) `stop`\n**Correct Answer: B**\n\n3. What is the output?\n```python\ni = 0\nwhile i < 3:\n    i += 1\n    if i == 2:\n        continue\n    print(i)\n```\nOptions: A) 1 3 B) 1 2 3 C) 0 1 2 D) 1 2\n**Correct Answer: A**\n\n4. Which loop is used when the number of iterations is unknown?\nOptions: A) `for` B) `while` C) Both D) Neither\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `for i in range(3): print(i, end=\" \")`?",
+              "options": [
+                "1 2 3",
+                "0 1 2",
+                "0 1 2 3",
+                "1 2 3 4"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which statement exits the loop immediately?",
+              "options": [
+                "continue",
+                "break",
+                "exit",
+                "stop"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of the while loop? `i=0; while i<3: i+=1; if i==2: continue; print(i)`",
+              "options": [
+                "1 3",
+                "1 2 3",
+                "0 1 2",
+                "1 2"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which loop is used when the number of iterations is unknown?",
+              "options": [
+                "for",
+                "while",
+                "Both",
+                "Neither"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm3",
+      "title": "Module 3: Data Structures",
+      "topics": [
+        {
+          "id": "pt3-1",
+          "title": "Lists and Tuples",
+          "contentMd": "# Lists and Tuples in Python\n\n## Introduction\nLists and tuples are used to store collections of items. Lists are mutable (can be changed), while tuples are immutable (cannot be changed).\n\n## 1. Lists\nA list is an ordered, mutable collection of items.\n\n**Creating a List:**\n```python\nfruits = [\"apple\", \"banana\", \"cherry\"]\nnumbers = [1, 2, 3, 4, 5]\nmixed = [1, \"hello\", 3.14, True]\n```\n\n### 1.1 Accessing Elements\nUse index (starting from 0).\n\n**Example:**\n```python\nprint(fruits[0])   # apple\nprint(fruits[-1])  # cherry (last element)\n```\n\n### 1.2 Slicing\nExtract a portion of the list.\n\n**Syntax:** `list[start:end:step]`\n```python\nnumbers = [0, 1, 2, 3, 4, 5]\nprint(numbers[1:4])    # [1, 2, 3]\nprint(numbers[:3])     # [0, 1, 2]\nprint(numbers[::2])    # [0, 2, 4]\n```\n\n### 1.3 Common List Methods\n\n| Method | Description | Example |\n|--------|-------------|---------|\n| `.append(item)` | Adds item at the end | `list.append(6)` |\n| `.insert(index, item)` | Inserts at specific index | `list.insert(0, 10)` |\n| `.extend(iterable)` | Adds all items from another list | `list.extend([7, 8])` |\n| `.remove(item)` | Removes first occurrence | `list.remove(3)` |\n| `.pop(index)` | Removes and returns item at index | `list.pop(2)` |\n| `.index(item)` | Returns index of first occurrence | `list.index(4)` |\n| `.count(item)` | Counts occurrences | `list.count(2)` |\n| `.sort()` | Sorts in ascending order | `list.sort()` |\n| `.reverse()` | Reverses the list | `list.reverse()` |\n| `.clear()` | Removes all items | `list.clear()` |\n\n### 1.4 List Comprehension\nCreate lists concisely.\n\n**Example:**\n```python\nsquares = [x**2 for x in range(5)]   # [0, 1, 4, 9, 16]\nevens = [x for x in range(10) if x % 2 == 0]  # [0, 2, 4, 6, 8]\n```\n\n## 2. Tuples\nA tuple is an ordered, immutable collection of items.\n\n**Creating a Tuple:**\n```python\ncolors = (\"red\", \"green\", \"blue\")\nsingle = (5,)   # Tuple with one element (comma is required)\n```\n\n### 2.1 Accessing Elements\nSame as lists – using indices.\n\n**Example:**\n```python\nprint(colors[0])   # red\n```\n\n### 2.2 Tuple Unpacking\nAssign tuple elements to variables.\n\n**Example:**\n```python\ncoordinates = (10, 20)\nx, y = coordinates\nprint(x, y)   # 10 20\n```\n\n## 3. List vs Tuple\n\n| Feature | List | Tuple |\n|---------|------|-------|\n| Mutability | Mutable | Immutable |\n| Syntax | `[]` | `()` |\n| Speed | Slower | Faster |\n| Memory | More memory | Less memory |\n| Use Case | Dynamic data | Fixed data (e.g., coordinates) |\n\n## Edge Cases\n\n### 1. IndexError\nAccessing an index out of range.\n```python\nlist = [1, 2]\nprint(list[5])   # ❌ IndexError\n```\n\n### 2. Converting Tuple to List\n```python\nt = (1, 2, 3)\nl = list(t)   # [1, 2, 3]\n```\n\n### 3. Sorting a Tuple\nTuples are immutable, so you cannot sort them directly. Convert to list first.\n\n### 4. Shallow Copy vs Deep Copy\n`list.copy()` creates a shallow copy (nested objects are shared).\n\n## Interview FAQs\n\n**Q1: When would you use a tuple instead of a list?**\n- When the data should not change (e.g., coordinates, database records).\n- For better performance and memory efficiency.\n\n**Q2: How to swap two variables in Python?**\n```python\na, b = b, a   # Tuple unpacking\n```\n\n**Q3: What is list comprehension?**\nA concise way to create lists from existing iterables.\n\n**Q4: How to check if an item exists in a list?**\n```python\nif item in list:\n    print(\"Found\")\n```\n\n**Q5: How to remove duplicates from a list?**\n```python\nlist(set(list))   # Converts to set (unique) and back to list\n```\n\n## MCQ Assessment\n\n1. What is the output of `[1, 2, 3] + [4, 5]`?\nOptions: A) [1, 2, 3, 4, 5] B) [5, 7] C) Error D) [1, 2, 3, 4, 5] \n**Correct Answer: A**\n\n2. Which method removes and returns the last element?\nOptions: A) `remove()` B) `pop()` C) `append()` D) `extend()`\n**Correct Answer: B**\n\n3. What is the output?\n```python\nt = (1, 2, 3)\nt[1] = 10\n```\nOptions: A) (1, 10, 3) B) Error C) (10, 2, 3) D) None\n**Correct Answer: B**\n\n4. Which is faster – list or tuple?\nOptions: A) List B) Tuple C) Both equal D) Depends on data\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `[1, 2, 3] + [4, 5]`?",
+              "options": [
+                "[1, 2, 3, 4, 5]",
+                "[5, 7]",
+                "Error",
+                "[]"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which method removes and returns the last element?",
+              "options": [
+                "remove()",
+                "pop()",
+                "append()",
+                "extend()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `t = (1, 2, 3); t[1] = 10`?",
+              "options": [
+                "(1, 10, 3)",
+                "Error",
+                "(10, 2, 3)",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is faster – list or tuple?",
+              "options": [
+                "List",
+                "Tuple",
+                "Both equal",
+                "Depends on data"
+              ],
+              "correct": 1
+            }
+          ]
+        },
+        {
+          "id": "pt3-2",
+          "title": "Dictionaries and Sets",
+          "contentMd": "# Dictionaries and Sets in Python\n\n## Introduction\n- **Dictionary:** Stores key-value pairs (mutable, unordered).\n- **Set:** Stores unique, unordered elements (mutable).\n\n## 1. Dictionaries\nA dictionary is an unordered collection of key-value pairs.\n\n**Creating a Dictionary:**\n```python\nstudent = {\n    \"name\": \"Alice\",\n    \"age\": 25,\n    \"city\": \"New York\"\n}\n```\n\n### 1.1 Accessing Values\n```python\nprint(student[\"name\"])      # Alice\nprint(student.get(\"age\"))   # 25\nprint(student.get(\"grade\")) # None (no error)\n```\n\n### 1.2 Adding/Updating Items\n```python\nstudent[\"grade\"] = \"A\"     # Add new key\nstudent[\"age\"] = 26        # Update existing key\n```\n\n### 1.3 Dictionary Methods\n\n| Method | Description | Example |\n|--------|-------------|---------|\n| `.keys()` | Returns all keys | `dict.keys()` |\n| `.values()` | Returns all values | `dict.values()` |\n| `.items()` | Returns key-value pairs as tuples | `dict.items()` |\n| `.update(dict2)` | Merges dict2 into dict | `dict.update(other)` |\n| `.pop(key)` | Removes key and returns value | `dict.pop(\"age\")` |\n| `.popitem()` | Removes and returns last item | `dict.popitem()` |\n| `.setdefault(key, default)` | Returns value if key exists, else sets default | `dict.setdefault(\"grade\", \"B\")` |\n| `.clear()` | Removes all items | `dict.clear()` |\n| `.copy()` | Returns a shallow copy | `new = dict.copy()` |\n\n### 1.4 Looping Through Dictionaries\n```python\nfor key in student:           # Only keys\n    print(key)\n\nfor value in student.values(): # Only values\n    print(value)\n\nfor key, value in student.items():  # Both\n    print(key, value)\n```\n\n### 1.5 Dictionary Comprehension\n```python\nsquares = {x: x**2 for x in range(5)}   # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}\n```\n\n## 2. Sets\nA set is an unordered collection of unique elements.\n\n**Creating a Set:**\n```python\ncolors = {\"red\", \"green\", \"blue\"}\nnumbers = set([1, 2, 3, 4, 5])\n```\n\n### 2.1 Set Operations\n\n| Operation | Description | Example |\n|-----------|-------------|---------|\n| `add(item)` | Adds an item | `set.add(6)` |\n| `remove(item)` | Removes an item (KeyError if not found) | `set.remove(3)` |\n| `discard(item)` | Removes if exists (no error) | `set.discard(10)` |\n| `union()` | Combines sets | `A.union(B)` |\n| `intersection()` | Common elements | `A.intersection(B)` |\n| `difference()` | Elements in A but not in B | `A.difference(B)` |\n| `symmetric_difference()` | Elements in A or B, but not both | `A.symmetric_difference(B)` |\n| `issubset()` | Check if A is subset of B | `A.issubset(B)` |\n| `issuperset()` | Check if A is superset of B | `A.issuperset(B)` |\n\n## Edge Cases\n\n### 1. KeyError\nAccessing a missing key directly (`dict[key]`) raises `KeyError`.\n\n**Fix:** Use `.get()` to handle missing keys gracefully.\n\n### 2. Mutable Keys\nDictionary keys must be immutable (e.g., strings, numbers, tuples). Lists cannot be keys.\n\n```python\nd = {[1, 2]: \"value\"}   # ❌ TypeError\n```\n\n### 3. Duplicate Keys\nIf you add a duplicate key, the old value is overwritten.\n\n### 4. Frozen Sets\n`frozenset()` creates an immutable version of a set.\n\n## Interview FAQs\n\n**Q1: What is the difference between a list and a dictionary?**\n- List: Ordered, indexed by position, mutable.\n- Dictionary: Unordered, indexed by key, mutable.\n\n**Q2: When to use a dictionary?**\nWhen you need fast lookup by key.\n\n**Q3: When to use a set?**\nWhen you need to store unique values and perform set operations.\n\n**Q4: How to merge two dictionaries?**\n```python\ndict1.update(dict2)\n# OR (Python 3.5+)\ndict3 = {**dict1, **dict2}\n```\n\n**Q5: How to get all keys from a dictionary?**\n```python\nkeys = list(dict.keys())\n```\n\n## MCQ Assessment\n\n1. What is the output of `d = {\"a\": 1, \"b\": 2}; d[\"c\"] = 3; print(d)`?\nOptions: A) {\"a\": 1, \"b\": 2} B) {\"a\": 1, \"b\": 2, \"c\": 3} C) Error D) None\n**Correct Answer: B**\n\n2. Which method removes a key and returns its value?\nOptions: A) `remove()` B) `pop()` C) `delete()` D) `discard()`\n**Correct Answer: B**\n\n3. What is the output?\n```python\ns = {1, 2, 3}\ns.add(3)\nprint(s)\n```\nOptions: A) {1, 2, 3} B) {1, 2, 3, 3} C) Error D) {1, 2}\n**Correct Answer: A**\n\n4. Can a list be a dictionary key?\nOptions: A) Yes B) No C) Sometimes D) Depends on Python version\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `d = {\"a\": 1, \"b\": 2}; d[\"c\"] = 3; print(d)`?",
+              "options": [
+                "{\"a\": 1, \"b\": 2}",
+                "{\"a\": 1, \"b\": 2, \"c\": 3}",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which method removes a key and returns its value?",
+              "options": [
+                "remove()",
+                "pop()",
+                "delete()",
+                "discard()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `s = {1, 2, 3}; s.add(3); print(s)`?",
+              "options": [
+                "{1, 2, 3}",
+                "{1, 2, 3, 3}",
+                "Error",
+                "{1, 2}"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Can a list be a dictionary key?",
+              "options": [
+                "Yes",
+                "No",
+                "Sometimes",
+                "Depends on Python version"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm4",
+      "title": "Module 4: Functions and Scope",
+      "topics": [
+        {
+          "id": "pt4-1",
+          "title": "Functions and Scope",
+          "contentMd": "# Functions and Scope in Python\n\n## Introduction\nFunctions are reusable blocks of code that perform a specific task. Scope determines where a variable is accessible.\n\n## 1. Defining and Calling Functions\n\n**Syntax:**\n```python\ndef function_name(parameters):\n    # code\n    return value\n```\n\n**Example:**\n```python\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")\n```\n\n## 2. Parameters and Arguments\n\n### 2.1 Positional Arguments\n```python\ndef add(a, b):\n    return a + b\n\nprint(add(5, 3))   # 8\n```\n\n### 2.2 Keyword Arguments\n```python\ndef introduce(name, age):\n    print(f\"{name} is {age} years old\")\n\nintroduce(age=25, name=\"Bob\")   # Order doesn't matter\n```\n\n### 2.3 Default Parameters\n```python\ndef greet(name, greeting=\"Hello\"):\n    print(f\"{greeting}, {name}!\")\n\ngreet(\"Alice\")          # Hello, Alice!\ngreet(\"Bob\", \"Hi\")      # Hi, Bob!\n```\n\n### 2.4 Variable-Length Arguments (`*args`)\nAccepts any number of positional arguments.\n\n**Example:**\n```python\ndef sum_all(*args):\n    return sum(args)\n\nprint(sum_all(1, 2, 3))      # 6\nprint(sum_all(10, 20, 30))   # 60\n```\n\n### 2.5 Variable-Length Keyword Arguments (`**kwargs`)\nAccepts any number of keyword arguments.\n\n**Example:**\n```python\ndef show_info(**kwargs):\n    for key, value in kwargs.items():\n        print(f\"{key}: {value}\")\n\nshow_info(name=\"Alice\", age=25, city=\"NYC\")\n```\n\n## 3. Return Statement\n\n### 3.1 Returning a Value\n```python\ndef square(x):\n    return x * x\n\nresult = square(5)\nprint(result)   # 25\n```\n\n### 3.2 Returning Multiple Values (Tuple)\n```python\ndef get_min_max(numbers):\n    return min(numbers), max(numbers)\n\nminimum, maximum = get_min_max([1, 5, 3, 9, 2])\nprint(minimum, maximum)   # 1 9\n```\n\n### 3.3 No Return Statement\nIf no `return`, the function returns `None`.\n\n## 4. Scope of Variables\n\n### 4.1 Local Scope\nVariables defined inside a function – accessible only inside that function.\n\n**Example:**\n```python\ndef demo():\n    x = 10   # Local variable\n    print(x)\n\ndemo()   # 10\nprint(x) # ❌ NameError\n```\n\n### 4.2 Global Scope\nVariables defined outside any function – accessible everywhere.\n\n**Example:**\n```python\nx = 10   # Global variable\n\ndef demo():\n    print(x)   # 10\n\ndemo()\n```\n\n### 4.3 `global` Keyword\nUsed to modify a global variable inside a function.\n\n**Example:**\n```python\ncount = 0\n\ndef increment():\n    global count\n    count += 1\n\nincrement()\nprint(count)   # 1\n```\n\n### 4.4 `nonlocal` Keyword\nUsed to modify a variable from the enclosing (outer) function inside a nested function.\n\n**Example:**\n```python\ndef outer():\n    x = 10\n    def inner():\n        nonlocal x\n        x += 5\n    inner()\n    print(x)   # 15\n\nouter()\n```\n\n## 5. Docstrings\nDocumentation for functions.\n\n**Example:**\n```python\ndef add(a, b):\n    \"\"\"\n    This function adds two numbers.\n    Parameters:\n    a (int/float): First number\n    b (int/float): Second number\n    Returns:\n    int/float: Sum of a and b\n    \"\"\"\n    return a + b\n```\n\n## Edge Cases\n\n### 1. Mutable Default Arguments\nUsing a mutable object as a default argument can cause unexpected behavior.\n\n**Example:**\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(1))   # [1]\nprint(add_item(2))   # [1, 2]  ❌ Unexpected!\n```\n\n**Fix:**\n```python\ndef add_item(item, items=None):\n    if items is None:\n        items = []\n    items.append(item)\n    return items\n```\n\n### 2. Passing Mutable Objects\nChanges inside the function affect the original object.\n\n**Example:**\n```python\ndef modify(list):\n    list.append(10)\n\nmy_list = [1, 2, 3]\nmodify(my_list)\nprint(my_list)   # [1, 2, 3, 10]\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `*args` and `**kwargs`?**\n- `*args` collects positional arguments into a tuple.\n- `**kwargs` collects keyword arguments into a dictionary.\n\n**Q2: What is the scope of a variable defined inside a function?**\n- Local scope – accessible only inside that function.\n\n**Q3: How to make a variable global inside a function?**\n- Use the `global` keyword.\n\n**Q4: Why is `None` returned when a function has no `return`?**\n- Python implicitly returns `None`.\n\n**Q5: What is the difference between `global` and `nonlocal`?**\n- `global` targets module-level variables.\n- `nonlocal` targets variables in the enclosing function.\n\n## MCQ Assessment\n\n1. What is the output of `def add(a, b): return a + b; print(add(5, 3))`?\nOptions: A) 8 B) 53 C) Error D) None\n**Correct Answer: A**\n\n2. Which keyword is used to modify a global variable inside a function?\nOptions: A) `nonlocal` B) `global` C) `local` D) `outer`\n**Correct Answer: B**\n\n3. What is the output?\n```python\nx = 10\ndef demo():\n    x = 20\n    print(x)\ndemo()\nprint(x)\n```\nOptions: A) 20 10 B) 10 20 C) 20 20 D) 10 10\n**Correct Answer: A**\n\n4. What does `*args` represent?\nOptions: A) A dictionary B) A tuple C) A list D) A string\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `def add(a, b): return a + b; print(add(5, 3))`?",
+              "options": [
+                "8",
+                "53",
+                "Error",
+                "None"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which keyword is used to modify a global variable inside a function?",
+              "options": [
+                "nonlocal",
+                "global",
+                "local",
+                "outer"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `x = 10; def demo(): x = 20; print(x); demo(); print(x)`?",
+              "options": [
+                "20 10",
+                "10 20",
+                "20 20",
+                "10 10"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What does `*args` represent?",
+              "options": [
+                "A dictionary",
+                "A tuple",
+                "A list",
+                "A string"
+              ],
+              "correct": 1
+            }
+          ]
+        },
+        {
+          "id": "pt4-2",
+          "title": "Lambda Functions and Map/Filter",
+          "contentMd": "# Lambda Functions, Map, and Filter\n\n## Introduction\n- **Lambda:** Small anonymous functions.\n- **Map:** Apply a function to all elements of an iterable.\n- **Filter:** Keep only elements that satisfy a condition.\n\n## 1. Lambda Functions (Anonymous Functions)\n\n**Syntax:** `lambda arguments: expression`\n\n**Example:**\n```python\nsquare = lambda x: x * x\nprint(square(5))   # 25\n```\n\n### 1.1 Lambda with Multiple Arguments\n```python\nadd = lambda a, b: a + b\nprint(add(5, 3))   # 8\n```\n\n### 1.2 Lambda with Conditional Expression\n```python\ncheck = lambda x: \"Even\" if x % 2 == 0 else \"Odd\"\nprint(check(4))   # Even\nprint(check(7))   # Odd\n```\n\n## 2. `map()` Function\n\n**Syntax:** `map(function, iterable)`\n\n**Example (with lambda):**\n```python\nnumbers = [1, 2, 3, 4, 5]\nsquares = list(map(lambda x: x * x, numbers))\nprint(squares)   # [1, 4, 9, 16, 25]\n```\n\n**Example (with named function):**\n```python\ndef double(x):\n    return x * 2\n\nresult = list(map(double, [1, 2, 3]))\nprint(result)   # [2, 4, 6]\n```\n\n## 3. `filter()` Function\n\n**Syntax:** `filter(function, iterable)`\n\n**Example (keep even numbers):**\n```python\nnumbers = [1, 2, 3, 4, 5, 6]\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(evens)   # [2, 4, 6]\n```\n\n**Example (keep positive numbers):**\n```python\ndef is_positive(x):\n    return x > 0\n\nvalues = [-3, -1, 0, 2, 5]\npositive = list(filter(is_positive, values))\nprint(positive)   # [2, 5]\n```\n\n## 4. `reduce()` Function\n\n**Syntax:** `reduce(function, iterable)` – requires import from `functools`.\n\n**Example:**\n```python\nfrom functools import reduce\n\nnumbers = [1, 2, 3, 4, 5]\nproduct = reduce(lambda a, b: a * b, numbers)\nprint(product)   # 120\n```\n\n## Edge Cases\n\n### 1. Empty Iterable with `map()`\n```python\nresult = list(map(lambda x: x * 2, []))   # []\n```\n\n### 2. Empty Iterable with `filter()`\n```python\nresult = list(filter(lambda x: x > 0, []))   # []\n```\n\n### 3. `lambda` with No Arguments\n```python\ndefault = lambda: \"Hello\"\nprint(default())   # Hello\n```\n\n### 4. `map()` with Multiple Iterables\n```python\na = [1, 2, 3]\nb = [10, 20, 30]\nresult = list(map(lambda x, y: x + y, a, b))\nprint(result)   # [11, 22, 33]\n```\n\n### 5. `filter()` with `None`\n```python\nvalues = [0, 1, None, \"\", \"Hello\"]\nfiltered = list(filter(None, values))\nprint(filtered)   # [1, \"Hello\"]  (falsy values removed)\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `map()` and `filter()`?**\n- `map()` applies a function to every element and returns transformed values.\n- `filter()` keeps only elements that satisfy a condition.\n\n**Q2: When should you use a lambda function?**\n- For short, one-time use functions (e.g., with `map()`, `filter()`, `sorted()`).\n\n**Q3: What is the difference between `map()` and list comprehension?**\n- List comprehension is more readable and often faster.\n- `map()` is lazy (returns an iterator) and can be more memory-efficient.\n\n**Q4: Can `lambda` have multiple statements?**\nNo. A lambda can only have a single expression.\n\n**Q5: What is the output of `list(map(lambda x: x**2, range(3)))`?**\n- `[0, 1, 4]`\n\n## MCQ Assessment\n\n1. What is the output of `list(map(lambda x: x * 2, [1, 2, 3]))`?\nOptions: A) [2, 4, 6] B) [1, 2, 3] C) [3, 6, 9] D) Error\n**Correct Answer: A**\n\n2. Which function filters elements based on a condition?\nOptions: A) `map()` B) `filter()` C) `reduce()` D) `lambda`\n**Correct Answer: B**\n\n3. What is the output of `list(filter(lambda x: x > 0, [-1, 0, 1, 2]))`?\nOptions: A) [-1, 0, 1, 2] B) [1, 2] C) [-1, 0] D) [0, 1, 2]\n**Correct Answer: B**\n\n4. Can a lambda function contain multiple statements?\nOptions: A) Yes B) No C) Sometimes D) Depends on Python version\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `list(map(lambda x: x * 2, [1, 2, 3]))`?",
+              "options": [
+                "[2, 4, 6]",
+                "[1, 2, 3]",
+                "[3, 6, 9]",
+                "Error"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which function filters elements based on a condition?",
+              "options": [
+                "map()",
+                "filter()",
+                "reduce()",
+                "lambda"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `list(filter(lambda x: x > 0, [-1, 0, 1, 2]))`?",
+              "options": [
+                "[-1, 0, 1, 2]",
+                "[1, 2]",
+                "[-1, 0]",
+                "[0, 1, 2]"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Can a lambda function contain multiple statements?",
+              "options": [
+                "Yes",
+                "No",
+                "Sometimes",
+                "Depends on Python version"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm5",
+      "title": "Module 5: Object-Oriented Programming",
+      "topics": [
+        {
+          "id": "pt5-1",
+          "title": "Classes, Objects, and Constructors",
+          "contentMd": "# Classes, Objects, and Constructors in Python\n\n## Introduction\nObject-Oriented Programming (OOP) is a programming paradigm that organizes code around objects (data + behavior).\n\n## 1. Class and Object\n\n**Class:** A blueprint for creating objects.\n\n**Object:** An instance of a class.\n\n**Syntax:**\n```python\nclass ClassName:\n    # attributes and methods\n\nobj = ClassName()   # Object creation\n```\n\n**Example:**\n```python\nclass Car:\n    def __init__(self, brand, color):\n        self.brand = brand\n        self.color = color\n\n    def display(self):\n        print(f\"{self.color} {self.brand}\")\n\nmy_car = Car(\"Toyota\", \"Red\")\nmy_car.display()   # Red Toyota\n```\n\n## 2. The `__init__` Constructor\n\n**Definition:** A special method that is automatically called when an object is created.\n\n**Purpose:** To initialize the object's attributes.\n\n**Syntax:**\n```python\ndef __init__(self, parameters):\n    self.attribute = value\n```\n\n### 2.1 Constructor with No Parameters\n```python\nclass Student:\n    def __init__(self):\n        self.name = \"Unknown\"\n        self.age = 0\n\ns = Student()\nprint(s.name)   # Unknown\n```\n\n### 2.2 Constructor with Default Parameters\n```python\nclass Student:\n    def __init__(self, name=\"Guest\", age=0):\n        self.name = name\n        self.age = age\n\ns1 = Student()\ns2 = Student(\"Alice\", 25)\n```\n\n## 3. `self` Parameter\n\n**Definition:** `self` refers to the current instance of the class.\n\n**Rules:**\n- Must be the first parameter in every instance method.\n- Python automatically passes the object when calling a method.\n\n**Example:**\n```python\nclass Person:\n    def __init__(self, name):\n        self.name = name   # self connects attribute to the object\n\n    def greet(self):\n        print(f\"Hello, {self.name}\")\n```\n\n## 4. Instance Attributes vs Class Attributes\n\n| **Type** | **Syntax** | **Scope** |\n|----------|------------|-----------|\n| Instance Attribute | `self.attribute` | Unique to each object |\n| Class Attribute | `ClassName.attribute` | Shared by all objects |\n\n**Example:**\n```python\nclass Employee:\n    company = \"ABC Corp\"   # Class attribute\n\n    def __init__(self, name, salary):\n        self.name = name           # Instance attribute\n        self.salary = salary       # Instance attribute\n\nprint(Employee.company)   # ABC Corp\ne1 = Employee(\"Alice\", 50000)\ne2 = Employee(\"Bob\", 60000)\nprint(e1.name)            # Alice\nprint(e2.name)            # Bob\n```\n\n## 5. Methods\n\n### 5.1 Instance Methods\nTake `self` and work on instance data.\n\n**Example:**\n```python\nclass Circle:\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14 * self.radius * self.radius\n```\n\n### 5.2 Class Methods (`@classmethod`)\nTake `cls` and work on class data.\n\n**Example:**\n```python\nclass Student:\n    total = 0\n\n    @classmethod\n    def increment_total(cls):\n        cls.total += 1\n```\n\n### 5.3 Static Methods (`@staticmethod`)\nDo not take `self` or `cls` – utility functions.\n\n**Example:**\n```python\nclass MathUtils:\n    @staticmethod\n    def add(a, b):\n        return a + b\n```\n\n## Edge Cases\n\n### 1. Forgetting `self`\nCalling an instance method without `self` causes an error.\n\n### 2. Overriding Class Attributes\nIf you assign a value using `self`, it creates an instance attribute that shadows the class attribute.\n\n### 3. Using `self` Outside Class\n`self` is only defined inside class methods.\n\n## Interview FAQs\n\n**Q1: What is the difference between a class and an object?**\n- Class is a blueprint; object is an instance of that class.\n\n**Q2: Why do we use `self`?**\n- To refer to the current instance and access its attributes/methods.\n\n**Q3: What is the purpose of `__init__`?**\n- To initialize instance attributes when an object is created.\n\n**Q4: Can we have multiple constructors in Python?**\n- No. Use default parameters or `*args`/`**kwargs` instead.\n\n**Q5: What is the difference between instance and class attributes?**\n- Instance attributes belong to objects; class attributes are shared across all objects.\n\n## MCQ Assessment\n\n1. What is the output of `class A: pass; obj = A(); print(type(obj))`?\nOptions: A) `<class '__main__.A'>` B) `<class 'object'>` C) `A` D) `obj`\n**Correct Answer: A**\n\n2. Which keyword is used to define a class?\nOptions: A) `class` B) `define` C) `struct` D) `object`\n**Correct Answer: A**\n\n3. What does `self` represent?\nOptions: A) The class B) The current object C) The parent class D) A global variable\n**Correct Answer: B**\n\n4. What is the output?\n```python\nclass Demo:\n    x = 10\n\nd = Demo()\nprint(d.x)\n```\nOptions: A) 10 B) Error C) None D) 0\n**Correct Answer: A**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `class A: pass; obj = A(); print(type(obj))`?",
+              "options": [
+                "<class '__main__.A'>",
+                "<class 'object'>",
+                "A",
+                "obj"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which keyword is used to define a class?",
+              "options": [
+                "class",
+                "define",
+                "struct",
+                "object"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What does `self` represent?",
+              "options": [
+                "The class",
+                "The current object",
+                "The parent class",
+                "A global variable"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `class Demo: x = 10; d = Demo(); print(d.x)`?",
+              "options": [
+                "10",
+                "Error",
+                "None",
+                "0"
+              ],
+              "correct": 0
+            }
+          ]
+        },
+        {
+          "id": "pt5-2",
+          "title": "Inheritance, Polymorphism, and Encapsulation",
+          "contentMd": "# Inheritance, Polymorphism, and Encapsulation\n\n## Introduction\nThese are three of the four pillars of OOP (along with Abstraction).\n\n## 1. Inheritance\n\n**Definition:** A child class inherits attributes and methods from a parent class.\n\n**Syntax:** `class Child(Parent):`\n\n### 1.1 Single Inheritance\n```python\nclass Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        print(f\"{self.name} makes a sound\")\n\nclass Dog(Animal):\n    def speak(self):\n        print(f\"{self.name} barks\")\n\ndog = Dog(\"Buddy\")\ndog.speak()   # Buddy barks\n```\n\n### 1.2 `super()` – Calling Parent Methods\n```python\nclass Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nclass Student(Person):\n    def __init__(self, name, age, roll):\n        super().__init__(name, age)   # Call parent constructor\n        self.roll = roll\n```\n\n### 1.3 Multiple Inheritance\n```python\nclass A:\n    def method(self):\n        print(\"A\")\n\nclass B:\n    def method(self):\n        print(\"B\")\n\nclass C(A, B):\n    pass\n\nc = C()\nc.method()   # A (first parent)\n```\n\n## 2. Polymorphism\n\n**Definition:** Same method name, different behavior in different classes.\n\n### 2.1 Method Overriding\n```python\nclass Bird:\n    def fly(self):\n        print(\"Bird flies\")\n\nclass Penguin(Bird):\n    def fly(self):   # Override\n        print(\"Penguin cannot fly\")\n```\n\n### 2.2 Duck Typing\n\"If it looks like a duck and quacks like a duck, it's a duck.\"\n\n```python\ndef make_sound(animal):\n    animal.sound()\n\nclass Dog:\n    def sound(self):\n        print(\"Bark\")\n\nclass Cat:\n    def sound(self):\n        print(\"Meow\")\n\nmake_sound(Dog())   # Bark\nmake_sound(Cat())   # Meow\n```\n\n## 3. Encapsulation\n\n**Definition:** Bundling data and methods, and restricting direct access to some components.\n\n### 3.1 Access Specifiers\n\n| **Type** | **Syntax** | **Access** |\n|----------|------------|------------|\n| Public | `self.name` | Accessible anywhere |\n| Protected | `self._name` | Inside class and child classes (convention) |\n| Private | `self.__name` | Only inside the class (name mangling) |\n\n**Example:**\n```python\nclass BankAccount:\n    def __init__(self, balance):\n        self.__balance = balance   # Private\n\n    def get_balance(self):\n        return self.__balance\n\nacc = BankAccount(1000)\nprint(acc.get_balance())     # 1000\n# print(acc.__balance)       # ❌ AttributeError\n```\n\n### 3.2 Getters and Setters (`@property`)\n```python\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @radius.setter\n    def radius(self, value):\n        if value > 0:\n            self._radius = value\n```\n\n## Edge Cases\n\n### 1. Diamond Problem (Multiple Inheritance)\nPython uses MRO (Method Resolution Order) to resolve conflicts.\n\n### 2. Super() in Multiple Inheritance\n`super()` follows the MRO, not the parent class you expect.\n\n### 3. Name Mangling\nPrivate attributes are renamed to `_ClassName__attribute`.\n\n## Interview FAQs\n\n**Q1: What is inheritance? Why use it?**\n- Child gets parent's attributes/methods. Used for code reuse.\n\n**Q2: What is polymorphism?**\n- Same method name, different behavior across classes.\n\n**Q3: What is encapsulation?**\n- Hiding internal details and controlling access via getters/setters.\n\n**Q4: What is the difference between `super()` and calling parent directly?**\n- `super()` handles MRO correctly in multiple inheritance.\n\n**Q5: What is method overriding?**\n- Child class redefines a method from the parent class.\n\n## MCQ Assessment\n\n1. What is the output?\n```python\nclass A: pass\nclass B(A): pass\nprint(issubclass(B, A))\n```\nOptions: A) True B) False C) Error D) None\n**Correct Answer: A**\n\n2. Which keyword is used to call the parent class constructor?\nOptions: A) `super()` B) `parent()` C) `base()` D) `this()`\n**Correct Answer: A**\n\n3. What is the output?\n```python\nclass A:\n    def show(self): print(\"A\")\nclass B(A):\n    def show(self): print(\"B\")\nobj = B()\nobj.show()\n```\nOptions: A) A B) B C) Error D) None\n**Correct Answer: B**\n\n4. Which access specifier uses `__`?\nOptions: A) Public B) Protected C) Private D) Package\n**Correct Answer: C**",
+          "quizQuestions": [
+            {
+              "text": "What is the output of `class A: pass; class B(A): pass; print(issubclass(B, A))`?",
+              "options": [
+                "True",
+                "False",
+                "Error",
+                "None"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which keyword is used to call the parent class constructor?",
+              "options": [
+                "super()",
+                "parent()",
+                "base()",
+                "this()"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What is the output of `class A: def show(self): print(\"A\"); class B(A): def show(self): print(\"B\"); obj = B(); obj.show()`?",
+              "options": [
+                "A",
+                "B",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which access specifier uses `__`?",
+              "options": [
+                "Public",
+                "Protected",
+                "Private",
+                "Package"
+              ],
+              "correct": 2
+            }
+          ]
+        },
+        {
+          "id": "pt5-3",
+          "title": "Decorators in OOP (@property, @classmethod, @staticmethod)",
+          "contentMd": "# OOP Decorators in Python\n\n## Introduction\nDecorators are special `@` symbols that modify or extend the behavior of methods.\n\n## 1. `@property` – Getters and Setters\n\n**Definition:** Allows you to define methods that can be accessed like attributes.\n\n**Purpose:**\n- Read-only attributes.\n- Validation when setting values.\n- Encapsulation.\n\n### 1.1 Getter (`@property`)\n```python\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @property\n    def area(self):\n        return 3.14 * self._radius * self._radius\n\nc = Circle(5)\nprint(c.radius)   # 5 (accessed like an attribute)\nprint(c.area)     # 78.5\n```\n\n### 1.2 Setter (`@radius.setter`)\n```python\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @radius.setter\n    def radius(self, value):\n        if value > 0:\n            self._radius = value\n        else:\n            raise ValueError(\"Radius must be positive\")\n\nc = Circle(5)\nc.radius = 10   # Calls setter\n```\n\n### 1.3 Deleter (`@radius.deleter`)\n```python\n@radius.deleter\ndef radius(self):\n    del self._radius\n```\n\n## 2. `@classmethod`\n\n**Definition:** Method that receives the class (`cls`) instead of the instance.\n\n**Use Cases:**\n- Alternative constructors.\n- Modifying class-level data.\n\n**Example:**\n```python\nclass Student:\n    total_students = 0\n\n    def __init__(self, name):\n        self.name = name\n        Student.total_students += 1\n\n    @classmethod\n    def create_from_string(cls, data):\n        name = data.split(\",\")[0]\n        return cls(name)\n\n    @classmethod\n    def get_total(cls):\n        return cls.total_students\n\ns1 = Student.create_from_string(\"Alice,25\")\ns2 = Student(\"Bob\")\nprint(Student.get_total())   # 2\n```\n\n## 3. `@staticmethod`\n\n**Definition:** A method that does not receive `self` or `cls` – behaves like a plain function inside the class.\n\n**Use Cases:**\n- Utility functions related to the class.\n- Functions that don't need class/instance data.\n\n**Example:**\n```python\nclass MathUtils:\n    @staticmethod\n    def add(a, b):\n        return a + b\n\n    @staticmethod\n    def is_even(n):\n        return n % 2 == 0\n\nprint(MathUtils.add(5, 3))    # 8\nprint(MathUtils.is_even(4))   # True\n```\n\n## 4. Comparison Table\n\n| **Decorator** | **First Parameter** | **Access Class Attributes** | **Access Instance Attributes** | **Use Case** |\n|---------------|---------------------|----------------------------|-------------------------------|--------------|\n| `@property` | `self` | Yes | Yes | Getters/Setters |\n| `@classmethod` | `cls` | Yes | No | Alternative constructors |\n| `@staticmethod` | None | Yes (via class name) | No | Utility functions |\n\n## Edge Cases\n\n### 1. Property Without Setter\nIf you only define `@property`, the attribute becomes read-only.\n\n### 2. Classmethod with Inheritance\nClass methods work correctly with inheritance – they receive the child class.\n\n### 3. Staticmethod vs Classmethod\n- `@classmethod` receives the class and can be overridden.\n- `@staticmethod` behaves the same way regardless of inheritance.\n\n## Interview FAQs\n\n**Q1: Why use `@property`?**\n- To add getter/setter logic without changing the API.\n\n**Q2: What is the difference between `@classmethod` and `@staticmethod`?**\n- `@classmethod` receives `cls`; `@staticmethod` receives nothing.\n- `@classmethod` can access/modify class data; `@staticmethod` cannot.\n\n**Q3: Can `@property` be used without a setter?**\n- Yes – the attribute becomes read-only.\n\n**Q4: When would you use a `@classmethod`?**\n- For alternative constructors (e.g., `from_string()`, `from_file()`).\n\n**Q5: What is the output of `@staticmethod` if accessed from an object?**\n- Works exactly the same as using the class name.\n\n## MCQ Assessment\n\n1. Which decorator allows a method to be accessed like an attribute?\nOptions: A) `@staticmethod` B) `@classmethod` C) `@property` D) `@abstractmethod`\n**Correct Answer: C**\n\n2. What does `@classmethod` receive as its first parameter?\nOptions: A) `self` B) `cls` C) `obj` D) None\n**Correct Answer: B**\n\n3. Which decorator is used for utility functions that don't need class/instance data?\nOptions: A) `@property` B) `@classmethod` C) `@staticmethod` D) `@abstractmethod`\n**Correct Answer: C**\n\n4. What is the output?\n```python\nclass Demo:\n    @staticmethod\n    def greet():\n        print(\"Hello\")\n\nDemo.greet()\n```\nOptions: A) Hello B) Error C) None D) `Demo.greet()`\n**Correct Answer: A**",
+          "quizQuestions": [
+            {
+              "text": "Which decorator allows a method to be accessed like an attribute?",
+              "options": [
+                "@staticmethod",
+                "@classmethod",
+                "@property",
+                "@abstractmethod"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What does `@classmethod` receive as its first parameter?",
+              "options": [
+                "self",
+                "cls",
+                "obj",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which decorator is used for utility functions that don't need class/instance data?",
+              "options": [
+                "@property",
+                "@classmethod",
+                "@staticmethod",
+                "@abstractmethod"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What is the output of `class Demo: @staticmethod def greet(): print(\"Hello\"); Demo.greet()`?",
+              "options": [
+                "Hello",
+                "Error",
+                "None",
+                "Demo.greet()"
+              ],
+              "correct": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm6",
+      "title": "Module 6: File Handling and Exception Handling",
+      "topics": [
+        {
+          "id": "pt6-1",
+          "title": "File Handling (Read, Write, Append)",
+          "contentMd": "# File Handling in Python\n\n## Introduction\nFile handling allows you to read from and write to files on the disk.\n\n## 1. Opening Files\n\n**Syntax:** `open(file_path, mode)`\n\n**Modes:**\n\n| **Mode** | **Description** |\n|----------|-----------------|\n| `'r'` | Read (default) |\n| `'w'` | Write (overwrites existing) |\n| `'a'` | Append (adds to end) |\n| `'x'` | Exclusive creation (fails if file exists) |\n| `'r+'` | Read and write |\n| `'b'` | Binary mode (e.g., `'rb'`, `'wb'`) |\n| `'t'` | Text mode (default) |\n\n## 2. Reading Files\n\n### 2.1 Reading Entire File (`read()`)\n```python\nwith open('file.txt', 'r') as f:\n    content = f.read()\n    print(content)\n```\n\n### 2.2 Reading Line by Line (`readline()`)\n```python\nwith open('file.txt', 'r') as f:\n    line = f.readline()\n    while line:\n        print(line, end='')\n        line = f.readline()\n```\n\n### 2.3 Reading All Lines (`readlines()`)\n```python\nwith open('file.txt', 'r') as f:\n    lines = f.readlines()\n    for line in lines:\n        print(line, end='')\n```\n\n### 2.4 Iterating Over Lines\n```python\nwith open('file.txt', 'r') as f:\n    for line in f:\n        print(line, end='')\n```\n\n## 3. Writing Files\n\n### 3.1 Write (`w` – overwrites)\n```python\nwith open('file.txt', 'w') as f:\n    f.write(\"Hello, World!\\n\")\n    f.write(\"Second line\")\n```\n\n### 3.2 Append (`a` – adds to end)\n```python\nwith open('file.txt', 'a') as f:\n    f.write(\"New line at the end\\n\")\n```\n\n### 3.3 Writing Multiple Lines\n```python\nlines = [\"Line 1\\n\", \"Line 2\\n\", \"Line 3\\n\"]\nwith open('file.txt', 'w') as f:\n    f.writelines(lines)\n```\n\n## 4. The `with` Statement (Context Manager)\n\n**Purpose:** Automatically closes the file.\n\n**Example:**\n```python\nwith open('file.txt', 'r') as f:\n    data = f.read()\n# File is automatically closed\n```\n\n## 5. Working with CSV Files\n\n```python\nimport csv\n\n# Reading\nwith open('data.csv', 'r') as f:\n    reader = csv.reader(f)\n    for row in reader:\n        print(row)\n\n# Writing\nwith open('output.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Age'])\n    writer.writerow(['Alice', 25])\n```\n\n## 6. Working with JSON Files\n\n```python\nimport json\n\n# Writing\ndata = {\"name\": \"Alice\", \"age\": 25}\nwith open('data.json', 'w') as f:\n    json.dump(data, f, indent=4)\n\n# Reading\nwith open('data.json', 'r') as f:\n    loaded = json.load(f)\n    print(loaded)\n```\n\n## Edge Cases\n\n### 1. File Not Found (`FileNotFoundError`)\n```python\ntry:\n    with open('missing.txt', 'r') as f:\n        data = f.read()\nexcept FileNotFoundError:\n    print(\"File not found\")\n```\n\n### 2. Permission Error (`PermissionError`)\nOccurs when you don't have permission to read/write the file.\n\n### 3. UnicodeDecodeError\nWhen reading a binary file in text mode, or wrong encoding.\n\n### 4. Closing Files\nAlways use `with` to ensure files are closed automatically.\n\n## Interview FAQs\n\n**Q1: What is the difference between `'w'` and `'a'` modes?**\n- `'w'` overwrites the file.\n- `'a'` appends to the end.\n\n**Q2: Why use `with open()`?**\n- It automatically closes the file, even if an error occurs.\n\n**Q3: How to read a file line by line?**\n- Use `readline()` or iterate over the file object.\n\n**Q4: How to check if a file exists before opening?**\n```python\nimport os\nif os.path.exists('file.txt'):\n    with open('file.txt', 'r') as f:\n        data = f.read()\n```\n\n**Q5: What is the difference between `read()` and `readlines()`?**\n- `read()` returns the entire content as a single string.\n- `readlines()` returns a list of lines (strings).\n\n## MCQ Assessment\n\n1. Which mode is used to append to a file?\nOptions: A) `'r'` B) `'w'` C) `'a'` D) `'x'`\n**Correct Answer: C**\n\n2. Which statement automatically closes a file?\nOptions: A) `with open()` B) `open()` C) `file.open()` D) `open.read()`\n**Correct Answer: A**\n\n3. Which function reads the entire file as a string?\nOptions: A) `read()` B) `readline()` C) `readlines()` D) `readall()`\n**Correct Answer: A**\n\n4. What happens if you open a file in `'w'` mode and the file already exists?\nOptions: A) Appends data B) Overwrites the file C) Throws an error D) Reads the file\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "Which mode is used to append to a file?",
+              "options": [
+                "'r'",
+                "'w'",
+                "'a'",
+                "'x'"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Which statement automatically closes a file?",
+              "options": [
+                "with open()",
+                "open()",
+                "file.open()",
+                "open.read()"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which function reads the entire file as a string?",
+              "options": [
+                "read()",
+                "readline()",
+                "readlines()",
+                "readall()"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What happens if you open a file in `'w'` mode and the file already exists?",
+              "options": [
+                "Appends data",
+                "Overwrites the file",
+                "Throws an error",
+                "Reads the file"
+              ],
+              "correct": 1
+            }
+          ]
+        },
+        {
+          "id": "pt6-2",
+          "title": "Exception Handling (try-except-finally)",
+          "contentMd": "# Exception Handling in Python\n\n## Introduction\nException handling is used to gracefully handle errors and prevent program crashes.\n\n## 1. Common Exceptions\n\n| **Exception** | **When It Occurs** |\n|---------------|-------------------|\n| `ZeroDivisionError` | Division by zero |\n| `ValueError` | Invalid value conversion (e.g., `int(\"abc\")`) |\n| `TypeError` | Operation on incompatible types |\n| `IndexError` | Accessing invalid index |\n| `KeyError` | Accessing missing dictionary key |\n| `FileNotFoundError` | File not found |\n| `AttributeError` | Accessing non-existent attribute |\n\n## 2. Basic Try-Except\n\n**Syntax:**\n```python\ntry:\n    # Risky code\nexcept ExceptionType:\n    # Code to handle the error\n```\n\n**Example:**\n```python\ntry:\n    num = int(input(\"Enter a number: \"))\n    result = 10 / num\n    print(result)\nexcept ValueError:\n    print(\"Invalid input! Please enter a number.\")\nexcept ZeroDivisionError:\n    print(\"Cannot divide by zero!\")\n```\n\n## 3. Catching All Exceptions (General)\n\n**Caution:** Catching all exceptions can hide bugs.\n\n```python\ntry:\n    # Risky code\nexcept Exception as e:\n    print(f\"Error: {e}\")\n```\n\n## 4. `else` Block\n\nRuns if no exception occurs.\n\n**Example:**\n```python\ntry:\n    num = int(input(\"Enter number: \"))\nexcept ValueError:\n    print(\"Invalid input\")\nelse:\n    print(f\"You entered {num}\")\n```\n\n## 5. `finally` Block\n\nAlways runs – even if an exception occurs or not. Used for cleanup (closing files, network connections).\n\n**Example:**\n```python\ntry:\n    f = open('file.txt', 'r')\n    data = f.read()\nexcept FileNotFoundError:\n    print(\"File not found\")\nfinally:\n    f.close()   # Always executed\n```\n\n## 6. `raise` – Raising Exceptions\n\n**Purpose:** To manually trigger an exception.\n\n**Example:**\n```python\ndef withdraw(amount):\n    if amount < 0:\n        raise ValueError(\"Amount cannot be negative\")\n    return amount\n\nwithdraw(-100)   # Raises ValueError\n```\n\n## 7. Creating Custom Exceptions\n\n```python\nclass NegativeAmountError(Exception):\n    pass\n\ndef withdraw(amount):\n    if amount < 0:\n        raise NegativeAmountError(\"Amount cannot be negative\")\n\nwithdraw(-100)   # Raises NegativeAmountError\n```\n\n## Edge Cases\n\n### 1. Finally with Return\n`finally` runs even if there is a `return` in `try` or `except`.\n\n### 2. Nested Try-Except\nYou can nest try-except blocks for finer control.\n\n### 3. Catching Multiple Exceptions\n```python\ntry:\n    # code\nexcept (ValueError, TypeError) as e:\n    print(f\"Error: {e}\")\n```\n\n### 4. Exception Chaining\n```python\ntry:\n    raise ValueError(\"Original error\")\nexcept ValueError as e:\n    raise RuntimeError(\"New error\") from e\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between `raise` and `try-except`?**\n- `try-except` handles exceptions.\n- `raise` triggers an exception.\n\n**Q2: What is the purpose of `finally`?**\n- To execute cleanup code regardless of whether an exception occurs.\n\n**Q3: When is `else` block executed?**\n- If no exception is raised in the `try` block.\n\n**Q4: Can you catch multiple exceptions in one `except` block?**\n- Yes, using a tuple: `except (Error1, Error2):`\n\n**Q5: What is the difference between `Exception` and `BaseException`?**\n- `Exception` is the base class for all built-in exceptions.\n- `BaseException` includes `KeyboardInterrupt` and `SystemExit`.\n\n## MCQ Assessment\n\n1. Which block always runs regardless of exception?\nOptions: A) `try` B) `except` C) `else` D) `finally`\n**Correct Answer: D**\n\n2. Which keyword is used to manually raise an exception?\nOptions: A) `except` B) `raise` C) `throw` D) `error`\n**Correct Answer: B**\n\n3. What is the output?\n```python\ntry:\n    print(\"A\")\n    raise ValueError\nexcept:\n    print(\"B\")\nfinally:\n    print(\"C\")\n```\nOptions: A) A B) A B C C) A B D) Error\n**Correct Answer: B**\n\n4. What happens if you don't handle an exception?\nOptions: A) Program continues B) Program crashes C) Error is ignored D) None\n**Correct Answer: B**",
+          "quizQuestions": [
+            {
+              "text": "Which block always runs regardless of exception?",
+              "options": [
+                "try",
+                "except",
+                "else",
+                "finally"
+              ],
+              "correct": 3
+            },
+            {
+              "text": "Which keyword is used to manually raise an exception?",
+              "options": [
+                "except",
+                "raise",
+                "throw",
+                "error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `try: print(\"A\"); raise ValueError; except: print(\"B\"); finally: print(\"C\")`?",
+              "options": [
+                "A",
+                "A B C",
+                "A B",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What happens if you don't handle an exception?",
+              "options": [
+                "Program continues",
+                "Program crashes",
+                "Error is ignored",
+                "None"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm7",
+      "title": "Module 7: Advanced Topics",
+      "topics": [
+        {
+          "id": "pt7-1",
+          "title": "Generators and Iterators",
+          "contentMd": "# Generators and Iterators in Python\n\n## Introduction\n- **Iterators:** Objects that allow iteration over a sequence.\n- **Generators:** Functions that return an iterator using `yield`.\n\n## 1. Iterators\n\n**Definition:** An object that implements `__iter__()` and `__next__()`.\n\n**Example (Built-in iterator):**\n```python\nnumbers = [1, 2, 3]\nit = iter(numbers)\nprint(next(it))   # 1\nprint(next(it))   # 2\nprint(next(it))   # 3\n# print(next(it))   # StopIteration\n```\n\n### 1.1 Creating a Custom Iterator\n```python\nclass CountUp:\n    def __init__(self, max):\n        self.max = max\n        self.current = 0\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current < self.max:\n            self.current += 1\n            return self.current\n        raise StopIteration\n\nfor num in CountUp(5):\n    print(num)   # 1 2 3 4 5\n```\n\n## 2. Generators\n\n**Definition:** A function that uses `yield` instead of `return`.\n\n**Purpose:** Generators produce items one at a time, saving memory.\n\n**Example:**\n```python\ndef count_up(max):\n    num = 1\n    while num <= max:\n        yield num\n        num += 1\n\nfor num in count_up(5):\n    print(num)   # 1 2 3 4 5\n```\n\n## 3. Generator Expressions\n\n**Syntax:** Similar to list comprehensions but with parentheses `()`.\n\n**Example:**\n```python\nsquares = (x**2 for x in range(5))\nfor sq in squares:\n    print(sq)   # 0 1 4 9 16\n```\n\n## 4. `yield` vs `return`\n\n| **Feature** | `return` | `yield` |\n|-------------|----------|---------|\n| Returns | A single value | A generator object |\n| State | Resets after return | Remembers state |\n| Memory | Returns entire data | Yields one item at a time |\n| Use case | Returning results | Producing sequences |\n\n## Edge Cases\n\n### 1. Infinite Generator\n```python\ndef infinite():\n    num = 0\n    while True:\n        yield num\n        num += 1\n\nfor x in infinite():\n    if x > 5:\n        break\n    print(x)   # 0 1 2 3 4 5\n```\n\n### 2. Generator with `send()`\n```python\ndef gen():\n    x = yield\n    print(f\"Received: {x}\")\n\ng = gen()\nnext(g)\ng.send(10)   # Received: 10\n```\n\n### 3. Generator with `close()`\n```python\ng = infinite()\nprint(next(g))   # 0\nprint(next(g))   # 1\ng.close()\n# next(g)   # StopIteration\n```\n\n## Interview FAQs\n\n**Q1: What is the difference between a generator and a list?**\n- Generator produces items one at a time (memory-efficient).\n- List stores all items in memory.\n\n**Q2: What is `yield`?**\n- It produces a value and pauses the function, preserving state.\n\n**Q3: What is the purpose of `StopIteration`?**\n- It signals that the iterator has no more items.\n\n**Q4: When to use generators?**\n- When working with large datasets that don't fit in memory.\n\n**Q5: How to create a generator from a list?**\n```python\ngen = (x for x in list)\n```\n\n## MCQ Assessment\n\n1. Which keyword is used in a generator function?\nOptions: A) `return` B) `yield` C) `break` D) `continue`\n**Correct Answer: B**\n\n2. What is the output?\n```python\ndef gen():\n    yield 1\n    yield 2\n\ng = gen()\nprint(next(g))\nprint(next(g))\n```\nOptions: A) 1 2 B) 1 1 C) 2 2 D) Error\n**Correct Answer: A**\n\n3. Which is more memory-efficient for large data?\nOptions: A) List B) Generator C) Tuple D) Dictionary\n**Correct Answer: B**\n\n4. What exception is raised when no more items are available?\nOptions: A) StopIteration B) IndexError C) ValueError D) TypeError\n**Correct Answer: A**",
+          "quizQuestions": [
+            {
+              "text": "Which keyword is used in a generator function?",
+              "options": [
+                "return",
+                "yield",
+                "break",
+                "continue"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is the output of `def gen(): yield 1; yield 2; g = gen(); print(next(g)); print(next(g))`?",
+              "options": [
+                "1 2",
+                "1 1",
+                "2 2",
+                "Error"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which is more memory-efficient for large data?",
+              "options": [
+                "List",
+                "Generator",
+                "Tuple",
+                "Dictionary"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What exception is raised when no more items are available?",
+              "options": [
+                "StopIteration",
+                "IndexError",
+                "ValueError",
+                "TypeError"
+              ],
+              "correct": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+import React, { useState, useRef } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useData } from '../../contexts/DataContext';
+import toast from 'react-hot-toast';
+import { FaCertificate, FaDownload, FaPrint, FaTimes, FaAward, FaShieldAlt } from 'react-icons/fa';
+import CertificateDocument from '../common/CertificateDocument';
+import { getCertificateDesign, generateCertificatePDF } from '../../services/certificateUtils';
+
+function CertificatePrintView({ cert, onClose }) {
+  const { certificateTemplates = [] } = useData();
+  const certRef = useRef(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const design = getCertificateDesign(cert, certificateTemplates);
+  const studentName = cert.studentName || 'Rahul Sharma';
+  const courseName = cert.courseName || cert.courseTitle || 'Full Stack Web Engineering';
+  const certId = cert.certificateId || cert.id || 'CERT-2026-0001';
+
+  const handleDownload = async () => {
+    if (!certRef.current) return;
+    setIsDownloading(true);
+    try {
+      await generateCertificatePDF(certRef.current, {
+        studentName,
+        courseName,
+        certId,
+        backgroundColor: design.bgType === 'solid' ? design.backgroundColor : design.gradientStart,
+      });
+      toast.success('Certificate PDF generated! Full-bleed A4 landscape downloaded.');
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('Failed to generate PDF: ' + err.message);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.8)',
+        backdropFilter: 'blur(6px)',
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        overflowY: 'auto',
+      }}
+    >
+      <div
+        style={{
+          background: 'var(--card-bg, #ffffff)',
+          border: '1px solid var(--border-color, #e2e8f0)',
+          borderRadius: 20,
+          maxWidth: 900,
+          width: '100%',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '94vh',
+        }}
+      >
+        {/* Actions bar (Hidden in Print) */}
+        <div
+          style={{
+            padding: '16px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: '1px solid var(--border-color)',
+            background: 'var(--card-bg)',
+          }}
+          className="no-print"
+        >
+          <div className="d-flex align-items-center gap-2">
+            <FaAward style={{ color: design.accentColor, fontSize: '1.2rem' }} />
+            <div>
+              <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                Official Accreditation Certificate
+              </span>
+              <div className="text-muted" style={{ fontSize: '0.72rem' }}>
+                Full-Bleed A4 Landscape • 300 DPI High Resolution
+              </div>
+            </div>
+          </div>
+
+          <div className="d-flex gap-2 align-items-center">
+            <button
+              onClick={() => window.print()}
+              className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1.5"
+              title="Native browser print dialog"
+            >
+              <FaPrint /> Print
+            </button>
+
+            <button
+              onClick={handleDownload}
+              disabled={isDownloading}
+              style={{
+                padding: '8px 20px',
+                background: design.accentColor || 'var(--bs-primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontFamily: 'inherit',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
+            >
+              <FaDownload /> {isDownloading ? 'Generating PDF...' : 'Download Full-Bleed A4 PDF'}
+            </button>
+
+            <button
+              onClick={onClose}
+              style={{
+                padding: '8px 12px',
+                background: 'var(--bg-body)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 8,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              <FaTimes />
+            </button>
+          </div>
+        </div>
+
+        {/* Certificate Display Area */}
+        <div
+          style={{
+            padding: '28px',
+            background: '#0f172a',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflowY: 'auto',
+            flex: 1,
+          }}
+        >
+          <div
+            id="certificate-print"
+            className="certificate-print-area shadow-2xl rounded-2 w-100"
+            style={{ maxWidth: 820 }}
+          >
+            <CertificateDocument
+              ref={certRef}
+              design={design}
+              studentName={studentName}
+              courseName={courseName}
+              certId={certId}
+              issuedAt={cert.issuedAt}
+              isInteractive={false}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function StudentCertificates() {
+  const { auth } = useAuth();
+  const { students = [], certificates = [], courses = [], certificateTemplates = [] } = useData();
+
+  const student = students.find(s => s.id === auth?.studentId);
+  const myCerts = certificates.filter(c => c.studentId === student?.id && !c.isRevoked);
+  const [viewCert, setViewCert] = useState(null);
+
+  // Check student course completion progress
+  const myCourse = courses.find(c => c.batchId === student?.batchId) || courses[0];
+  const allTopics = Array.isArray(myCourse?.modules) ? myCourse.modules.flatMap(m => Array.isArray(m.topics) ? m.topics : []) : [];
+  const completedTopics = allTopics.filter(t => student?.progress?.[t.id] === 'completed');
+  const progress = allTopics.length ? Math.round((completedTopics.length / allTopics.length) * 100) : 0;
+  const alreadyCertified = myCerts.some(c => c.courseName === myCourse?.title);
+  const isPendingAdminIssuance = progress === 100 && !alreadyCertified;
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="mb-3">
+        <h4 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>My Certificates</h4>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>
+          {myCerts.length} verified certificate(s) issued to your profile
+        </p>
+      </div>
+
+      {/* Progress & Issuance Status Card */}
+      {myCourse && !alreadyCertified && (
+        <div
+          className="card border rounded-4 mb-3"
+          style={{
+            background: isPendingAdminIssuance ? 'linear-gradient(135deg, rgba(217, 119, 6, 0.12), rgba(217, 119, 6, 0.05))' : 'var(--card-bg)',
+            borderColor: isPendingAdminIssuance ? 'rgba(217, 119, 6, 0.3)' : 'var(--border-color)',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+          }}
+        >
+          <div className="card-body p-4">
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div style={{ flex: 1, minWidth: '260px' }}>
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <h6 style={{ fontWeight: 800, color: 'var(--text-primary)', marginBottom: 0 }}>
+                    {myCourse.title}
+                  </h6>
+                  {isPendingAdminIssuance ? (
+                    <span className="badge bg-warning text-dark border">
+                      Awaiting Admin Issuance
+                    </span>
+                  ) : (
+                    <span className="badge bg-primary">
+                      {progress}% Completed
+                    </span>
+                  )}
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 12 }}>
+                  {isPendingAdminIssuance
+                    ? 'Congratulations on completing 100% of your course curriculum! Your certificate has been submitted for administrative review and official credential issuance.'
+                    : `Complete all topics to earn your official certificate. ${completedTopics.length}/${allTopics.length} topics done (${progress}%).`}
+                </p>
+                <div style={{ height: 8, background: 'var(--border-color)', borderRadius: 4, overflow: 'hidden', maxWidth: 420 }}>
+                  <div
+                    style={{
+                      width: `${progress}%`,
+                      height: '100%',
+                      background: isPendingAdminIssuance ? '#D97706' : 'var(--bs-primary)',
+                      borderRadius: 4,
+                      transition: 'width 0.5s ease',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {isPendingAdminIssuance && (
+                <div className="p-3 rounded-3 border text-center shadow-sm" style={{ background: 'var(--card-bg)' }}>
+                  <div className="small fw-bold text-muted text-uppercase mb-1">Status</div>
+                  <div className="fw-bold text-warning d-flex align-items-center gap-1.5 justify-content-center">
+                    <FaShieldAlt /> Under Academy Review
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Certificates List */}
+      {myCerts.length === 0 ? (
+        <div className="text-center py-5" style={{ color: 'var(--text-secondary)' }}>
+          <FaCertificate style={{ fontSize: '3rem', marginBottom: 12, opacity: 0.3 }} />
+          <h6 style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>No certificates issued yet</h6>
+          <p style={{ fontSize: '0.875rem', margin: 0 }}>
+            Complete all modules and topics in your curriculum. Once verified by your academy faculty, your credentials will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="row g-4">
+          {myCerts.map(cert => {
+            const certDesign = getCertificateDesign(cert, certificateTemplates);
+            const certAccent = certDesign.accentColor || '#15803D';
+
+            return (
+              <div key={cert.id} className="col-md-6">
+                <div
+                  className="card border rounded-4 h-100 shadow-sm transition overflow-hidden"
+                  style={{
+                    background: certDesign.bgStyle,
+                    borderColor: certDesign.borderColor || 'var(--border-color)',
+                    borderWidth: Math.min(certDesign.borderWidth, 3),
+                    borderStyle: certDesign.borderStyle || 'solid',
+                  }}
+                >
+                  <div className="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                      {certDesign.showRibbon && (
+                        <div
+                          style={{
+                            background: certDesign.ribbonColor || certAccent,
+                            color: '#fff',
+                            fontSize: '0.65rem',
+                            fontWeight: 800,
+                            letterSpacing: '2px',
+                            textAlign: 'center',
+                            padding: '3px 0',
+                            borderRadius: '4px',
+                            marginBottom: '12px',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {certDesign.ribbonText}
+                        </div>
+                      )}
+
+                      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                        <div className="mb-2"><FaAward size={36} className="text-primary" /></div>
+                        <h6 style={{ fontWeight: 800, color: certDesign.isDark ? '#F1F5F9' : '#0F172A', marginBottom: 4 }}>
+                          {cert.courseName}
+                        </h6>
+                        <p style={{ fontSize: '0.85rem', color: certDesign.isDark ? '#94A3B8' : '#64748B', marginBottom: 0 }}>
+                          {cert.certTitle || certDesign.certTitle}
+                        </p>
+                      </div>
+
+                      <div
+                        className="rounded-3 p-3 mb-3 border"
+                        style={{
+                          background: certDesign.isDark ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.8)',
+                          backdropFilter: 'blur(4px)',
+                        }}
+                      >
+                        <div className="d-flex justify-content-between align-items-center mb-1.5" style={{ fontSize: '0.8rem' }}>
+                          <span style={{ color: certDesign.isDark ? '#94A3B8' : '#64748B' }}>Credential ID</span>
+                          <span style={{ fontWeight: 700, color: certAccent, fontFamily: 'monospace' }}>
+                            {cert.certificateId}
+                          </span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center" style={{ fontSize: '0.8rem' }}>
+                          <span style={{ color: certDesign.isDark ? '#94A3B8' : '#64748B' }}>Issued Date</span>
+                          <span style={{ fontWeight: 600, color: certDesign.isDark ? '#F1F5F9' : '#0F172A' }}>
+                            {new Date(cert.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="d-flex gap-2 mt-2">
+                      <button
+                        onClick={() => setViewCert(cert)}
+                        style={{
+                          flex: 1,
+                          background: certAccent,
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 10,
+                          padding: '11px',
+                          fontWeight: 700,
+                          fontSize: '0.875rem',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                        }}
+                      >
+                        <FaDownload /> View & Download PDF (A4)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Print / Preview Modal */}
+      {viewCert && <CertificatePrintView cert={viewCert} onClose={() => setViewCert(null)} />}
+    </div>
+  );
+}

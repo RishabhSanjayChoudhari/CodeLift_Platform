@@ -1,0 +1,61 @@
+{
+  "id": "course-fswd",
+  "title": "Full Stack Web Development",
+  "slug": "full-stack-web-development",
+  "description": "Master the complete web development stack from HTML & CSS to React, Node.js, and Cloud deployment.",
+  "categoryId": "cat-web",
+  "batchId": "batch-fswd-morning",
+  "batchIds": [
+    "batch-fswd-morning",
+    "batch-fswd-evening"
+  ],
+  "price": 2499,
+  "isFree": false,
+  "isPublished": true,
+  "isApproved": true,
+  "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600",
+  "rating": 4.9,
+  "numReviews": 84,
+  "studentsEnrolled": 620,
+  "createdAt": "2026-01-10T00:00:00.000Z",
+  "updatedAt": "2026-02-01T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Web Foundations",
+      "topics": [
+        {
+          "id": "t1",
+          "title": "HTML5 & Semantic Markup",
+          "contentMd": "# HTML5 & Semantic Markup\n\nHTML5 introduced a rich set of semantic elements that describe the meaning of your content.\n\n## Key Semantic Elements\n- `<header>` – Page or section header\n- `<nav>` – Navigation links\n- `<main>` – Primary content\n- `<article>` – Self-contained content\n"
+        },
+        {
+          "id": "t2",
+          "title": "CSS3 Flexbox & Grid",
+          "contentMd": "# CSS3 Flexbox & Grid\n\nModern CSS layout is powered by Flexbox (1D) and Grid (2D).\n"
+        },
+        {
+          "id": "t3",
+          "title": "Responsive Design Principles",
+          "contentMd": "# Responsive Design Principles\n\nResponsive design ensures your UI looks great on every device.\n"
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "JavaScript Mastery",
+      "topics": [
+        {
+          "id": "t4",
+          "title": "ES6+ Modern JavaScript",
+          "contentMd": "# ES6+ Modern JavaScript\n\nES6 and beyond introduced powerful features that modernized JavaScript.\n"
+        },
+        {
+          "id": "t5",
+          "title": "Promises & Async/Await",
+          "contentMd": "# Promises & Async/Await\n\nAsynchronous JavaScript lets your code do work without blocking the thread.\n"
+        }
+      ]
+    }
+  ]
+}

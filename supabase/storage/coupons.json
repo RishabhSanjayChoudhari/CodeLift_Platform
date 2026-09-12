@@ -1,0 +1,18 @@
+[
+  {
+    "id": "cpn-launch-500",
+    "code": "CODELIFT-500",
+    "discount": 500,
+    "expiry": "2026-12-31T23:59:59.000Z",
+    "createdBy": "std-admin-super",
+    "usedBy": null
+  },
+  {
+    "id": "cpn-super-1000",
+    "code": "EARLYBIRD-1000",
+    "discount": 1000,
+    "expiry": "2026-12-31T23:59:59.000Z",
+    "createdBy": "std-admin-super",
+    "usedBy": null
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fee-rec-001",
+    "studentId": "std-001-rahul",
+    "amount": 5000,
+    "paidAt": "2026-02-01T10:15:00.000Z",
+    "status": "PAID"
+  },
+  {
+    "id": "fee-rec-002",
+    "studentId": "std-002-ananya",
+    "amount": 5000,
+    "paidAt": "2026-02-05T12:00:00.000Z",
+    "status": "PAID"
+  }
+]

@@ -1,0 +1,94 @@
+/**
+ * Master Test Runner for CodeLift Platform
+ * 
+ * Runs critical test suites:
+ * 1. Entity Associations & Batch Synchronization
+ * 2. Course JSON Import/Export & Quiz Assessment Engine
+ */
+
+import { runEntityAssociationTests } from './entity-associations.test.js';
+import { runCourseImportExportTests } from './course-import-export.test.js';
+import { runFeeManagementTests } from './fee-management.test.js';
+import { runCookieThemePersistenceTests } from './cookie-theme-persistence.test.js';
+import { runThemeConsistencyTests } from './verify-theme-consistency.js';
+
+async function runAll() {
+  console.log('===============================================================');
+  console.log('🚀 CODELIFT AUTOMATED REGRESSION & INTEGRITY TEST RUNNER');
+  console.log('===============================================================');
+
+  const startTime = Date.now();
+  let totalPassed = 0;
+  let totalTests = 0;
+  const suiteResults = [];
+
+  try {
+    const r1 = await runEntityAssociationTests();
+    totalPassed += r1.passedCount;
+    totalTests += r1.totalCount;
+    suiteResults.push({ name: 'Entity Associations & Batch Synchronization', passed: r1.passedCount, total: r1.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Entity Associations & Batch Synchronization', error: err.message, ok: false });
+  }
+
+  try {
+    const r2 = await runCourseImportExportTests();
+    totalPassed += r2.passedCount;
+    totalTests += r2.totalCount;
+    suiteResults.push({ name: 'Course Import/Export & Assessment Grading', passed: r2.passedCount, total: r2.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Course Import/Export & Assessment Grading', error: err.message, ok: false });
+  }
+
+  try {
+    const r3 = await runFeeManagementTests();
+    totalPassed += r3.passedCount;
+    totalTests += r3.totalCount;
+    suiteResults.push({ name: 'Fee Recording & Ledger Synchronization', passed: r3.passedCount, total: r3.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Fee Recording & Ledger Synchronization', error: err.message, ok: false });
+  }
+
+  try {
+    const r4 = await runCookieThemePersistenceTests();
+    totalPassed += r4.passedCount;
+    totalTests += r4.totalCount;
+    suiteResults.push({ name: 'Cookie-Based Theme Persistence & Resolution', passed: r4.passedCount, total: r4.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Cookie-Based Theme Persistence & Resolution', error: err.message, ok: false });
+  }
+
+  try {
+    const r5 = runThemeConsistencyTests();
+    totalPassed += r5.passedCount;
+    totalTests += r5.totalCount;
+    suiteResults.push({ name: 'UI Theme Consistency & Design System Integrity', passed: r5.passedCount, total: r5.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'UI Theme Consistency & Design System Integrity', error: err.message, ok: false });
+  }
+
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+  const allPassed = suiteResults.every(s => s.ok);
+
+  console.log('\n===============================================================');
+  console.log('📊 TEST EXECUTION SUMMARY');
+  console.log('===============================================================');
+  suiteResults.forEach((s) => {
+    const status = s.ok ? '✅ PASS' : '❌ FAIL';
+    console.log(` ${status} | ${s.name} (${s.passed}/${s.total})`);
+  });
+  console.log('---------------------------------------------------------------');
+  console.log(`Total Assertions Passed: ${totalPassed}/${totalTests}`);
+  console.log(`Execution Time:          ${elapsed}s`);
+  console.log('===============================================================');
+
+  if (allPassed) {
+    console.log('🎉 ALL INTEGRITY TESTS PASSED! Safe to push.');
+    process.exit(0);
+  } else {
+    console.error('❌ ONE OR MORE TEST SUITES FAILED! Do not push.');
+    process.exit(1);
+  }
+}
+
+runAll();

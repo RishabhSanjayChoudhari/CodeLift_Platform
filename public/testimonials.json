@@ -1,0 +1,29 @@
+[
+  {
+    "quote": "The project-based approach gave me the confidence to crack my first developer interview. I walked in with a GitHub full of real applications—that made all the difference.",
+    "name": "Rahul Sharma",
+    "role": "Software Engineer at TechCorp",
+    "initials": "RS",
+    "avatarBg": "#15803D",
+    "outcome": "Placed within 3 months",
+    "rating": 5
+  },
+  {
+    "quote": "The mentorship is unparalleled. I went from being a complete beginner with zero coding background to a job-ready data analyst. My mentor was with me every step of the way.",
+    "name": "Priya M.",
+    "role": "Data Analyst at FinEdge Analytics",
+    "initials": "PM",
+    "avatarBg": "#1d4ed8",
+    "outcome": "Salary 2x after switch",
+    "rating": 5
+  },
+  {
+    "quote": "Small batch sizes meant I never got left behind. Every doubt was addressed. The community of learners here is supportive and keeps you accountable. Best decision I ever made.",
+    "name": "Amit K.",
+    "role": "Full-Stack Engineer at CloudScale",
+    "initials": "AK",
+    "avatarBg": "#6d28d9",
+    "outcome": "Remote job at a product startup",
+    "rating": 5
+  }
+]

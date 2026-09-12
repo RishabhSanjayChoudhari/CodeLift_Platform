@@ -1,0 +1,1122 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import * as supabaseDataService from '../services/supabaseDataService';
+
+// Seed Fallbacks for seamless offline/initial hydration
+import usersSeed from '../../data/users.json';
+import studentsSeed from '../../data/students.json';
+import categoriesSeed from '../../data/categories.json';
+import coursesSeed from '../../data/courses.json';
+import enrollmentsSeed from '../../data/enrollments.json';
+import couponsSeed from '../../data/coupons.json';
+import paymentsSeed from '../../data/payments.json';
+import batchesSeed from '../../data/batches.json';
+import feesSeed from '../../data/fees.json';
+import testsSeed from '../../data/tests.json';
+import attemptsSeed from '../../data/attempts.json';
+import assignmentsSeed from '../../data/assignments.json';
+import submissionsSeed from '../../data/submissions.json';
+import certificatesSeed from '../../data/certificates.json';
+import certificateTemplatesSeed from '../../data/certificateTemplates.json';
+import completedBatchesSeed from '../../data/completedBatches.json';
+import problemAttemptsSeed from '../../data/problemAttempts.json';
+
+const DataContext = createContext(null);
+
+function genId(prefix = '') {
+  const p = prefix ? `${prefix}-` : '';
+  return `${p}${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+const DEFAULT_PLATFORM_SETTINGS = {
+  revenueSplit: 100,
+  paymentInstructions: 'UPI: codelift@upi | Bank Transfer: HDFC Bank A/C 98765432101, IFSC: HDFC0001234',
+  featureFlags: {
+    marketplaceEnabled: true,
+    problemSolvingEnabled: true,
+    autoCertificates: true
+  }
+};
+
+export function DataProvider({ children }) {
+  // Collections State initialized with local seeds for instant render
+  const [users, setUsers] = useState(usersSeed);
+  const [students, setStudents] = useState(studentsSeed);
+  const [categories, setCategories] = useState(categoriesSeed);
+  const [courses, setCourses] = useState(coursesSeed);
+  const [enrollments, setEnrollments] = useState(enrollmentsSeed);
+  const [coupons, setCoupons] = useState(couponsSeed);
+  const [payments, setPayments] = useState(paymentsSeed);
+  const [batches, setBatches] = useState(batchesSeed);
+  const [fees, setFees] = useState(feesSeed);
+  const [tests, setTests] = useState(testsSeed);
+  const [testAttempts, setTestAttempts] = useState(attemptsSeed);
+  const [assignments, setAssignments] = useState(assignmentsSeed);
+  const [submissions, setSubmissions] = useState(submissionsSeed);
+  const [certificates, setCertificates] = useState(certificatesSeed);
+  const [certificateTemplates, setCertificateTemplates] = useState(certificateTemplatesSeed);
+  const [completedBatches, setCompletedBatches] = useState(completedBatchesSeed);
+  const [problemAttempts, setProblemAttempts] = useState(problemAttemptsSeed);
+  const [platformSettings, setPlatformSettings] = useState(DEFAULT_PLATFORM_SETTINGS);
+
+  // Hydrate all collections from Supabase on mount and window focus (no polling)
+  useEffect(() => {
+    let isMounted = true;
+
+    async function syncFromSupabase() {
+      try {
+        const data = await supabaseDataService.fetchAllData();
+        if (!isMounted) return;
+
+        if (data.users?.length) setUsers(data.users);
+        if (data.students?.length) {
+          setStudents(data.students.map((s) => ({ ...s, isActive: s.isActive !== false })));
+        }
+        if (data.categories?.length) setCategories(data.categories);
+        if (data.courses?.length) setCourses(data.courses);
+        if (data.enrollments?.length) setEnrollments(data.enrollments);
+        if (data.coupons?.length) setCoupons(data.coupons);
+        if (data.payments?.length) setPayments(data.payments);
+        if (data.batches?.length) setBatches(data.batches);
+        if (data.fees?.length) setFees(data.fees);
+        if (data.tests?.length) setTests(data.tests);
+        if (data.testAttempts?.length) setTestAttempts(data.testAttempts);
+        if (data.assignments?.length) setAssignments(data.assignments);
+        if (data.submissions?.length) setSubmissions(data.submissions);
+        if (data.certificates?.length) setCertificates(data.certificates);
+        if (data.certificateTemplates?.length) setCertificateTemplates(data.certificateTemplates);
+        if (data.completedBatches?.length) setCompletedBatches(data.completedBatches);
+        if (data.problemAttempts?.length) setProblemAttempts(data.problemAttempts);
+      } catch (err) {
+        console.warn('[DataContext] Background fetch from Supabase deferred:', err.message);
+      }
+    }
+
+    syncFromSupabase();
+
+    const onFocus = () => syncFromSupabase();
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
+
+  // ── USER MANAGEMENT ──────────────────────────────────────────────────────────
+  const addUser = (userData) => {
+    const newUser = { id: genId(), joinedAt: new Date().toISOString(), isActive: true, ...userData };
+    setUsers((prev) => [newUser, ...prev]);
+    return newUser;
+  };
+
+  const updateUser = (userId, updates) => {
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, ...updates } : u)));
+  };
+
+  // ── STUDENT MANAGEMENT ───────────────────────────────────────────────────────
+  const addStudent = (studentData) => {
+    const newStudent = {
+      id: studentData.id || genId(),
+      isActive: true,
+      isGraduated: false,
+      completedBatchIds: [],
+      progress: {},
+      enrolledDate: new Date().toISOString().split('T')[0],
+      paidFee: 0,
+      feeStatus: 'Pending',
+      ...studentData
+    };
+    setStudents((prev) => [newStudent, ...prev]);
+    supabaseDataService.addStudent(newStudent).catch((e) => console.error('[DataContext] addStudent failed:', e));
+    return newStudent;
+  };
+
+  const updateStudent = (studentId, updates) => {
+    setStudents((prev) => prev.map((s) => (s.id === studentId || s.legacyId === studentId ? { ...s, ...updates } : s)));
+    supabaseDataService.updateStudent(studentId, updates).catch((e) => console.error('[DataContext] updateStudent failed:', e));
+  };
+
+  const toggleStudentActive = (studentId) => {
+    const current = students.find((s) => s.id === studentId || s.legacyId === studentId);
+    const nextActive = current ? !(current.isActive !== false) : true;
+    updateStudent(studentId, { isActive: nextActive });
+  };
+
+  const deleteStudent = (studentId) => {
+    setStudents((prev) => prev.filter((s) => s.id !== studentId && s.legacyId !== studentId));
+    supabaseDataService.deleteStudent(studentId).catch((e) => console.error('[DataContext] deleteStudent failed:', e));
+  };
+
+  // ── BATCH MANAGEMENT ────────────────────────────────────────────────────────
+  const addBatch = (batchData) => {
+    const newBatch = {
+      id: batchData.id || genId('batch'),
+      isActive: true,
+      isCompleted: false,
+      completedAt: null,
+      archivedStudents: [],
+      courseIds: [],
+      testIds: [],
+      ...batchData
+    };
+    setBatches((prev) => [newBatch, ...prev]);
+    supabaseDataService.addBatch(newBatch).catch((e) => console.error('[DataContext] addBatch failed:', e));
+    return newBatch;
+  };
+
+  const updateBatch = (batchId, updates) => {
+    setBatches((prev) => prev.map((b) => (b.id === batchId ? { ...b, ...updates } : b)));
+    supabaseDataService.updateBatch(batchId, updates).catch((e) => console.error('[DataContext] updateBatch failed:', e));
+  };
+
+  const deleteBatch = (batchId) => {
+    setBatches((prev) => prev.filter((b) => b.id !== batchId));
+    supabaseDataService.deleteBatch(batchId).catch((e) => console.error('[DataContext] deleteBatch failed:', e));
+  };
+
+  const completeBatch = async (batchId) => {
+    const batch = batches.find((b) => b.id === batchId);
+    if (!batch) return null;
+
+    const batchStudents = students.filter((s) => s.batchId === batchId);
+    const batchCourses = courses.filter((c) => Array.isArray(c.batchIds) && c.batchIds.includes(batchId));
+    const batchTests = tests.filter((t) => Array.isArray(t.assignedBatchIds) && t.assignedBatchIds.includes(batchId));
+    const batchAssignments = assignments.filter((a) => Array.isArray(a.batchIds) && a.batchIds.includes(batchId));
+    const batchSubmissions = submissions.filter((sub) => sub.batchId === batchId);
+    const batchTestAttempts = testAttempts.filter((ta) => ta.batchId === batchId);
+
+    const completedRecord = {
+      id: genId('cb'),
+      originalBatchId: batchId,
+      name: batch.name,
+      description: batch.description || '',
+      startDate: batch.startDate || null,
+      endDate: batch.endDate || new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      studentIds: batchStudents.map((s) => s.id),
+      testIds: batchTests.map((t) => t.id),
+      assignmentIds: batchAssignments.map((a) => a.id),
+      snapshot: {
+        batch: { ...batch },
+        students: batchStudents.map((s) => ({
+          id: s.id,
+          name: s.name,
+          email: s.email,
+          phone: s.phone,
+          enrolledDate: s.enrolledDate,
+          totalFee: s.totalFee,
+          paidFee: s.paidFee,
+          feeStatus: s.feeStatus,
+          isGraduated: true,
+          progress: s.progress || {}
+        })),
+        courses: batchCourses.map((c) => ({ id: c.id, title: c.title })),
+        tests: batchTests.map((t) => ({
+          id: t.id,
+          title: t.title,
+          attemptsCount: batchTestAttempts.filter((ta) => ta.testId === t.id).length
+        })),
+        assignments: batchAssignments.map((a) => ({
+          id: a.id,
+          title: a.title,
+          submissionsCount: batchSubmissions.filter((sub) => sub.assignmentId === a.id).length
+        })),
+        stats: {
+          totalStudents: batchStudents.length,
+          graduatedStudents: batchStudents.length,
+          totalTests: batchTests.length,
+          totalAssignments: batchAssignments.length,
+          totalSubmissions: batchSubmissions.length,
+          totalRevenue: batchStudents.reduce((sum, s) => sum + (Number(s.paidFee) || 0), 0)
+        }
+      }
+    };
+
+    setCompletedBatches((prev) => [completedRecord, ...prev]);
+    try {
+      await supabaseDataService.addCompletedBatch(completedRecord);
+    } catch (e) {
+      console.error('[DataContext] addCompletedBatch error:', e);
+    }
+
+    // Update batch status to completed
+    updateBatch(batchId, { isCompleted: true, isActive: false, completedAt: new Date().toISOString() });
+
+    // Mark enrolled students as graduated while preserving their progress
+    batchStudents.forEach((s) => {
+      updateStudent(s.id, {
+        isGraduated: true,
+        completedBatchIds: Array.from(new Set([...(s.completedBatchIds || []), batchId]))
+      });
+    });
+
+    return completedRecord;
+  };
+
+  const cleanupBatch = async (batchId) => {
+    try {
+      await supabaseDataService.deleteBatchCleanup(batchId);
+    } catch (e) {
+      console.error('[DataContext] deleteBatchCleanup error:', e);
+    }
+
+    // Update local state: remove batch activity, preserve students & progress
+    setSubmissions((prev) => prev.filter((s) => s.batchId !== batchId));
+    setTestAttempts((prev) => prev.filter((t) => t.batchId !== batchId));
+    setAssignments((prev) => prev.filter((a) => !a.batchIds?.includes(batchId)));
+    setBatches((prev) => prev.filter((b) => b.id !== batchId));
+  };
+
+  // ── COURSE & MARKETPLACE MANAGEMENT ─────────────────────────────────────────
+  const addCourse = (courseData) => {
+    const newCourse = {
+      id: courseData.id || genId('course'),
+      slug: courseData.title ? courseData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : `course-${Date.now()}`,
+      rating: 5.0,
+      numReviews: 0,
+      studentsEnrolled: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isPublished: true,
+      isApproved: true,
+      modules: [],
+      ...courseData
+    };
+    setCourses((prev) => [newCourse, ...prev]);
+    supabaseDataService.addCourse(newCourse).catch((e) => console.error('[DataContext] addCourse failed:', e));
+    return newCourse;
+  };
+
+  const updateCourse = (courseId, updates) => {
+    setCourses((prev) =>
+      prev.map((c) => (c.id === courseId ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c))
+    );
+    supabaseDataService.updateCourse(courseId, updates).catch((e) => console.error('[DataContext] updateCourse failed:', e));
+  };
+
+  const deleteCourse = (courseId) => {
+    setCourses((prev) => prev.filter((c) => c.id !== courseId));
+    supabaseDataService.deleteCourse(courseId).catch((e) => console.error('[DataContext] deleteCourse failed:', e));
+  };
+
+  // ── ENTITY ASSOCIATION MANAGERS (SYNCHRONIZED) ──────────────────────────────
+  const attachCourseToBatch = (courseId, batchId) => {
+    setBatches((prev) =>
+      prev.map((b) => {
+        if (b.id === batchId) {
+          const courseIds = Array.isArray(b.courseIds) ? b.courseIds : [];
+          return { ...b, courseIds: Array.from(new Set([...courseIds, courseId])) };
+        }
+        return b;
+      })
+    );
+    setCourses((prev) =>
+      prev.map((c) => {
+        if (c.id === courseId) {
+          const batchIds = Array.isArray(c.batchIds) ? c.batchIds : (c.batchId ? [c.batchId] : []);
+          return {
+            ...c,
+            batchIds: Array.from(new Set([...batchIds, batchId])),
+            batchId: c.batchId || batchId,
+            updatedAt: new Date().toISOString()
+          };
+        }
+        return c;
+      })
+    );
+    const targetCourse = courses.find((c) => c.id === courseId);
+    const updatedBatchIds = Array.from(new Set([...(targetCourse?.batchIds || []), batchId]));
+    supabaseDataService.updateCourse(courseId, { batchIds: updatedBatchIds }).catch((e) => console.error(e));
+  };
+
+  const detachCourseFromBatch = (courseId, batchId) => {
+    setBatches((prev) =>
+      prev.map((b) => {
+        if (b.id === batchId) {
+          const courseIds = Array.isArray(b.courseIds) ? b.courseIds : [];
+          return { ...b, courseIds: courseIds.filter((id) => id !== courseId) };
+        }
+        return b;
+      })
+    );
+    setCourses((prev) =>
+      prev.map((c) => {
+        if (c.id === courseId) {
+          const batchIds = (Array.isArray(c.batchIds) ? c.batchIds : (c.batchId ? [c.batchId] : [])).filter((id) => id !== batchId);
+          const newPrimaryBatchId = c.batchId === batchId ? (batchIds[0] || null) : c.batchId;
+          return {
+            ...c,
+            batchIds,
+            batchId: newPrimaryBatchId,
+            updatedAt: new Date().toISOString()
+          };
+        }
+        return c;
+      })
+    );
+    const targetCourse = courses.find((c) => c.id === courseId);
+    const updatedBatchIds = (targetCourse?.batchIds || []).filter((id) => id !== batchId);
+    supabaseDataService.updateCourse(courseId, { batchIds: updatedBatchIds }).catch((e) => console.error(e));
+  };
+
+  const assignTestToBatch = (testId, batchId) => {
+    setTests((prev) =>
+      prev.map((t) => {
+        if (t.id === testId) {
+          const assigned = Array.isArray(t.assignedBatchIds) ? t.assignedBatchIds : [];
+          return { ...t, assignedBatchIds: Array.from(new Set([...assigned, batchId])) };
+        }
+        return t;
+      })
+    );
+    const targetTest = tests.find((t) => t.id === testId);
+    const updatedBatchIds = Array.from(new Set([...(targetTest?.assignedBatchIds || []), batchId]));
+    supabaseDataService.updateTest(testId, { assignedBatchIds: updatedBatchIds }).catch((e) => console.error(e));
+  };
+
+  const unassignTestFromBatch = (testId, batchId) => {
+    setTests((prev) =>
+      prev.map((t) => {
+        if (t.id === testId) {
+          const assigned = Array.isArray(t.assignedBatchIds) ? t.assignedBatchIds : [];
+          return { ...t, assignedBatchIds: assigned.filter((id) => id !== batchId) };
+        }
+        return t;
+      })
+    );
+    const targetTest = tests.find((t) => t.id === testId);
+    const updatedBatchIds = (targetTest?.assignedBatchIds || []).filter((id) => id !== batchId);
+    supabaseDataService.updateTest(testId, { assignedBatchIds: updatedBatchIds }).catch((e) => console.error(e));
+  };
+
+  const assignStudentToBatch = (studentId, batchId) => {
+    updateStudent(studentId, { batchId });
+  };
+
+  const removeStudentFromBatch = (studentId) => {
+    updateStudent(studentId, { batchId: '' });
+  };
+
+  const createCourseFromJSON = (jsonPayload, targetCourseId = null) => {
+    let data;
+    if (typeof jsonPayload === 'string') {
+      try {
+        data = JSON.parse(jsonPayload);
+      } catch (err) {
+        throw new Error('Invalid JSON format: ' + err.message);
+      }
+    } else if (typeof jsonPayload === 'object' && jsonPayload !== null) {
+      data = jsonPayload;
+    } else {
+      throw new Error('Course data must be a valid JSON object');
+    }
+
+    if (!data.title || typeof data.title !== 'string' || !data.title.trim()) {
+      throw new Error('Course JSON must contain a valid non-empty "title"');
+    }
+
+    const existingCourse = targetCourseId
+      ? courses.find((c) => c.id === targetCourseId)
+      : (data.id
+          ? courses.find((c) => c.id === data.id)
+          : courses.find((c) => c.title?.trim().toLowerCase() === data.title?.trim().toLowerCase()));
+
+    const baseSlug = (data.slug || data.title)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    let uniqueSlug = existingCourse?.slug || baseSlug || `course-${Date.now()}`;
+    if (!existingCourse) {
+      let counter = 1;
+      while (courses.some((c) => c.slug === uniqueSlug)) {
+        uniqueSlug = `${baseSlug}-${counter++}`;
+      }
+    }
+
+    const formattedModules = Array.isArray(data.modules)
+      ? data.modules.map((m, mIdx) => ({
+          id: m.id || `mod-${Date.now()}-${mIdx}-${Math.random().toString(36).slice(2, 6)}`,
+          title: m.title || `Module ${mIdx + 1}`,
+          topics: Array.isArray(m.topics)
+            ? m.topics.map((t, tIdx) => ({
+                id: t.id || `top-${Date.now()}-${mIdx}-${tIdx}-${Math.random().toString(36).slice(2, 6)}`,
+                title: t.title || `Topic ${tIdx + 1}`,
+                videoUrl: t.videoUrl || '',
+                contentMd: t.contentMd || `# ${t.title || 'Topic'}\n\nContent for this topic.`
+              }))
+            : []
+        }))
+      : [];
+
+    const { id: ignoredOldId, ...restOfData } = data;
+
+    if (existingCourse) {
+      const updatedCourse = {
+        ...existingCourse,
+        ...restOfData,
+        title: data.title.trim(),
+        description: data.description !== undefined ? data.description : existingCourse.description,
+        modules: formattedModules,
+        isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : existingCourse.isPublished,
+        updatedAt: new Date().toISOString()
+      };
+      setCourses((prev) => prev.map((c) => (c.id === existingCourse.id ? updatedCourse : c)));
+      supabaseDataService.updateCourse(existingCourse.id, updatedCourse).catch((e) => console.error(e));
+      return updatedCourse;
+    }
+
+    const newCourse = {
+      id: data.id || genId('course'),
+      slug: uniqueSlug,
+      title: data.title.trim(),
+      description: data.description || '',
+      categoryId: data.categoryId || 'cat-web',
+      price: typeof data.price === 'number' ? data.price : 0,
+      isFree: data.isFree !== undefined ? Boolean(data.isFree) : (!data.price || data.price === 0),
+      isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
+      isApproved: true,
+      thumbnail: data.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600',
+      promoVideo: data.promoVideo || '',
+      rating: typeof data.rating === 'number' ? data.rating : 5.0,
+      numReviews: typeof data.numReviews === 'number' ? data.numReviews : 0,
+      studentsEnrolled: typeof data.studentsEnrolled === 'number' ? data.studentsEnrolled : 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...restOfData,
+      modules: formattedModules
+    };
+
+    setCourses((prev) => [newCourse, ...prev]);
+    supabaseDataService.addCourse(newCourse).catch((e) => console.error(e));
+    return newCourse;
+  };
+
+  // ── ENROLLMENTS & PAYMENTS ──────────────────────────────────────────────────
+  const enrollCourse = ({ studentId, studentName, courseId, amount, paymentProof, paymentNote, couponId, discountApplied }) => {
+    const course = courses.find((c) => c.id === courseId);
+    const isFree = Boolean(course?.isFree || amount === 0);
+    const status = isFree ? 'FREE' : 'PENDING';
+
+    const newEnrollment = {
+      id: genId('enr'),
+      studentId,
+      courseId,
+      status,
+      paymentProof: paymentProof || null,
+      paymentNote: paymentNote || null,
+      verifiedBy: null,
+      verifiedAt: null,
+      amount: amount || 0,
+      couponId: couponId || null,
+      discountApplied: discountApplied || 0,
+      enrolledAt: new Date().toISOString(),
+      completedAt: null
+    };
+
+    setEnrollments((prev) => [newEnrollment, ...prev]);
+
+    if (!isFree) {
+      const newPayment = {
+        id: genId('pay'),
+        enrollmentId: newEnrollment.id,
+        studentId,
+        studentName: studentName || 'Student',
+        courseId,
+        courseTitle: course?.title || 'Course',
+        amount: amount || 0,
+        mode: 'UPI / Bank Transfer',
+        status: 'PENDING',
+        paymentProof: paymentProof || null,
+        paymentNote: paymentNote || null,
+        createdAt: new Date().toISOString()
+      };
+      setPayments((prev) => [newPayment, ...prev]);
+    } else {
+      updateCourse(courseId, { studentsEnrolled: (course?.studentsEnrolled || 0) + 1 });
+    }
+
+    return newEnrollment;
+  };
+
+  const verifyPayment = (paymentId, isApproved, adminNote) => {
+    const pay = payments.find((p) => p.id === paymentId);
+    if (!pay) return;
+
+    const nextStatus = isApproved ? 'PAID' : 'FAILED';
+    setPayments((prev) =>
+      prev.map((p) => (p.id === paymentId ? { ...p, status: nextStatus, verifiedBy: 'admin', verifiedAt: new Date().toISOString() } : p))
+    );
+
+    if (pay.enrollmentId) {
+      setEnrollments((prev) =>
+        prev.map((e) => (e.id === pay.enrollmentId ? { ...e, status: nextStatus, verifiedBy: 'admin', verifiedAt: new Date().toISOString() } : e))
+      );
+    }
+
+    if (isApproved && pay.courseId) {
+      const course = courses.find((c) => c.id === pay.courseId);
+      if (course) {
+        updateCourse(course.id, { studentsEnrolled: (course.studentsEnrolled || 0) + 1 });
+      }
+    }
+  };
+
+  // ── FEE MANAGEMENT & RECORDING ──────────────────────────────────────────────
+  const syncStudentFeeRecord = (studentId, updatedFeesList) => {
+    if (!studentId) return;
+
+    setStudents((prevStudents) => {
+      const studentList = Array.isArray(prevStudents) ? prevStudents : [];
+      const student = studentList.find((s) => s.id === studentId || s.legacyId === studentId);
+      if (!student) return studentList;
+
+      const currentFees = updatedFeesList || fees || [];
+      const studentFees = currentFees.filter((f) => f.studentId === studentId || f.studentId === student.id);
+      const totalPaid = studentFees
+        .filter((f) => f.status === 'PAID')
+        .reduce((sum, f) => sum + (Number(f.amount) || 0), 0);
+
+      const batch = (batches || []).find((b) => b.id === student.batchId);
+      const totalFee = Number(student.totalFee) || batch?.feeAmount || (totalPaid > 0 ? totalPaid : 45000);
+      const feeStatus = totalPaid >= totalFee ? 'Paid' : totalPaid > 0 ? 'Partial' : 'Pending';
+
+      const updated = { ...student, totalFee, paidFee: totalPaid, feeStatus };
+      supabaseDataService.updateStudent(student.id, { totalFee, paidFee: totalPaid, feeStatus }).catch((e) => console.error(e));
+
+      return studentList.map((s) => (s.id === student.id ? updated : s));
+    });
+  };
+
+  const addFee = (feeData) => {
+    const newFee = {
+      id: feeData.id || `fee-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      studentId: feeData.studentId,
+      amount: Number(feeData.amount) || 0,
+      paidAt: feeData.paidAt || new Date().toISOString().split('T')[0],
+      dueDate: feeData.dueDate || null,
+      mode: feeData.mode || 'UPI',
+      status: feeData.status || 'PAID',
+      receiptNo: feeData.receiptNo || `REC-${Date.now().toString().slice(-6)}`,
+      notes: feeData.notes || '',
+      createdAt: new Date().toISOString()
+    };
+
+    let updatedFeesList = [];
+    setFees((prev) => {
+      const arr = Array.isArray(prev) ? prev : [];
+      updatedFeesList = [newFee, ...arr];
+      return updatedFeesList;
+    });
+
+    supabaseDataService.addFee(newFee).catch((e) => console.error('[DataContext] addFee failed:', e));
+
+    if (feeData.studentId) {
+      syncStudentFeeRecord(feeData.studentId, updatedFeesList);
+    }
+
+    toast.success(`Fee record of ₹${newFee.amount.toLocaleString()} saved.`, { duration: 3000 });
+    return newFee;
+  };
+
+  const recordFee = addFee;
+
+  const updateFee = (feeId, updates) => {
+    let affectedStudentId = null;
+    let nextFees = [];
+    setFees((prev) => {
+      const arr = Array.isArray(prev) ? prev : [];
+      nextFees = arr.map((f) => {
+        if (f.id === feeId) {
+          affectedStudentId = updates.studentId || f.studentId;
+          return { ...f, ...updates };
+        }
+        return f;
+      });
+      return nextFees;
+    });
+
+    supabaseDataService.updateFee(feeId, updates).catch((e) => console.error('[DataContext] updateFee failed:', e));
+
+    if (affectedStudentId) {
+      syncStudentFeeRecord(affectedStudentId, nextFees);
+    }
+    toast.success('Fee record updated.', { duration: 3000 });
+  };
+
+  const deleteFee = (feeId) => {
+    let affectedStudentId = null;
+    let nextFees = [];
+    setFees((prev) => {
+      const arr = Array.isArray(prev) ? prev : [];
+      const found = arr.find((f) => f.id === feeId);
+      if (found) affectedStudentId = found.studentId;
+      nextFees = arr.filter((f) => f.id !== feeId);
+      return nextFees;
+    });
+
+    supabaseDataService.deleteFee(feeId).catch((e) => console.error('[DataContext] deleteFee failed:', e));
+
+    if (affectedStudentId) {
+      syncStudentFeeRecord(affectedStudentId, nextFees);
+    }
+    toast.success('Fee record deleted.', { duration: 3000 });
+  };
+
+  // ── PROGRESS, QUIZ ATTEMPTS & TOPIC COMPLETION ──────────────────────────────
+  const saveQuizAttempt = ({ studentId, courseId, topicId, answers, score, totalMarks, passed, rating }) => {
+    const student = students.find((s) => s.id === studentId || s.legacyId === studentId);
+    if (!student) return null;
+
+    const numScore = Number(score) || 0;
+    const numTotal = Number(totalMarks) || (Array.isArray(answers) ? answers.length : 1);
+    const percentage = numTotal > 0 ? Math.round((numScore / numTotal) * 100) : 0;
+    const isPassed = Boolean(passed) || percentage >= 75;
+
+    let computedRating = rating;
+    if (!computedRating) {
+      if (percentage === 100) computedRating = 'Grade A+ (Perfect Score)';
+      else if (percentage >= 85) computedRating = 'Grade A (Exceptional)';
+      else if (percentage >= 75) computedRating = 'Grade B+ (Passed)';
+      else if (percentage >= 50) computedRating = 'Grade C (Average)';
+      else computedRating = 'Grade F (Needs Practice)';
+    }
+
+    const attemptRecord = {
+      answers: answers || [],
+      score: numScore,
+      totalMarks: numTotal,
+      percentage,
+      passed: isPassed,
+      rating: computedRating,
+      submittedAt: new Date().toISOString()
+    };
+
+    const updatedAttempts = {
+      ...(student.quizAttempts || {}),
+      [topicId]: attemptRecord
+    };
+
+    const updatedProgress = {
+      ...(student.progress || {})
+    };
+
+    if (isPassed) {
+      updatedProgress[topicId] = 'completed';
+    }
+
+    updateStudent(student.id, {
+      quizAttempts: updatedAttempts,
+      progress: updatedProgress
+    });
+
+    // Auto-certificate verification if all topics completed
+    if (courseId && platformSettings?.featureFlags?.autoCertificates && isPassed) {
+      const course = courses.find((c) => c.id === courseId);
+      if (course) {
+        const allTopics = course.modules?.flatMap((m) => m.topics || []) || [];
+        const completedCount = allTopics.filter(
+          (t) => updatedProgress[t.id] === 'completed' || updatedProgress[t.id] === true
+        ).length;
+
+        if (allTopics.length > 0 && completedCount === allTopics.length) {
+          const existingCert = certificates.find(
+            (cert) => cert.studentId === student.id && cert.courseName === course.title
+          );
+          if (!existingCert) {
+            issueCertificate({
+              studentId: student.id,
+              studentName: student.name || 'Student',
+              courseName: course.title,
+              certificateId: `CERT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+            });
+          }
+        }
+      }
+    }
+
+    return attemptRecord;
+  };
+
+  const markTopicComplete = (studentId, topicId, courseId) => {
+    const student = students.find((s) => s.id === studentId || s.legacyId === studentId);
+    if (!student) return;
+
+    const updatedProgress = {
+      ...(student?.progress || {}),
+      [topicId]: 'completed'
+    };
+
+    updateStudent(student.id, {
+      progress: updatedProgress
+    });
+
+    if (courseId && platformSettings?.featureFlags?.autoCertificates) {
+      const course = courses.find((c) => c.id === courseId);
+      if (course) {
+        const allTopics = course.modules?.flatMap((m) => m.topics || []) || [];
+        const completedCount = allTopics.filter((t) => updatedProgress[t.id] === 'completed' || updatedProgress[t.id] === true).length;
+
+        if (allTopics.length > 0 && completedCount === allTopics.length) {
+          const existingCert = certificates.find((cert) => cert.studentId === student.id && cert.courseName === course.title);
+          if (!existingCert) {
+            issueCertificate({
+              studentId: student.id,
+              studentName: student?.name || 'Student',
+              courseName: course.title,
+              certificateId: `CERT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+            });
+          }
+        }
+      }
+    }
+  };
+
+  // ── CERTIFICATES ────────────────────────────────────────────────────────────
+  const issueCertificate = (arg1, arg2, arg3) => {
+    let certData = {};
+    if (typeof arg1 === 'object' && arg1 !== null) {
+      certData = { ...arg1 };
+    } else {
+      const studentId = arg1;
+      const courseName = arg2;
+      const templateId = arg3;
+      const studentObj = students.find((s) => s.id === studentId || s.legacyId === studentId);
+      certData = {
+        studentId: studentObj?.id || studentId,
+        studentName: studentObj?.name || 'Student',
+        courseName,
+        templateId,
+      };
+    }
+
+    const activeTpl = certificateTemplates.find((t) => t.isActive) || certificateTemplates[0];
+    const targetTpl = certData.templateId
+      ? certificateTemplates.find((t) => t.id === certData.templateId) || activeTpl
+      : activeTpl;
+
+    const newCert = {
+      id: genId('cert'),
+      certificateId: certData.certificateId || `CERT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      issuedAt: new Date().toISOString(),
+      isIssued: true,
+      isRevoked: false,
+      templateId: targetTpl?.id,
+      instituteName: targetTpl?.instituteName || 'CodeLift Engineering Academy',
+      signatoryName: targetTpl?.signatoryName || 'Vikram Nair',
+      signatoryTitle: targetTpl?.signatoryTitle || 'Director of Academic Affairs',
+      certTitle: targetTpl?.certTitle || 'CERTIFICATE OF COMPLETION',
+      design: targetTpl?.design ? { ...targetTpl.design } : undefined,
+      ...certData
+    };
+
+    setCertificates((prev) => [newCert, ...prev]);
+    supabaseDataService.issueCertificate(newCert).catch((e) => console.error('[DataContext] issueCertificate failed:', e));
+    return newCert;
+  };
+
+  const revokeCertificate = (certificateId) => {
+    setCertificates((prev) =>
+      prev.map((c) => (c.id === certificateId ? { ...c, isRevoked: true } : c))
+    );
+    supabaseDataService.revokeCertificate(certificateId).catch((e) => console.error(e));
+  };
+
+  const addCertificateTemplate = (templateData) => {
+    const newTemplate = {
+      id: genId('tpl'),
+      name: templateData.name || 'Custom Certificate Template',
+      isActive: Boolean(templateData.isActive),
+      instituteName: templateData.instituteName || 'CodeLift Engineering Academy',
+      signatoryName: templateData.signatoryName || 'Vikram Nair',
+      signatoryTitle: templateData.signatoryTitle || 'Director of Academic Affairs',
+      certTitle: templateData.certTitle || 'CERTIFICATE OF COMPLETION',
+      design: {
+        accentColor: '#15803D',
+        bgType: 'gradient',
+        backgroundColor: '#ffffff',
+        gradientStart: '#f0fdf4',
+        gradientEnd: '#ffffff',
+        bgStyle: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)',
+        fontFamily: 'Georgia, serif',
+        borderStyle: 'double',
+        borderWidth: 4,
+        borderColor: '#15803D',
+        borderRadius: 8,
+        isDark: false,
+        showRibbon: false,
+        ribbonText: 'VERIFIED CREDENTIAL',
+        ribbonColor: '#15803D',
+        showCorners: true,
+        showBadge: true,
+        badgeText: 'ACADEMIC EXCELLENCE',
+        titleSize: '1.45rem',
+        nameSize: '2.1rem',
+        courseSize: '1.25rem',
+        titleAlign: 'center',
+        nameAlign: 'center',
+        ...(templateData.design || {})
+      },
+      ...templateData,
+    };
+
+    setCertificateTemplates((prev) => {
+      if (newTemplate.isActive) {
+        return [...prev.map((t) => ({ ...t, isActive: false })), newTemplate];
+      }
+      return [...prev, newTemplate];
+    });
+
+    return newTemplate;
+  };
+
+  const updateCertificateTemplate = (templateId, updates) => {
+    setCertificateTemplates((prev) =>
+      prev.map((t) => {
+        if (t.id === templateId) {
+          return {
+            ...t,
+            ...updates,
+            design: updates.design ? { ...t.design, ...updates.design } : t.design
+          };
+        }
+        return t;
+      })
+    );
+  };
+
+  const setActiveCertificateTemplate = (templateId) => {
+    setCertificateTemplates((prev) =>
+      prev.map((t) => ({
+        ...t,
+        isActive: t.id === templateId
+      }))
+    );
+  };
+
+  const deleteCertificateTemplate = (templateId) => {
+    setCertificateTemplates((prev) => {
+      const filtered = prev.filter((t) => t.id !== templateId);
+      if (filtered.length > 0 && !filtered.some((t) => t.isActive)) {
+        filtered[0].isActive = true;
+      }
+      return filtered;
+    });
+  };
+
+  // ── PROBLEM SOLVING MODULE ──────────────────────────────────────────────────
+  const recordProblemAttempt = ({ studentId, problemId, codeSubmitted, passed, score, testResults, timeTaken, hintsUsed }) => {
+    const newAttempt = {
+      id: genId('pa'),
+      studentId,
+      problemId,
+      codeSubmitted,
+      passed: Boolean(passed),
+      score: Number(score) || 0,
+      testResults: testResults || [],
+      attemptedAt: new Date().toISOString(),
+      timeTaken: Number(timeTaken) || 0,
+      hintsUsed: Number(hintsUsed) || 0,
+      status: passed ? 'Completed' : 'Submitted'
+    };
+    setProblemAttempts((prev) => [newAttempt, ...prev]);
+    return newAttempt;
+  };
+
+  // ── TESTS & ATTEMPTS ────────────────────────────────────────────────────────
+  const addTest = (testData) => {
+    const newTest = {
+      id: testData.id || genId('test'),
+      title: testData.title || 'Untitled Test',
+      description: testData.description || '',
+      passingPercentage: testData.passingPercentage !== undefined ? Number(testData.passingPercentage) : 70,
+      allowRetake: Boolean(testData.allowRetake),
+      assignedBatchIds: testData.assignedBatchIds || [],
+      questions: testData.questions || [],
+      createdAt: new Date().toISOString()
+    };
+    setTests((prev) => [newTest, ...prev]);
+    supabaseDataService.addTest(newTest).catch((e) => console.error(e));
+    return newTest;
+  };
+
+  const updateTest = (testId, updates) => {
+    setTests((prev) => prev.map((t) => (t.id === testId ? { ...t, ...updates } : t)));
+    supabaseDataService.updateTest(testId, updates).catch((e) => console.error(e));
+  };
+
+  const deleteTest = (testId) => {
+    setTests((prev) => prev.filter((t) => t.id !== testId));
+    supabaseDataService.deleteTest(testId).catch((e) => console.error(e));
+  };
+
+  const submitTestAttempt = (attemptData) => {
+    const totalQuestions = Number(attemptData.totalQuestions) || (attemptData.answers?.length) || 1;
+    const score = Number(attemptData.score) || 0;
+    const percentage = attemptData.percentage !== undefined
+      ? Number(attemptData.percentage)
+      : Math.round((score / totalQuestions) * 100);
+
+    const newAttempt = {
+      id: attemptData.id || genId('att'),
+      studentId: attemptData.studentId,
+      testId: attemptData.testId,
+      batchId: attemptData.batchId,
+      answers: attemptData.answers || [],
+      score,
+      totalQuestions,
+      percentage,
+      passingPercentage: attemptData.passingPercentage !== undefined ? Number(attemptData.passingPercentage) : 70,
+      submittedAt: attemptData.submittedAt || new Date().toISOString()
+    };
+    setTestAttempts((prev) => [newAttempt, ...prev]);
+    supabaseDataService.submitTestAttempt(newAttempt).catch((e) => console.error(e));
+    return newAttempt;
+  };
+
+  // ── ASSIGNMENTS & SUBMISSIONS ───────────────────────────────────────────────
+  const addSubmission = ({ studentId, assignmentId, fileUrl, fileUrls, notes }) => {
+    const student = students.find((s) => s.id === studentId || s.legacyId === studentId);
+    const assignment = assignments.find((a) => a.id === assignmentId);
+
+    if (assignment && student) {
+      const allowedBatchIds = assignment.batchIds || (assignment.batchId ? [assignment.batchId] : []);
+      if (allowedBatchIds.length > 0 && student.batchId && !allowedBatchIds.includes(student.batchId)) {
+        throw new Error(
+          `Batch Mismatch: Student is assigned to batch "${student.batchId}", but this assignment is restricted to batch(es): ${allowedBatchIds.join(', ')}.`
+        );
+      }
+    }
+
+    const submissionUrl = fileUrl || (Array.isArray(fileUrls) && fileUrls[0]) || '';
+    const submissionUrls = Array.isArray(fileUrls) ? fileUrls : (submissionUrl ? [submissionUrl] : []);
+
+    const newSubmission = {
+      id: genId('sub'),
+      studentId: student?.id || studentId,
+      assignmentId,
+      batchId: student?.batchId || null,
+      fileUrl: submissionUrl,
+      fileUrls: submissionUrls,
+      notes: notes || '',
+      submittedAt: new Date().toISOString(),
+      grade: null,
+      feedback: null,
+      status: 'Submitted'
+    };
+
+    setSubmissions((prev) => {
+      const existingIdx = prev.findIndex((s) => s.studentId === newSubmission.studentId && s.assignmentId === assignmentId);
+      if (existingIdx !== -1) {
+        const copy = [...prev];
+        copy[existingIdx] = newSubmission;
+        return copy;
+      }
+      return [newSubmission, ...prev];
+    });
+
+    supabaseDataService.addSubmission(newSubmission).catch((e) => console.error(e));
+    toast.success('Assignment submitted successfully!');
+    return newSubmission;
+  };
+
+  const gradeSubmission = (submissionId, grade, feedback) => {
+    setSubmissions((prev) =>
+      prev.map((s) => (s.id === submissionId ? { ...s, grade: Number(grade), feedback } : s))
+    );
+    supabaseDataService.gradeSubmission(submissionId, grade, feedback).catch((e) => console.error(e));
+  };
+
+  // ── PLATFORM SETTINGS ───────────────────────────────────────────────────────
+  const updatePlatformSettings = (newSettings) => {
+    setPlatformSettings((prev) => ({ ...prev, ...newSettings }));
+  };
+
+  return (
+    <DataContext.Provider
+      value={{
+        // Collections
+        users,
+        students,
+        categories,
+        courses,
+        enrollments,
+        coupons,
+        reviews: [],
+        discussions: [],
+        payments,
+        batches,
+        fees,
+        tests,
+        testAttempts,
+        assignments,
+        submissions,
+        certificates,
+        certificateTemplates,
+        completedBatches,
+        problemAttempts,
+        notifications: [],
+        platformSettings,
+
+        // Handlers
+        addUser,
+        updateUser,
+        addStudent,
+        updateStudent,
+        deleteStudent,
+        toggleStudentActive,
+        addBatch,
+        updateBatch,
+        deleteBatch,
+        completeBatch,
+        markBatchComplete: completeBatch,
+        cleanupBatch,
+        addCourse,
+        updateCourse,
+        deleteCourse,
+        createCourseFromJSON,
+        enrollCourse,
+        verifyPayment,
+        addFee,
+        recordFee,
+        updateFee,
+        deleteFee,
+        markTopicComplete,
+        saveQuizAttempt,
+        addSubmission,
+        gradeSubmission,
+        issueCertificate,
+        revokeCertificate,
+        addCertificateTemplate,
+        updateCertificateTemplate,
+        setActiveCertificateTemplate,
+        deleteCertificateTemplate,
+        addReview: () => {},
+        replyReview: () => {},
+        addQuestion: () => {},
+        addAnswer: () => {},
+        upvoteAnswer: () => {},
+        recordProblemAttempt,
+        addTest,
+        updateTest,
+        deleteTest,
+        submitTestAttempt,
+        attachCourseToBatch,
+        detachCourseFromBatch,
+        assignTestToBatch,
+        unassignTestFromBatch,
+        assignStudentToBatch,
+        removeStudentFromBatch,
+        updatePlatformSettings
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
+}
+
+export function useData() {
+  const ctx = useContext(DataContext);
+  if (!ctx) throw new Error('useData must be used within DataProvider');
+  return ctx;
+}

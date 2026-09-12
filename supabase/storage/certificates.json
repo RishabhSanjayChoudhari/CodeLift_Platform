@@ -1,0 +1,10 @@
+[
+  {
+    "id": "cert-2026-001",
+    "studentId": "std-001-rahul",
+    "courseTitle": "Modern Full-Stack Web Engineering",
+    "pdfUrl": "https://example.com/certificates/cert-2026-001.pdf",
+    "issuedAt": "2026-03-05T12:00:00.000Z",
+    "isRevoked": false
+  }
+]

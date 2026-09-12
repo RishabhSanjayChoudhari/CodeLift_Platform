@@ -1,0 +1,42 @@
+{
+  "id": "test-js-01",
+  "title": "JavaScript Core Internals & Concurrency Assessment",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which of the following queue types has highest execution priority upon completion of current call stack frame?",
+      "options": [
+        "Timer Macrotask Queue",
+        "Microtask Queue (Promise handlers, queueMicrotask)",
+        "I/O Poll Queue",
+        "setImmediate Check Queue"
+      ],
+      "correctIndex": 1,
+      "explanation": "The JavaScript engine empties the entire microtask queue before processing the next macrotask from the event loop."
+    },
+    {
+      "id": "q2",
+      "question": "What is the return value of Promise.all([]) when given an empty array?",
+      "options": [
+        "A Promise rejected immediately",
+        "A Promise that stays pending forever",
+        "A Promise fulfilled synchronously with an empty array []",
+        "null"
+      ],
+      "correctIndex": 2,
+      "explanation": "Promise.all() resolves synchronously to an empty array when passed an empty iterable."
+    },
+    {
+      "id": "q3",
+      "question": "In the V8 engine, how are closures allocated in memory?",
+      "options": [
+        "Always on the Thread Stack",
+        "On the Heap inside Context objects",
+        "In global CPU registers",
+        "In browser localStorage"
+      ],
+      "correctIndex": 1,
+      "explanation": "Variables captured by closures outlive the stack frame and are allocated on the V8 heap inside Context objects."
+    }
+  ]
+}

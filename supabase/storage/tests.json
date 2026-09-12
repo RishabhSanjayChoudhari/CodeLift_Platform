@@ -1,0 +1,14 @@
+[
+  {
+    "id": "test-js-01",
+    "title": "JavaScript Core Internals & Concurrency Assessment",
+    "timeLimit": 15,
+    "questionsUrl": "content/tests/test-js-01.json"
+  },
+  {
+    "id": "test-react-02",
+    "title": "React Architecture & Render Lifecycle Quiz",
+    "timeLimit": 20,
+    "questionsUrl": "content/tests/test-react-02.json"
+  }
+]

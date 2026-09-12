@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="dark-emerald" data-bs-theme="dark" data-theme-mode="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310B981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 2 7 12 12 22 7 12 2'/><polyline points='2 17 12 22 22 17'/><polyline points='2 12 12 17 22 12'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeLift Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      (function () {
+        try {
+          var themes = [
+            'forest-green', 'emerald', 'dark-green', 'navy-blue',
+            'indigo', 'teal', 'amber', 'rose', 'purple', 'neutral',
+            'dark-emerald', 'dark-nebula', 'dark-carbon',
+            'ocean-blue', 'royal-indigo', 'sunset-orange', 'rose-pink',
+            'amethyst-purple', 'teal-wave', 'crimson-red', 'graphite-grey',
+            'midnight-emerald', 'nebula-night', 'carbon-black'
+          ];
+          var aliases = {
+            'ocean-blue': 'navy-blue',
+            'royal-indigo': 'indigo',
+            'sunset-orange': 'amber',
+            'rose-pink': 'rose',
+            'amethyst-purple': 'purple',
+            'teal-wave': 'teal',
+            'crimson-red': 'dark-green',
+            'graphite-grey': 'neutral',
+            'midnight-emerald': 'dark-emerald',
+            'nebula-night': 'dark-nebula',
+            'carbon-black': 'dark-carbon'
+          };
+          var m = document.cookie.match(/(?:^|; )codelift_theme=([^;]*)/);
+          var theme = m ? decodeURIComponent(m[1]) : null;
+          if (!theme) theme = localStorage.getItem('codelift_theme');
+          if (theme && aliases[theme]) theme = aliases[theme];
+          if (!theme || themes.indexOf(theme) === -1) theme = 'dark-emerald';
+          var isDark = theme.indexOf('dark') !== -1 || theme === 'midnight-emerald' || theme === 'nebula-night' || theme === 'carbon-black';
+          var mode = isDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute('data-bs-theme', mode);
+          document.documentElement.setAttribute('data-theme-mode', mode);
+          if (document.body) {
+            document.body.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-bs-theme', mode);
+            document.body.setAttribute('data-theme-mode', mode);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body data-theme="dark-emerald" data-bs-theme="dark" data-theme-mode="dark">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

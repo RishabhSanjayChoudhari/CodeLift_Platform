@@ -1,0 +1,8 @@
+[
+  { "id": "cat-web", "name": "Full Stack Web", "slug": "full-stack-web", "icon": "🌐", "description": "HTML, CSS, JS, React, Node.js, Next.js & Cloud." },
+  { "id": "cat-data", "name": "Data Science & Analytics", "slug": "data-science", "icon": "📊", "description": "Python, SQL, Pandas, Tableau, Machine Learning." },
+  { "id": "cat-ai", "name": "Artificial Intelligence & ML", "slug": "ai-ml", "icon": "🤖", "description": "Deep Learning, PyTorch, LLMs, GenAI & Neural Networks." },
+  { "id": "cat-mobile", "name": "Mobile App Development", "slug": "mobile-dev", "icon": "📱", "description": "React Native, Flutter, iOS & Android development." },
+  { "id": "cat-devops", "name": "DevOps & Cloud Systems", "slug": "devops-cloud", "icon": "☁️", "description": "Docker, Kubernetes, AWS, CI/CD pipelines & Linux." },
+  { "id": "cat-db", "name": "Database & Backend Engineering", "slug": "database-backend", "icon": "🗄️", "description": "PostgreSQL, MongoDB, Redis, GraphQL & microservices." }
+]

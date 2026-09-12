@@ -1,0 +1,318 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../services/supabaseClient';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [session, setSession] = useState(null);
+  const [auth, setAuth] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Hydrate auth profile for a given user session
+  async function hydrateProfile(user) {
+    if (!user) {
+      setAuth(null);
+      return;
+    }
+
+    try {
+      // Check if user is admin in users table
+      const { data: adminUser } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (adminUser && adminUser.role === 'admin') {
+        setAuth({
+          role: 'admin',
+          userId: user.id,
+          id: user.id,
+          name: adminUser.name || 'Administrator',
+          username: adminUser.username || '',
+          email: user.email || adminUser.email,
+          phone: adminUser.phone || ''
+        });
+        return;
+      }
+
+      // Check if student in students table
+      const { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .or(`id.eq.${user.id},email.eq.${user.email}`)
+        .single();
+
+      if (student) {
+        setAuth({
+          role: 'student',
+          userId: student.id,
+          studentId: student.id,
+          id: student.id,
+          studentName: student.name,
+          name: student.name,
+          email: student.email || user.email,
+          phone: student.phone || '',
+          batchId: student.batch_id || '',
+          progress: student.progress || {}
+        });
+        return;
+      }
+
+      // Default authenticated fallback
+      setAuth({
+        role: user.user_metadata?.role || 'student',
+        userId: user.id,
+        id: user.id,
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        email: user.email,
+        phone: user.phone || ''
+      });
+    } catch (err) {
+      console.warn('[AuthContext] Profile hydration note:', err.message);
+      setAuth({
+        role: user.user_metadata?.role || 'student',
+        userId: user.id,
+        id: user.id,
+        name: user.email?.split('@')[0] || 'User',
+        email: user.email
+      });
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initSession() {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (isMounted) {
+          setSession(initialSession);
+          if (initialSession?.user) {
+            await hydrateProfile(initialSession.user);
+          }
+        }
+      } catch (err) {
+        console.warn('[AuthContext] getSession warning:', err.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    initSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession);
+      if (newSession?.user) {
+        await hydrateProfile(newSession.user);
+      } else {
+        setAuth(null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  const loginAdmin = async (credentials) => {
+    let email = credentials?.email;
+    if (credentials?.username) {
+      const { data: resolvedEmail, error: rpcErr } = await supabase.rpc('get_admin_email', {
+        p_username: credentials.username.trim()
+      });
+      if (rpcErr || !resolvedEmail) {
+        throw new Error('Invalid administrator credentials.');
+      }
+      email = resolvedEmail;
+    }
+
+    if (!email || !credentials?.password) {
+      throw new Error('Please enter administrator username and password.');
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: credentials.password
+    });
+    if (error) throw error;
+
+    // Verify admin role in users table
+    const { data: adminUser, error: adminErr } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (adminErr || !adminUser || adminUser.role !== 'admin') {
+      await supabase.auth.signOut();
+      throw new Error('Unauthorized: Administrator privileges required.');
+    }
+
+    const adminAuth = {
+      role: 'admin',
+      userId: data.user.id,
+      id: data.user.id,
+      name: adminUser.name || 'Administrator',
+      username: adminUser.username || credentials.username || 'admin',
+      email: data.user.email || adminUser.email,
+      phone: adminUser.phone || ''
+    };
+    setAuth(adminAuth);
+    return adminAuth;
+  };
+
+  const loginStudent = async (studentOrCreds) => {
+    if (studentOrCreds?.password && studentOrCreds?.email) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: studentOrCreds.email.trim(),
+        password: studentOrCreds.password
+      });
+      if (error) throw error;
+
+      // Check if this user is an admin
+      const { data: adminCheck } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (adminCheck && adminCheck.role === 'admin') {
+        await supabase.auth.signOut();
+        throw new Error('Administrator accounts cannot log in through the student portal.');
+      }
+
+      // Check student record
+      const { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .or(`id.eq.${data.user.id},email.eq.${data.user.email}`)
+        .maybeSingle();
+
+      if (student && (student.is_active === false || student.status === 'SUSPENDED')) {
+        await supabase.auth.signOut();
+        throw new Error('This student account is suspended or inactive.');
+      }
+
+      const next = {
+        role: 'student',
+        userId: data.user.id,
+        studentId: student?.id || data.user.id,
+        studentName: student?.name || data.user.user_metadata?.name || 'Student',
+        name: student?.name || data.user.user_metadata?.name || 'Student',
+        email: data.user.email,
+        phone: student?.phone || '',
+        batchId: student?.batch_id || '',
+        progress: student?.progress || {}
+      };
+      setAuth(next);
+      return next;
+    }
+
+    if (!studentOrCreds || studentOrCreds.isActive === false || studentOrCreds.status === 'SUSPENDED') {
+      throw new Error('This student account is suspended or inactive.');
+    }
+
+    const next = {
+      role: 'student',
+      userId: studentOrCreds.id,
+      studentId: studentOrCreds.id,
+      studentName: studentOrCreds.name,
+      name: studentOrCreds.name,
+      email: studentOrCreds.email || '',
+      phone: studentOrCreds.phone || '',
+      batchId: studentOrCreds.batchId || '',
+      progress: studentOrCreds.progress || {}
+    };
+    setAuth(next);
+    return next;
+  };
+
+  const loginUser = (user) => {
+    if (user.role === 'admin') loginAdmin();
+    else loginStudent(user);
+  };
+
+  const updateAuthUser = (updates) => {
+    setAuth((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        name: updates.name ?? prev.name,
+        studentName: updates.name ?? prev.studentName,
+        email: updates.email ?? prev.email,
+        phone: updates.phone ?? prev.phone
+      };
+    });
+  };
+
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {}
+    setAuth(null);
+    setSession(null);
+  };
+
+  const currentUser = auth
+    ? {
+        role: auth.role,
+        id: auth.userId || auth.studentId || (auth.role === 'admin' ? 'admin' : 'student'),
+        name: auth.name || (auth.role === 'admin' ? 'Administrator' : auth.studentName || 'User'),
+        email: auth.email || (auth.role === 'admin' ? 'admin@codelift.dev' : ''),
+        phone: auth.phone || ''
+      }
+    : null;
+
+  const currentStudent = auth && auth.role === 'student'
+    ? {
+        id: auth.studentId || auth.userId || 'stu-1',
+        name: auth.studentName || auth.name || 'Rahul Sharma',
+        email: auth.email || 'rahul.sharma@example.com',
+        phone: auth.phone || '',
+        batchId: auth.batchId || 'batch-fswd-morning',
+        progress: auth.progress || {},
+        ...auth
+      }
+    : null;
+
+  return (
+    <AuthContext.Provider
+      value={{
+        session,
+        auth,
+        currentUser,
+        user: currentUser,
+        currentStudent,
+        role: auth?.role || null,
+        loading,
+        loginAdmin,
+        loginStudent,
+        loginUser,
+        loginAsAdmin: loginAdmin,
+        loginAsStudent: (std) =>
+          loginStudent(
+            std || {
+              id: 'stu-1',
+              name: 'Rahul Sharma',
+              email: 'rahul.sharma@example.com',
+              batchId: 'batch-fswd-morning'
+            }
+          ),
+        updateAuthUser,
+        logout,
+        isAdmin: auth?.role === 'admin',
+        isStudent: auth?.role === 'student'
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+}
