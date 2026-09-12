@@ -5,12 +5,30 @@
  * the optional backend API endpoint if configured.
  */
 
+export const ADMIN_WA = import.meta.env.VITE_ADMIN_WHATSAPP || '919834671940';
+
 export const INSTITUTE_INFO = {
   name: 'CodeLift Academy',
-  phone: '917796895137',
-  email: 'info@codelift.in',
+  phone: '919834671940',
+  email: 'codelift.official@gmail.com',
   website: 'https://codelift.in'
 };
+
+export function buildAdminNotification(type, data) {
+  const templates = {
+    new_enquiry: `New enquiry from ${data.name}\nPhone: ${data.phone}\nInterest: ${data.interest}`,
+    fee_recorded: `Fee of ₹${data.amount} recorded for ${data.studentName} on ${data.date}`,
+    enrolment_verified: `Enrolment verified for ${data.studentName} in ${data.courseTitle}`,
+    certificate_issued: `Certificate issued to ${data.studentName} for ${data.courseTitle}`,
+    student_added: `New student added: ${data.name} (${data.email})`,
+  };
+  return templates[type] || '';
+}
+
+export function openAdminWhatsApp(message) {
+  const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-IN', {

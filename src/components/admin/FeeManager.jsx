@@ -16,10 +16,13 @@ import {
   FaReceipt,
   FaInfoCircle
 } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import NotificationModal from '../common/NotificationModal';
 import {
   createFeeReceiptNotification,
-  createFeeReminderNotification
+  createFeeReminderNotification,
+  buildAdminNotification,
+  openAdminWhatsApp
 } from '../../services/notificationService';
 
 export default function FeeManager() {
@@ -98,7 +101,7 @@ export default function FeeManager() {
       return;
     }
 
-    recordFee({
+    const feePayload = {
       studentId: formStudentId,
       amount: numAmount,
       paidAt: formDate || new Date().toISOString().split('T')[0],
@@ -106,9 +109,42 @@ export default function FeeManager() {
       status: formStatus,
       receiptNo: formReceiptNo || `REC-${Date.now().toString().slice(-6)}`,
       notes: formNotes
-    });
+    };
 
+    recordFee(feePayload);
     setShowRecordModal(false);
+
+    const targetStudent = studentList.find((s) => s.id === formStudentId);
+    const targetBatch = batchList.find((b) => b.id === targetStudent?.batchId);
+
+    // Call Supabase Edge Function to email fee receipt (non-blocking)
+    if (formStatus === 'PAID' && targetStudent?.email) {
+      fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-fee-receipt`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentEmail: targetStudent.email,
+            studentName: targetStudent.name,
+            amount: numAmount,
+            paidAt: feePayload.paidAt,
+            mode: formMode,
+            courseName: targetBatch?.name || targetStudent?.courseName || 'CodeLift Course',
+          }),
+        }
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          toast.success('Payment recorded and receipt emailed');
+        })
+        .catch((err) => {
+          console.error('Receipt email failed:', err);
+          toast.success('Payment recorded'); // Don't block the flow on email failure
+        });
+    } else {
+      toast.success('Payment recorded');
+    }
   };
 
   // Selected student details helper
@@ -366,9 +402,29 @@ export default function FeeManager() {
                         </td>
                         <td className="text-end">
                           <div className="d-inline-flex align-items-center gap-1">
-                            {fee.status === 'PAID' ? (
+                            {fee.status === 'PAID' && (
                               <Button
                                 variant="outline-success"
+                                size="sm"
+                                onClick={() => {
+                                  openAdminWhatsApp(
+                                    buildAdminNotification('fee_recorded', {
+                                      studentName: student?.name || 'Student',
+                                      amount: fee.amount,
+                                      date: new Date(fee.paidAt || Date.now()).toLocaleDateString('en-IN'),
+                                    })
+                                  );
+                                }}
+                                className="d-inline-flex align-items-center gap-1"
+                                title="Notify on WhatsApp"
+                              >
+                                <FaWhatsapp size={12} />
+                                <span className="d-none d-md-inline">Notify on WhatsApp</span>
+                              </Button>
+                            )}
+                            {fee.status === 'PAID' ? (
+                              <Button
+                                variant="outline-primary"
                                 size="sm"
                                 onClick={() => {
                                   const notif = createFeeReceiptNotification({ student, fee, batch });
@@ -377,7 +433,7 @@ export default function FeeManager() {
                                 className="d-inline-flex align-items-center gap-1"
                                 title="Send official payment receipt via WhatsApp / Email"
                               >
-                                <FaWhatsapp size={12} />
+                                <FaReceipt size={11} />
                                 <span className="d-none d-md-inline">Receipt</span>
                               </Button>
                             ) : (

@@ -13,10 +13,12 @@ import {
   FaSearch,
   FaUsers,
   FaKey,
-  FaRupeeSign
+  FaRupeeSign,
+  FaWhatsapp
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabaseClient';
+import { buildAdminNotification, openAdminWhatsApp } from '../../services/notificationService';
 
 // Zod schema for student form validation
 const studentSchema = z.object({
@@ -92,10 +94,36 @@ export default function StudentManager() {
     resolver: zodResolver(studentSchema)
   });
 
+  const [justAddedStudent, setJustAddedStudent] = useState(null);
+
   const onAddSubmit = (data) => {
     addStudent(data);
+    setJustAddedStudent(data);
     resetAdd();
     setShowAddModal(false);
+
+    toast((t) => (
+      <div className="d-flex align-items-center justify-content-between gap-3">
+        <span>Student <strong>{data.name}</strong> added!</span>
+        <Button
+          variant="success"
+          size="sm"
+          className="d-inline-flex align-items-center gap-1 py-1 px-2.5 text-nowrap"
+          onClick={() => {
+            openAdminWhatsApp(
+              buildAdminNotification('student_added', {
+                name: data.name,
+                email: data.email,
+              })
+            );
+            toast.dismiss(t.id);
+          }}
+        >
+          <FaWhatsapp size={14} />
+          <span>Notify Admin</span>
+        </Button>
+      </div>
+    ), { duration: 8000 });
   };
 
   const onStartEdit = (student) => {
@@ -133,6 +161,45 @@ export default function StudentManager() {
 
   return (
     <div>
+      {/* Recently Added Student Notification Banner */}
+      {justAddedStudent && (
+        <div className="alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 rounded-3 shadow-sm">
+          <div className="d-flex align-items-center gap-2">
+            <FaUserCheck className="text-success" />
+            <span>
+              Student <strong>{justAddedStudent.name}</strong> ({justAddedStudent.email}) successfully enrolled.
+            </span>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <Button
+              variant="success"
+              size="sm"
+              className="d-inline-flex align-items-center gap-1.5 fw-bold"
+              onClick={() => {
+                openAdminWhatsApp(
+                  buildAdminNotification('student_added', {
+                    name: justAddedStudent.name,
+                    email: justAddedStudent.email,
+                  })
+                );
+              }}
+            >
+              <FaWhatsapp size={15} />
+              <span>Notify Admin on WhatsApp</span>
+            </Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              className="py-0 px-2"
+              onClick={() => setJustAddedStudent(null)}
+              title="Dismiss"
+            >
+              ✕
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Header Bar */}
       <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
         <div>

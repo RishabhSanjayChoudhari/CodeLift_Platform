@@ -36,3 +36,4 @@ Thumbs.db
 # Sensitive local storage backups & temp metadata
 supabase/storage/**
 supabase/.temp/**
+scratch/
