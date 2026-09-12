@@ -11,7 +11,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-y: auto;
   overflow-x: hidden;
   background: var(--bg-body, #ffffff);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -55,10 +54,11 @@
   width: 100%;
   max-width: 1440px;
   min-height: 100vh;
-  padding: 40px 48px;
-  gap: 80px; /* 60–80px gap maintained */
+  padding: 24px 48px;
+  gap: 64px; /* 60–80px gap maintained */
   position: relative;
   z-index: 2;
+  box-sizing: border-box;
 }
 
 /* Left Column: Radar Presentation */
