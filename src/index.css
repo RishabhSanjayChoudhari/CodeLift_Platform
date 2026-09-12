@@ -340,6 +340,58 @@ body {
   box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.35) !important;
 }
 
+/* Collapsed sidebar icon rail styles (clean centering, hidden scrollbars, refined active state) */
+.sidebar-collapsed-nav {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.sidebar-collapsed-nav::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.sidebar-toggle-btn {
+  background: transparent !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+  color: var(--text-secondary, #94A3B8) !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+  padding: 0 !important;
+}
+.sidebar-toggle-btn:hover {
+  background: rgba(var(--bs-primary-rgb), 0.12) !important;
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  transform: scale(1.05);
+}
+
+.sidebar-collapsed-item {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  position: relative;
+  box-sizing: border-box !important;
+}
+.sidebar-collapsed-item:hover:not(.active) {
+  background: rgba(var(--bs-primary-rgb), 0.1) !important;
+  color: var(--bs-primary) !important;
+  transform: translateY(-1px);
+}
+.sidebar-collapsed-item.active {
+  background: var(--bs-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(var(--bs-primary-rgb), 0.35) !important;
+}
+
 /* Dedicated Admin Sidebar Theme Styling */
 .admin-sidebar {
   min-height: calc(100vh - 60px);

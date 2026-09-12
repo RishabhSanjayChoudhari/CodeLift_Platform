@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Button, Modal, Form, Alert, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FiChevronLeft, FiChevronRight, FiX, FiLock } from 'react-icons/fi';
 import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../../config/navigation';
 import { useAuth } from '../../contexts/AuthContext';
@@ -254,32 +254,36 @@ export default function Sidebar({
         {/* ── COLLAPSED DESKTOP STATE ── */}
         {!isOpen ? (
           <div
-            className="d-flex flex-column align-items-center h-100"
+            className="d-flex flex-column align-items-center h-100 w-100"
             style={{ width: cWidth }}
           >
             {/* Expand Toggle Button inside the sidebar */}
             <div
-              className="d-flex align-items-center justify-content-center w-100 py-2 border-bottom flex-shrink-0"
+              className="d-flex align-items-center justify-content-center w-100 border-bottom flex-shrink-0"
               style={{
                 height: '56px',
                 borderColor: 'var(--border-color, #e5e7eb)'
               }}
             >
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                onClick={handleToggle}
-                className="d-flex align-items-center justify-content-center p-1 px-2 border rounded-2"
-                title="Expand sidebar"
-                aria-label="Expand sidebar"
-                style={{ width: '36px', height: '36px' }}
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 200, hide: 50 }}
+                overlay={<Tooltip id="tooltip-expand-sidebar">Expand sidebar</Tooltip>}
               >
-                <FiChevronRight size={20} />
-              </Button>
+                <button
+                  type="button"
+                  onClick={handleToggle}
+                  className="sidebar-toggle-btn"
+                  aria-label="Expand sidebar"
+                  style={{ width: '34px', height: '34px' }}
+                >
+                  <FiChevronRight size={16} />
+                </button>
+              </OverlayTrigger>
             </div>
 
-            {/* Menu Icons Visible & Clickable in Collapsed State */}
-            <nav className="d-flex flex-column align-items-center gap-2 py-2 flex-grow-1 overflow-y-auto w-100">
+            {/* Menu Icons Visible & Clickable in Collapsed State with Sleek Tooltips */}
+            <nav className="sidebar-collapsed-nav d-flex flex-column align-items-center gap-2 py-3 flex-grow-1 w-100" style={{ overflowY: 'auto', overflowX: 'hidden' }}>
               {items.map((item, index) => {
                 const targetPath = item.to || item.route;
                 const itemKey = item.id || targetPath || `collapsed-nav-${index}`;
@@ -287,45 +291,69 @@ export default function Sidebar({
 
                 if (targetPath) {
                   return (
-                    <NavLink
+                    <OverlayTrigger
                       key={itemKey}
-                      to={targetPath}
-                      onClick={(e) => handleItemSelect(item, e)}
-                      title={item.label}
-                      className={({ isActive }) =>
-                        `sidebar-nav-item d-flex align-items-center justify-content-center rounded-3 transition-all ${isActive ? 'active' : ''}`
-                      }
-                      style={{
-                        width: '44px',
-                        height: '44px',
-                        fontSize: '1.15rem'
-                      }}
+                      placement="right"
+                      delay={{ show: 100, hide: 50 }}
+                      overlay={<Tooltip id={`tooltip-${itemKey}`}>{item.label}</Tooltip>}
                     >
-                      <span className="d-inline-flex align-items-center justify-content-center">
-                        {iconElement}
-                      </span>
-                    </NavLink>
+                      <NavLink
+                        to={targetPath}
+                        onClick={(e) => handleItemSelect(item, e)}
+                        className={({ isActive }) =>
+                          `sidebar-nav-item sidebar-collapsed-item d-flex align-items-center justify-content-center transition-all ${isActive ? 'active' : ''}`
+                        }
+                        style={{
+                          width: '42px',
+                          height: '42px',
+                          fontSize: '1.2rem',
+                          flexShrink: 0
+                        }}
+                      >
+                        <span className="d-inline-flex align-items-center justify-content-center">
+                          {iconElement}
+                        </span>
+                        {item.badge && (
+                          <span
+                            className="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
+                            style={{ width: '8px', height: '8px', marginTop: '6px', marginRight: '6px' }}
+                          />
+                        )}
+                      </NavLink>
+                    </OverlayTrigger>
                   );
                 }
 
                 const isItemActive = Boolean(item.isActive);
                 return (
-                  <button
+                  <OverlayTrigger
                     key={itemKey}
-                    type="button"
-                    onClick={(e) => handleItemSelect(item, e)}
-                    title={item.label}
-                    className={`sidebar-nav-item btn d-flex align-items-center justify-content-center rounded-3 border-0 p-0 transition-all ${isItemActive ? 'active' : ''}`}
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      fontSize: '1.15rem'
-                    }}
+                    placement="right"
+                    delay={{ show: 100, hide: 50 }}
+                    overlay={<Tooltip id={`tooltip-${itemKey}`}>{item.label}</Tooltip>}
                   >
-                    <span className="d-inline-flex align-items-center justify-content-center">
-                      {iconElement}
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleItemSelect(item, e)}
+                      className={`sidebar-nav-item sidebar-collapsed-item btn d-flex align-items-center justify-content-center border-0 p-0 transition-all ${isItemActive ? 'active' : ''}`}
+                      style={{
+                        width: '42px',
+                        height: '42px',
+                        fontSize: '1.2rem',
+                        flexShrink: 0
+                      }}
+                    >
+                      <span className="d-inline-flex align-items-center justify-content-center">
+                        {iconElement}
+                      </span>
+                      {item.badge && (
+                        <span
+                          className="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
+                          style={{ width: '8px', height: '8px', marginTop: '6px', marginRight: '6px' }}
+                        />
+                      )}
+                    </button>
+                  </OverlayTrigger>
                 );
               })}
             </nav>
@@ -352,17 +380,21 @@ export default function Sidebar({
               </span>
 
               {/* Collapse Toggle Button inside the sidebar */}
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                onClick={handleToggle}
-                className="d-flex align-items-center justify-content-center p-1 px-2 border rounded-2 flex-shrink-0"
-                title="Collapse sidebar"
-                aria-label="Collapse sidebar"
-                style={{ width: '36px', height: '36px' }}
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 200, hide: 50 }}
+                overlay={<Tooltip id="tooltip-collapse-sidebar">Collapse sidebar</Tooltip>}
               >
-                <FiChevronLeft size={20} />
-              </Button>
+                <button
+                  type="button"
+                  onClick={handleToggle}
+                  className="sidebar-toggle-btn"
+                  aria-label="Collapse sidebar"
+                  style={{ width: '32px', height: '32px' }}
+                >
+                  <FiChevronLeft size={16} />
+                </button>
+              </OverlayTrigger>
             </div>
 
             {/* Navigation Items (Icons + Labels, Selected item preserved) */}
