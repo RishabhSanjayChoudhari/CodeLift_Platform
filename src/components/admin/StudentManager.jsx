@@ -394,6 +394,11 @@ export default function StudentManager() {
                 {addErrors.batchId?.message}
               </Form.Control.Feedback>
             </Form.Group>
+
+            <div className="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-0">
+              <span>ℹ️</span>
+              <span>Default student portal password will be <strong><code>password</code></strong>.</span>
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" size="sm" onClick={() => setShowAddModal(false)}>

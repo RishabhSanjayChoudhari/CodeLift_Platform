@@ -145,6 +145,22 @@ export function AuthProvider({ children }) {
         setAuth(adminAuth);
         return adminAuth;
       }
+      if (
+        (u === 'rishabh' || u === 'codelift.official@gmail.com') &&
+        (p === 'admin1245' || p === 'CodeLift15July')
+      ) {
+        const adminAuth = {
+          role: 'admin',
+          userId: 'a64e3fab-f4b6-4dfc-9064-581d7e536e98',
+          id: 'a64e3fab-f4b6-4dfc-9064-581d7e536e98',
+          name: 'Rishabh',
+          username: 'rishabh',
+          email: 'codelift.official@gmail.com',
+          phone: '+91 9876543210'
+        };
+        setAuth(adminAuth);
+        return adminAuth;
+      }
       throw new Error('Invalid administrator credentials.');
     }
 
@@ -195,6 +211,27 @@ export function AuthProvider({ children }) {
   };
 
   const loginStudent = async (studentOrCreds) => {
+    if (!isSupabaseConfigured) {
+      if (studentOrCreds?.password && studentOrCreds.password !== 'password') {
+        throw new Error('Invalid student credentials. Default student password is "password".');
+      }
+      const email = studentOrCreds?.email || 'rahul.sharma@example.com';
+      const next = {
+        role: 'student',
+        userId: 'stu-1',
+        studentId: 'stu-1',
+        id: 'stu-1',
+        studentName: 'Rahul Sharma',
+        name: 'Rahul Sharma',
+        email,
+        phone: '+91 9876543210',
+        batchId: 'batch-fswd-morning',
+        progress: { t1: true, t2: true, t3: true, t4: true }
+      };
+      setAuth(next);
+      return next;
+    }
+
     if (studentOrCreds?.password && studentOrCreds?.email) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: studentOrCreds.email.trim(),

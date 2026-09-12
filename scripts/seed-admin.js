@@ -22,7 +22,7 @@ const supabase = createClient(supabaseUrl, serviceKey, {
 });
 
 async function seedAdmin() {
-  const adminEmail = 'rishabh@codelift.local';
+  const adminEmail = 'codelift.official@gmail.com';
   const adminPassword = 'admin1245';
   const adminUsername = 'rishabh';
   const adminName = 'Rishabh';

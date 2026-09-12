@@ -31,7 +31,7 @@ export default function AdminProfile() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState({ type: '', text: '' });
 
-  const adminEmail = auth?.email || currentUser?.email || 'rishabh@codelift.local';
+  const adminEmail = auth?.email || currentUser?.email || 'codelift.official@gmail.com';
   const adminUsername = auth?.username || 'rishabh';
 
   const handleLogout = async () => {

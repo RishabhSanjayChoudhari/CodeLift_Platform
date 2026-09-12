@@ -65,7 +65,7 @@ export default function Sidebar({
     setFeesError('');
 
     try {
-      const email = auth?.email || currentUser?.email || 'rishabh@codelift.local';
+      const email = auth?.email || currentUser?.email || 'codelift.official@gmail.com';
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password: feesPassword

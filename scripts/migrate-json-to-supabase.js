@@ -108,7 +108,8 @@ export async function runJsonSeedMigration(existingClient = null, options = {}) 
     const studentIdMap = new Map();
     const userIdMap = new Map();
 
-    const defaultDevPassword = process.env.SEED_DEFAULT_PASSWORD || 'CodeLift2026!';
+    const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || process.env.SEED_DEFAULT_PASSWORD || 'CodeLift15July';
+    const studentDefaultPassword = 'password';
     // Blowfish hash for default password or direct crypt via pgcrypto
     await client.query(`create extension if not exists pgcrypto;`);
 
@@ -129,7 +130,7 @@ export async function runJsonSeedMigration(existingClient = null, options = {}) 
           `INSERT INTO auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, role, aud, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
            VALUES ($1, '00000000-0000-0000-0000-000000000000', $2, crypt($3, gen_salt('bf')), now(), 'authenticated', 'authenticated', '{"provider":"email","providers":["email"]}', $4, now(), now())
            ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;`,
-          [uId, u.email, defaultDevPassword, JSON.stringify({ name: u.name, role: u.role || 'admin' })]
+          [uId, u.email, adminDefaultPassword, JSON.stringify({ name: u.name, role: u.role || 'admin', email_verified: true })]
         );
       }
       userIdMap.set(u.id, uId);
@@ -217,7 +218,7 @@ export async function runJsonSeedMigration(existingClient = null, options = {}) 
         sId = existingAuth.rows[0].id;
         await client.query(
           `UPDATE auth.users SET encrypted_password = crypt($1, gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()) WHERE id = $2;`,
-          [defaultDevPassword, sId]
+          [studentDefaultPassword, sId]
         );
       } else {
         sId = toUUID(s.id || s.email);
@@ -225,7 +226,7 @@ export async function runJsonSeedMigration(existingClient = null, options = {}) 
           `INSERT INTO auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, role, aud, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
            VALUES ($1, '00000000-0000-0000-0000-000000000000', $2, crypt($3, gen_salt('bf')), now(), 'authenticated', 'authenticated', '{"provider":"email","providers":["email"]}', $4, now(), now())
            ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;`,
-          [sId, s.email, defaultDevPassword, JSON.stringify({ name: s.name, role: 'student' })]
+          [sId, s.email, studentDefaultPassword, JSON.stringify({ name: s.name, role: 'student', email_verified: true })]
         );
       }
       studentIdMap.set(s.id, sId);
