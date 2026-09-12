@@ -50,9 +50,7 @@ export default function InstituteNavbar() {
           <ul className="navbar-nav mx-auto gap-1">
             {[
               { label: 'Home', id: 'hero' },
-              { label: 'About Us', id: 'about' },
-              { label: 'Programs', id: 'programs' },
-              { label: 'Testimonials', id: 'testimonials' },
+              { label: 'Courses', id: 'courses' },
               { label: 'Contact', id: 'contact' },
             ].map(({ label, id }) => (
               <li className="nav-item" key={id}>
