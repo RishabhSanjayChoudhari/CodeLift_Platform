@@ -1,0 +1,33 @@
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+.contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+.contact-icon {
+  color: var(--bs-primary);
+  flex-shrink: 0;
+  margin-top: 3px;
+  font-size: 1.15rem;
+}
+.contact-row a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.contact-row a:hover {
+  color: var(--bs-primary);
+}
+
+@media (max-width: 767px) {
+  .contact-row {
+    font-size: 0.95rem;
+  }
+}
