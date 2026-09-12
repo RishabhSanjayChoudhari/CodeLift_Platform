@@ -325,9 +325,9 @@ export function DataProvider({ children }) {
         return c;
       })
     );
-    const targetCourse = courses.find((c) => c.id === courseId);
-    const updatedBatchIds = Array.from(new Set([...(targetCourse?.batchIds || []), batchId]));
-    supabaseDataService.updateCourse(courseId, { batchIds: updatedBatchIds }).catch((e) => console.error(e));
+    supabaseDataService
+      .attachCourseToBatch(courseId, batchId)
+      .catch((e) => console.error('[DataContext] attachCourseToBatch failed:', e));
   };
 
   const detachCourseFromBatch = (courseId, batchId) => {
@@ -355,9 +355,9 @@ export function DataProvider({ children }) {
         return c;
       })
     );
-    const targetCourse = courses.find((c) => c.id === courseId);
-    const updatedBatchIds = (targetCourse?.batchIds || []).filter((id) => id !== batchId);
-    supabaseDataService.updateCourse(courseId, { batchIds: updatedBatchIds }).catch((e) => console.error(e));
+    supabaseDataService
+      .detachCourseFromBatch(courseId, batchId)
+      .catch((e) => console.error('[DataContext] detachCourseFromBatch failed:', e));
   };
 
   const assignTestToBatch = (testId, batchId) => {

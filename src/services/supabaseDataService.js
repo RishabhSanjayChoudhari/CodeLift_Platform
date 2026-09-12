@@ -202,7 +202,11 @@ export async function fetchAllData() {
 
     // Reassemble Batches
     const batches = rawBatches.map((b) => {
-      const courseIds = rawBatchCourses.filter((bc) => bc.batch_id === b.id).map((bc) => bc.course_id);
+      const dbCourseIds = rawBatchCourses.filter((bc) => bc.batch_id === b.id).map((bc) => bc.course_id);
+      const staticCohortCourseIds = cohortCourses
+        .filter((c) => c.batchId === b.id || (Array.isArray(c.batchIds) && c.batchIds.includes(b.id)))
+        .map((c) => c.id);
+      const courseIds = Array.from(new Set([...dbCourseIds, ...staticCohortCourseIds]));
       const testIds = rawBatchTests.filter((bt) => bt.batch_id === b.id).map((bt) => bt.test_id);
       return {
         id: b.id,
@@ -268,7 +272,19 @@ export async function fetchAllData() {
     const nonDuplicateElectives = electiveCourses.filter(
       (ec) => !cohortIds.has(ec.id) && !cohortSlugs.has(ec.slug)
     );
-    const courses = [...cohortCourses, ...nonDuplicateElectives];
+    const augmentedCohortCourses = cohortCourses.map((c) => {
+      const dbBatchIds = rawBatchCourses
+        .filter((bc) => bc.course_id === c.id || (c.slug && bc.course_id === c.slug))
+        .map((bc) => bc.batch_id);
+      const initialBatchIds = Array.isArray(c.batchIds) ? c.batchIds : (c.batchId ? [c.batchId] : []);
+      const combinedBatchIds = Array.from(new Set([...initialBatchIds, ...dbBatchIds]));
+      return {
+        ...c,
+        batchIds: combinedBatchIds,
+        batchId: combinedBatchIds[0] || null
+      };
+    });
+    const courses = [...augmentedCohortCourses, ...nonDuplicateElectives];
 
     // Reassemble Tests
     const tests = rawTests.map((t) => {
@@ -713,6 +729,24 @@ export async function updateBatch(batchId, updates) {
 export async function deleteBatch(batchId) {
   const { error } = await supabase.from('batches').delete().eq('id', batchId);
   if (error) handleSupabaseError(error, 'Failed to delete batch');
+  return true;
+}
+
+export async function attachCourseToBatch(courseId, batchId) {
+  const { error } = await supabase
+    .from('batch_courses')
+    .upsert({ batch_id: batchId, course_id: courseId }, { onConflict: 'batch_id,course_id' });
+  if (error) handleSupabaseError(error, 'Failed to attach course to batch');
+  return true;
+}
+
+export async function detachCourseFromBatch(courseId, batchId) {
+  const { error } = await supabase
+    .from('batch_courses')
+    .delete()
+    .eq('batch_id', batchId)
+    .eq('course_id', courseId);
+  if (error) handleSupabaseError(error, 'Failed to detach course from batch');
   return true;
 }
 

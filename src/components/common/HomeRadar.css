@@ -88,13 +88,13 @@
 }
 
 /* ─── BREAKPOINTS ─────────────────────────────────────────────────── */
-
+ 
 /* 1200px - 1399px */
 @media (max-width: 1399px) and (min-width: 1200px) {
   .home-radar-stage {
     right: -220px;
-    width: 1100px;
-    height: 1100px;
+    width: 1200px;
+    height: 1200px;
     opacity: 1.0;
   }
 }
@@ -103,69 +103,70 @@
 @media (max-width: 1199px) and (min-width: 992px) {
   .home-radar-stage {
     right: -260px;
-    width: 950px;
-    height: 950px;
+    width: 1200px;
+    height: 1200px;
     opacity: 0.92;
   }
 }
 
-/* <= 991px: Recenter, dim to 0.5, radial vignette */
+/* <= 991px (Tablet): Elegant centered orbital watermark, hide sweep and floating icons */
 @media (max-width: 991px) {
   .home-radar-stage {
     left: 50%;
     right: auto;
-    transform: translate(-50%, -50%);
-    width: 900px;
-    height: 900px;
-    opacity: 0.5;
+    top: 38%;
+    transform: translate(-50%, -50%) scale(0.55);
+    transform-origin: center center;
+    width: 1200px;
+    height: 1200px;
+    opacity: 0.20;
+    pointer-events: none !important;
+  }
+
+  .home-radar-stage .rr-sweep-wrap {
+    display: none !important; /* Eliminate distracting sweeping line across text */
+  }
+
+  .home-radar-stage .rr-planet-wrapper {
+    display: none !important; /* Eliminate orphan icons hovering over words */
+  }
+
+  .home-art-particles-container {
+    pointer-events: none !important; /* Never block touch interactions on mobile */
   }
 
   .home-radar-vignette {
     background: radial-gradient(
-      circle at center,
+      circle at 50% 40%,
       transparent 0%,
-      color-mix(in srgb, var(--bg-body, #ffffff) 70%, transparent) 55%,
-      var(--bg-body, #ffffff) 100%
+      color-mix(in srgb, var(--bg-body, #ffffff) 65%, transparent) 45%,
+      var(--bg-body, #ffffff) 85%
     );
   }
-}
 
-/* <= 767px: Dim 0.35, hide labels, hide outer layer */
-@media (max-width: 767px) {
-  .home-radar-stage {
-    width: 700px;
-    height: 700px;
-    opacity: 0.35;
-  }
-  .home-radar-stage .rr-planet-label {
-    display: none !important;
-  }
-  .home-radar-stage .rr-layer-outer {
-    display: none !important;
-  }
-}
-
-/* <= 575px: Dim 0.28, hide mid layer too */
-@media (max-width: 575px) {
-  .home-radar-stage {
-    width: 500px;
-    height: 500px;
-    opacity: 0.28;
-  }
-  .home-radar-stage .rr-layer-mid {
-    display: none !important;
-  }
-}
-
-/* AI Art responsive visibility */
-@media (max-width: 991px) {
   .home-art-flow-container {
     display: none !important;
   }
 }
 
+/* <= 767px (Mobile): Scale down further, preserve pristine readability of hero text & CTAs */
 @media (max-width: 767px) {
+  .home-radar-stage {
+    top: 32%;
+    transform: translate(-50%, -50%) scale(0.42);
+    opacity: 0.16;
+  }
+
   .home-art-neural-container {
     display: none !important;
+  }
+}
+
+/* <= 575px (Small Mobile): Delicate cosmic orbital watermark */
+@media (max-width: 575px) {
+  .home-radar-stage {
+    top: 28%;
+    transform: translate(-50%, -50%) scale(0.35);
+    opacity: 0.14;
   }
 }

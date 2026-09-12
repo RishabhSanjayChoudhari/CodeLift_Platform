@@ -14,10 +14,17 @@ export default function HomeRadar({ hideAngles = [] }) {
     window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const isMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(max-width: 991px)').matches;
+
+  const shouldDisableParallax = prefersReducedMotion || isMobile;
+
   // Parallax rates: Neural at 0.3x, Particles at 0.5x, Radar at 1.0x
-  const yNeural = useTransform(scrollY, [0, 800], [0, prefersReducedMotion ? 0 : 90]);
-  const yParticles = useTransform(scrollY, [0, 800], [0, prefersReducedMotion ? 0 : 150]);
-  const yRadar = useTransform(scrollY, [0, 800], [0, prefersReducedMotion ? 0 : 200]);
+  const yNeural = useTransform(scrollY, [0, 800], [0, shouldDisableParallax ? 0 : 90]);
+  const yParticles = useTransform(scrollY, [0, 800], [0, shouldDisableParallax ? 0 : 150]);
+  const yRadar = useTransform(scrollY, [0, 800], [0, shouldDisableParallax ? 0 : 200]);
 
   return (
     <div className="home-radar" aria-hidden="true">

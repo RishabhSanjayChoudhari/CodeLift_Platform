@@ -136,7 +136,8 @@ export default function Sidebar({
 
   const handleItemSelect = (item, e) => {
     const targetPath = item.to || item.route || item.path || '';
-    const isFeesRoute = targetPath.includes('/fees') || item.id === 'fees';
+    const isAdmin = auth?.role === 'admin' || auth?.isAdmin;
+    const isFeesRoute = isAdmin && (targetPath.includes('/admin/fees') || (item.id === 'fees' && targetPath.startsWith('/admin')));
 
     if (isFeesRoute && !isFeesUnlocked()) {
       if (e && e.preventDefault) e.preventDefault();

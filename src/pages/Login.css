@@ -283,28 +283,57 @@
     padding-right: 0;
   }
   .login-card-col {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     z-index: 5;
   }
 }
 
-/* ─── MOBILE (<= 767px): RADAR HIDDEN ENTIRELY, CARD CENTERS FULL-WIDTH ───── */
+/* ─── MOBILE (<= 767px): RADAR HIDDEN ENTIRELY, CARD PERFECTLY CENTERED ───── */
 @media (max-width: 767px) {
+  .login-page-wrapper {
+    min-height: 100dvh;
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 12px 0 24px;
+  }
   .login-grid-container {
-    grid-template-columns: 1fr;
-    padding: 70px 16px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100dvh - 36px);
+    width: 100%;
+    padding: 56px 16px 20px;
+    margin: 0 auto;
     gap: 0;
+    box-sizing: border-box;
   }
   .login-radar-col {
     display: none !important;
   }
   .login-card-col {
     width: 100%;
+    max-width: 440px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     padding: 0;
+    display: flex;
+    justify-content: center;
     z-index: 5;
   }
   .login-glass-card {
+    width: 100%;
     max-width: 100%;
+    margin: 0 auto;
     padding: 28px 20px;
     border-radius: 20px;
+    box-sizing: border-box;
+  }
+  .login-back-link {
+    top: 14px;
+    left: 16px;
+    font-size: 0.8rem;
+    padding: 6px 14px;
   }
 }

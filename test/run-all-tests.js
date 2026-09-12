@@ -11,6 +11,7 @@ import { runCourseImportExportTests } from './course-import-export.test.js';
 import { runFeeManagementTests } from './fee-management.test.js';
 import { runCookieThemePersistenceTests } from './cookie-theme-persistence.test.js';
 import { runThemeConsistencyTests } from './verify-theme-consistency.js';
+import { runBatchCourseAndFeeTests } from './batch-course-and-fee.test.js';
 
 async function runAll() {
   console.log('===============================================================');
@@ -65,6 +66,15 @@ async function runAll() {
     suiteResults.push({ name: 'UI Theme Consistency & Design System Integrity', passed: r5.passedCount, total: r5.totalCount, ok: true });
   } catch (err) {
     suiteResults.push({ name: 'UI Theme Consistency & Design System Integrity', error: err.message, ok: false });
+  }
+
+  try {
+    const r6 = runBatchCourseAndFeeTests();
+    totalPassed += r6.passedCount;
+    totalTests += r6.totalCount;
+    suiteResults.push({ name: 'Batch Course Attachment, Student Fees & Mobile UI Fixes', passed: r6.passedCount, total: r6.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Batch Course Attachment, Student Fees & Mobile UI Fixes', error: err.message, ok: false });
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
