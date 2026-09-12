@@ -43,9 +43,9 @@ export default function Home() {
         <div className="container hero-content">
           <div className="row align-items-center g-5">
             <div className="col-lg-7 col-xl-6">
-              <h1 className="mb-4" style={{ textShadow: 'none', filter: 'none' }}>
+              <h1 className="mb-4">
                 Where Ambition Meets{' '}
-                <span className="highlight" style={{ textShadow: 'none', filter: 'none' }}>
+                <span className="highlight">
                   Expertise
                 </span>{' '}
                 — Master Full-Stack &amp; Data Analytics

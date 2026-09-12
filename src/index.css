@@ -1597,17 +1597,23 @@ body {
   line-height: 1.18;
   color: var(--cl-text);
   letter-spacing: -0.5px;
-  text-shadow: none !important;
-  box-shadow: none !important;
-  filter: none !important;
+}
+
+[data-theme-mode="dark"] .cl-hero h1,
+[data-bs-theme="dark"] .cl-hero h1,
+[data-theme*="dark"] .cl-hero h1 {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.75);
 }
 
 .cl-hero h1 .highlight {
   color: var(--cl-green);
   position: relative;
-  text-shadow: none !important;
-  box-shadow: none !important;
-  filter: none !important;
+}
+
+[data-theme-mode="dark"] .cl-hero h1 .highlight,
+[data-bs-theme="dark"] .cl-hero h1 .highlight,
+[data-theme*="dark"] .cl-hero h1 .highlight {
+  text-shadow: 0 0 24px rgba(var(--bs-primary-rgb, 16, 185, 129), 0.35);
 }
 
 .cl-hero p.lead-text {
@@ -1615,6 +1621,12 @@ body {
   color: var(--cl-text-muted);
   line-height: 1.75;
   max-width: 540px;
+}
+
+[data-theme-mode="dark"] .cl-hero p.lead-text,
+[data-bs-theme="dark"] .cl-hero p.lead-text,
+[data-theme*="dark"] .cl-hero p.lead-text {
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
 }
 
 .cl-hero .btn-explore {
