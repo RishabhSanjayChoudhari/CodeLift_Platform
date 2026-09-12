@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { FaArrowRight, FaStar, FaUserGraduate, FaGraduationCap, FaBookOpen } from 'react-icons/fa';
 import InstituteNavbar from '../components/common/InstituteNavbar';
 import HomeRadar from '../components/common/HomeRadar';
-import ContactSection from '../components/home/ContactSection';
+import ContactHub from '../components/home/ContactHub';
+import FloatingWhatsApp from '../components/common/FloatingWhatsApp';
 import { useData } from '../contexts/DataContext';
 
 export default function Home() {
@@ -281,8 +282,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. CONTACT SECTION */}
-      <ContactSection />
+      {/* 4. CONTACT & SOCIAL HUB */}
+      <ContactHub />
 
       {/* MINIMAL FOOTER */}
       <footer
@@ -301,6 +302,9 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* FLOATING WHATSAPP BUTTON */}
+      <FloatingWhatsApp />
     </>
   );
 }

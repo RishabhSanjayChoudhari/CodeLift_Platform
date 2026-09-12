@@ -1,0 +1,216 @@
+/* ==========================================================================
+   InterestFormModal - Contact & Interest Form Dialog
+   Theme-aware, mobile-optimized, input >= 16px to prevent iOS auto-zoom
+   ========================================================================== */
+
+.interest-modal-dialog {
+  max-width: 520px;
+  margin: 1.5rem auto;
+}
+
+.interest-modal-content {
+  background: var(--card-bg, #ffffff) !important;
+  border: 1px solid var(--border-color, #e5e7eb) !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2) !important;
+  color: var(--text-primary, #0f172a) !important;
+}
+
+.interest-modal-header {
+  padding: 24px 28px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  background: var(--card-bg-alt, rgba(0, 0, 0, 0.02));
+}
+
+.interest-modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+
+.interest-modal-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.interest-modal-close-btn {
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  color: var(--text-secondary, #64748b);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.interest-modal-close-btn:hover {
+  background: var(--border-color, #e5e7eb);
+  color: var(--text-primary, #0f172a);
+}
+
+.interest-modal-body {
+  padding: 24px 28px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 72vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.interest-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.interest-form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #334155);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.interest-form-label .label-icon {
+  color: var(--bs-primary, #15803d);
+  font-size: 0.95rem;
+}
+
+.interest-form-label .req {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+/* Ensure font-size is strictly >= 16px to prevent iOS Safari auto-zooming */
+.interest-form-input,
+.interest-form-select,
+.interest-form-textarea {
+  width: 100%;
+  font-size: 16px !important;
+  line-height: 1.5;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color, #d1d5db);
+  background: var(--bg-body, #ffffff);
+  color: var(--text-primary, #0f172a);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.interest-form-input:focus,
+.interest-form-select:focus,
+.interest-form-textarea:focus {
+  border-color: var(--bs-primary, #15803d);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bs-primary, #15803d) 20%, transparent);
+}
+
+.interest-form-input.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.interest-field-error {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.interest-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.interest-modal-footer {
+  padding: 16px 28px 24px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  background: var(--card-bg-alt, rgba(0, 0, 0, 0.02));
+}
+
+.interest-cancel-btn {
+  border-radius: 50px !important;
+  padding: 10px 22px !important;
+  font-weight: 600 !important;
+  min-height: 46px !important;
+  border-color: var(--border-color, #d1d5db) !important;
+  color: var(--text-secondary, #64748b) !important;
+}
+
+.interest-cancel-btn:hover {
+  background: var(--border-color, #e5e7eb) !important;
+  color: var(--text-primary, #0f172a) !important;
+}
+
+.interest-submit-btn {
+  border-radius: 50px !important;
+  padding: 10px 26px !important;
+  font-weight: 700 !important;
+  min-height: 46px !important;
+  background: #25D366 !important; /* WhatsApp Green */
+  border-color: #25D366 !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35) !important;
+  transition: all 0.2s ease !important;
+}
+
+.interest-submit-btn:hover {
+  background: #1eb956 !important;
+  border-color: #1eb956 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45) !important;
+  color: #ffffff !important;
+}
+
+/* Mobile responsive fine-tuning */
+@media (max-width: 575px) {
+  .interest-modal-dialog {
+    margin: 0.75rem;
+  }
+
+  .interest-modal-header {
+    padding: 20px 20px 14px;
+  }
+
+  .interest-modal-body {
+    padding: 18px 20px 10px;
+    gap: 14px;
+  }
+
+  .interest-modal-footer {
+    padding: 14px 20px 20px;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .interest-cancel-btn,
+  .interest-submit-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+  }
+}

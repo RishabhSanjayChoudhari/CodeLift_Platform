@@ -1,0 +1,201 @@
+/* ==========================================================================
+   ContactHub - Contact & Social Channels Grid + Share Interest CTA
+   Theme-compliant with 13 canonical color schemes, 100% responsive
+   ========================================================================== */
+
+.contact-hub-section {
+  background: var(--bg-body, #ffffff);
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  position: relative;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 767px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.contact-block {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.contact-block:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 35%, var(--border-color, #e5e7eb));
+}
+
+.contact-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 12%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.contact-icon {
+  color: var(--bs-primary, #15803d);
+  width: 24px;
+  height: 24px;
+}
+
+.contact-block h3 {
+  color: var(--text-primary, #0f172a);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.contact-block p {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.92rem;
+  margin: 0;
+  line-height: 1.55;
+  min-height: 42px;
+}
+
+/* Touch targets and buttons inside cards */
+.contact-block .btn {
+  min-height: 44px;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 9px 22px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.contact-block .d-flex .btn {
+  align-self: auto;
+}
+
+.contact-block .btn-outline-primary {
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 60%, var(--border-color, #e5e7eb));
+  color: var(--bs-primary, #15803d);
+  background: transparent;
+}
+
+.contact-block .btn-outline-primary:hover {
+  background: var(--bs-primary, #15803d);
+  border-color: var(--bs-primary, #15803d);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.contact-block .btn-primary {
+  background: var(--bs-primary, #15803d);
+  border-color: var(--bs-primary, #15803d);
+  color: #ffffff;
+}
+
+.contact-block .btn-primary:hover {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000000);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000000);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Share Interest Full-Width CTA Banner */
+.share-interest-cta {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--bs-primary, #15803d) 10%, var(--card-bg, #ffffff)),
+    var(--card-bg, #ffffff)
+  );
+  border: 1.5px solid color-mix(in srgb, var(--bs-primary, #15803d) 25%, var(--border-color, #e5e7eb));
+  border-radius: 20px;
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.share-interest-cta h3 {
+  color: var(--text-primary, #0f172a);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.share-interest-cta p {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.96rem;
+  margin: 0;
+  max-width: 520px;
+}
+
+.share-interest-cta .btn {
+  min-height: 48px;
+  min-width: 220px;
+  font-weight: 700;
+  border-radius: 50px;
+  font-size: 1rem;
+  padding: 12px 32px;
+  background: var(--bs-primary, #15803d);
+  border-color: var(--bs-primary, #15803d);
+  color: #ffffff;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.share-interest-cta .btn:hover {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000000);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000000);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--bs-primary, #15803d) 40%, transparent);
+}
+
+@media (max-width: 767px) {
+  .contact-block {
+    padding: 22px 18px;
+  }
+
+  .contact-block p {
+    min-height: auto;
+  }
+
+  .contact-block .btn {
+    width: 100%;
+  }
+
+  .contact-block .d-flex {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .share-interest-cta {
+    padding: 28px 18px;
+  }
+
+  .share-interest-cta .btn {
+    width: 100%;
+  }
+}
