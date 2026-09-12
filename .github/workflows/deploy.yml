@@ -32,8 +32,8 @@ jobs:
       - name: 🔨 Run CodeLift Vite Build
         env:
           VITE_BASE_PATH: /CodeLift_Platform/
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://yuznthzgyrkrxhzldmdi.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_4fRM66XdHhcZ__c1jnuj3g_hCD4Litw' }}
         run: npm run build
 
       - name: 📦 Upload Pages artifact
