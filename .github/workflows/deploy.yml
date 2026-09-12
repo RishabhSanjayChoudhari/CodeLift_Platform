@@ -31,20 +31,10 @@ jobs:
 
       - name: 🔨 Run CodeLift Vite Build
         env:
-          VITE_BASE_PATH: /CodeLift_Platform/
+          VITE_BASE_PATH: /platform/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: |
-          (npm run build 2>&1) | tee build.log
-
-      - name: 🚨 Report build error
-        if: failure()
-        run: |
-          if [ -f build.log ]; then
-            cat build.log
-            ERR=$(tail -n 10 build.log | tr '\r\n' '  ')
-            echo "::error title=Vite Build Failure::$ERR"
-          fi
+        run: npm run build
 
       - name: 📦 Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

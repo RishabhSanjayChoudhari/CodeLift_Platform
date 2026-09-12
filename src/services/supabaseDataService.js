@@ -52,7 +52,7 @@ function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
 // ==============================================================================
 export async function getStaticCohortCourses() {
   try {
-    const basePath = import.meta.env.BASE_URL || '/CodeLift_Platform/';
+    const basePath = import.meta.env.BASE_URL || '/platform/';
     const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
     const res = await fetch(`${cleanBase}courses/cohort/index.json`);
     if (!res.ok) return [];

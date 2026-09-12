@@ -130,7 +130,7 @@ node scripts/export-supabase-to-json.js
 ## 6. GitHub Pages Deployment
 
 The repository includes an automated GitHub Actions deployment workflow (`.github/workflows/deploy.yml`):
-- **Base Path**: Configured via `VITE_BASE_PATH` in `vite.config.js` (default: `/codelift/`).
+- **Base Path**: Configured via `VITE_BASE_PATH` in `vite.config.js` (default: `/platform/`).
 - **SPA Routing**: `npm run build` automatically generates `dist/404.html` so client-side routes (e.g. `/admin/dashboard`) work seamlessly on GitHub Pages.
 - **Repository Secrets**: Ensure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are added under **Settings → Secrets and variables → Actions**.
 
