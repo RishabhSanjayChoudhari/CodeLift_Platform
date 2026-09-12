@@ -34,7 +34,7 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_ADMIN_WHATSAPP: ${{ secrets.VITE_ADMIN_WHATSAPP }}
-          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH || '/CodeLift_Platform/' }}
+          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH || '/platform/' }}
         run: |
           if [ -n "$VITE_SUPABASE_URL" ] && [ -n "$VITE_SUPABASE_ANON_KEY" ]; then
             echo "✅ Supabase build variables detected in CI environment"
