@@ -213,7 +213,7 @@ To obtain your connection string:
 DATABASE_URL is currently using a placeholder password.
 Please open .env.local and replace YOUR_DB_PASSWORD_HERE with your real Supabase database password:
 
-  DATABASE_URL=postgresql://postgres:YOUR_REAL_PASSWORD@db.yuznthzgyrkrxhzldmdi.supabase.co:5432/postgres
+  DATABASE_URL=postgresql://postgres:YOUR_REAL_PASSWORD@db.[PROJECT-REF].supabase.co:5432/postgres
 
 * Tip: If your password contains special characters (e.g. @, #, $, %, !), make sure to URL-encode them.
 `);
