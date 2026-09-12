@@ -1542,6 +1542,22 @@ body {
   overflow: hidden;
 }
 
+@media (max-width: 991px) {
+  .cl-hero,
+  .hero-section {
+    padding: 115px 0 65px;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .cl-hero,
+  .hero-section {
+    padding: 95px 0 45px;
+    min-height: auto;
+  }
+}
+
 .hero-radar-bg {
   position: absolute;
   inset: 0;

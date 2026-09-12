@@ -109,17 +109,17 @@
   }
 }
 
-/* <= 991px (Tablet): Elegant centered orbital watermark, hide sweep and floating icons */
+/* <= 991px (Tablet): Elegant right-anchored orbital watermark, hide sweep and floating icons */
 @media (max-width: 991px) {
   .home-radar-stage {
-    left: 50%;
-    right: auto;
-    top: 46%;
-    transform: translate(-50%, -50%) scale(0.55);
-    transform-origin: center center;
+    left: auto;
+    right: -220px;
+    top: 15%;
+    transform: translateY(-50%) scale(0.55);
+    transform-origin: center right;
     width: 1200px;
     height: 1200px;
-    opacity: 0.18;
+    opacity: 0.22;
     pointer-events: none !important;
   }
 
@@ -155,11 +155,12 @@
   }
 
   .home-radar-vignette {
-    background: radial-gradient(
-      ellipse at 50% 46%,
-      color-mix(in srgb, var(--bg-body, #ffffff) 65%, transparent) 0%,
-      color-mix(in srgb, var(--bg-body, #ffffff) 30%, transparent) 45%,
-      var(--bg-body, #ffffff) 90%
+    background: linear-gradient(
+      135deg,
+      var(--bg-body, #ffffff) 0%,
+      color-mix(in srgb, var(--bg-body, #ffffff) 85%, transparent) 45%,
+      color-mix(in srgb, var(--bg-body, #ffffff) 25%, transparent) 80%,
+      transparent 100%
     );
   }
 
@@ -168,12 +169,13 @@
   }
 }
 
-/* <= 767px (Mobile): Even, balanced placement so radar harmonizes with and frames hero content */
+/* <= 767px (Mobile): Off-canvas top-right orbital arc framing */
 @media (max-width: 767px) {
   .home-radar-stage {
-    top: 45%;
-    transform: translate(-50%, -50%) scale(0.48);
-    opacity: 0.15;
+    right: -320px;
+    top: 10%;
+    transform: translateY(-50%) scale(0.50);
+    opacity: 0.20;
   }
 
   .home-art-neural-container {
@@ -181,11 +183,12 @@
   }
 }
 
-/* <= 575px (Small Mobile): Delicate cosmic orbital watermark evenly centered */
+/* <= 575px (Small Mobile): Delicate cosmic orbital arcs sweeping from top-right */
 @media (max-width: 575px) {
   .home-radar-stage {
-    top: 44%;
-    transform: translate(-50%, -50%) scale(0.40);
-    opacity: 0.14;
+    right: -320px;
+    top: 10%;
+    transform: translateY(-50%) scale(0.44);
+    opacity: 0.18;
   }
 }
