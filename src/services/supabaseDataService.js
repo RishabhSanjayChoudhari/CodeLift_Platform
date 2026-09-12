@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js';
+import { supabase, isSupabaseConfigured } from './supabaseClient.js';
 
 // ==============================================================================
 // TYPED CUSTOM ERRORS
@@ -119,6 +119,9 @@ export async function getAllCourses() {
 // FETCH ALL DATA (PARALLEL HYDRATION)
 // ==============================================================================
 export async function fetchAllData() {
+  if (!isSupabaseConfigured) {
+    return {};
+  }
   try {
     const [
       cohortCourses,

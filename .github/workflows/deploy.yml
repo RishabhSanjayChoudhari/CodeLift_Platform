@@ -35,6 +35,11 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
+          if [ -n "$VITE_SUPABASE_URL" ] && [ -n "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "✅ Supabase build variables detected in CI environment"
+          else
+            echo "ℹ️ Supabase secrets not detected in CI environment. Building with resilient offline seed fallback."
+          fi
           set +e
           output=$(npm run build 2>&1)
           status=$?

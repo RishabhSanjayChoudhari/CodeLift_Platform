@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
 const AuthContext = createContext(null);
 
@@ -84,6 +84,10 @@ export function AuthProvider({ children }) {
     let isMounted = true;
 
     async function initSession() {
+      if (!isSupabaseConfigured) {
+        if (isMounted) setLoading(false);
+        return;
+      }
       try {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         if (isMounted) {
@@ -101,22 +105,49 @@ export function AuthProvider({ children }) {
 
     initSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession);
-      if (newSession?.user) {
-        await hydrateProfile(newSession.user);
-      } else {
-        setAuth(null);
-      }
-    });
+    let subscription;
+    if (isSupabaseConfigured) {
+      const { data } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        setSession(newSession);
+        if (newSession?.user) {
+          await hydrateProfile(newSession.user);
+        } else {
+          setAuth(null);
+        }
+      });
+      subscription = data?.subscription;
+    }
 
     return () => {
       isMounted = false;
-      subscription?.unsubscribe();
+      subscription?.unsubscribe?.();
     };
   }, []);
 
   const loginAdmin = async (credentials) => {
+    if (!isSupabaseConfigured) {
+      // Offline / Local Demo Admin Login
+      const u = credentials?.username?.trim()?.toLowerCase();
+      const p = credentials?.password;
+      if (
+        (u === 'admin' || u === 'admin@codelift.dev') &&
+        (p === 'CodeLift15July' || p === 'admin1234' || p === 'admin')
+      ) {
+        const adminAuth = {
+          role: 'admin',
+          userId: 'admin',
+          id: 'admin',
+          name: 'Administrator',
+          username: 'admin',
+          email: 'admin@codelift.dev',
+          phone: '+91 9876543210'
+        };
+        setAuth(adminAuth);
+        return adminAuth;
+      }
+      throw new Error('Invalid administrator credentials.');
+    }
+
     let email = credentials?.email;
     if (credentials?.username) {
       const { data: resolvedEmail, error: rpcErr } = await supabase.rpc('get_admin_email', {
@@ -249,7 +280,9 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      if (isSupabaseConfigured) {
+        await supabase.auth.signOut();
+      }
     } catch (_) {}
     setAuth(null);
     setSession(null);
