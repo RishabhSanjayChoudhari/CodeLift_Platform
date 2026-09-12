@@ -108,7 +108,11 @@ export async function runJsonSeedMigration(existingClient = null, options = {}) 
     const studentIdMap = new Map();
     const userIdMap = new Map();
 
-    const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || process.env.SEED_DEFAULT_PASSWORD || 'CodeLift15July';
+    const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || process.env.SEED_DEFAULT_PASSWORD;
+    if (!adminDefaultPassword) {
+      console.error('❌ Missing ADMIN_DEFAULT_PASSWORD or SEED_DEFAULT_PASSWORD in .env.local');
+      process.exit(1);
+    }
     const studentDefaultPassword = 'password';
     // Blowfish hash for default password or direct crypt via pgcrypto
     await client.query(`create extension if not exists pgcrypto;`);

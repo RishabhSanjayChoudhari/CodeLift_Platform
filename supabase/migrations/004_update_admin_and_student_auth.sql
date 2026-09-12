@@ -15,7 +15,6 @@ where username = 'rishabh'
 
 update auth.users
 set email = 'codelift.official@gmail.com',
-    encrypted_password = crypt('admin1245', gen_salt('bf')),
     email_confirmed_at = coalesce(email_confirmed_at, now()),
     updated_at = now()
 where id in (select id from public.users where username = 'rishabh')

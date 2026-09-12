@@ -22,8 +22,12 @@ const supabase = createClient(supabaseUrl, serviceKey, {
 });
 
 async function seedAdmin() {
-  const adminEmail = 'codelift.official@gmail.com';
-  const adminPassword = 'admin1245';
+  const adminEmail = process.env.ADMIN_EMAIL || 'codelift.official@gmail.com';
+  const adminPassword = process.env.ADMIN_PASSWORD || process.env.SEED_DEFAULT_PASSWORD;
+  if (!adminPassword) {
+    console.error('❌ Missing ADMIN_PASSWORD or SEED_DEFAULT_PASSWORD in .env.local');
+    process.exit(1);
+  }
   const adminUsername = 'rishabh';
   const adminName = 'Rishabh';
 

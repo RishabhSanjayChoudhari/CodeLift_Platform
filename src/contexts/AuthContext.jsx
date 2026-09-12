@@ -129,9 +129,10 @@ export function AuthProvider({ children }) {
       // Offline / Local Demo Admin Login
       const u = credentials?.username?.trim()?.toLowerCase();
       const p = credentials?.password;
+      const validDevPassword = import.meta.env.VITE_DEV_ADMIN_PASSWORD || 'admin';
       if (
         (u === 'admin' || u === 'admin@codelift.dev') &&
-        (p === 'CodeLift15July' || p === 'admin1234' || p === 'admin')
+        (p === validDevPassword || p === 'admin' || p === 'demo')
       ) {
         const adminAuth = {
           role: 'admin',
@@ -147,7 +148,7 @@ export function AuthProvider({ children }) {
       }
       if (
         (u === 'rishabh' || u === 'codelift.official@gmail.com') &&
-        (p === 'admin1245' || p === 'CodeLift15July')
+        (p === validDevPassword || p === 'admin' || p === 'demo')
       ) {
         const adminAuth = {
           role: 'admin',
