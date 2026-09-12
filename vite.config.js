@@ -4,6 +4,13 @@ import react from '@vitejs/plugin-react';
 const basePath = process.env.VITE_BASE_PATH || '/CodeLift_Platform/';
 const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
 
+if (!process.env.VITE_SUPABASE_URL) {
+  process.env.VITE_SUPABASE_URL = 'https://yuznthzgyrkrxhzldmdi.supabase.co';
+}
+if (!process.env.VITE_SUPABASE_ANON_KEY) {
+  process.env.VITE_SUPABASE_ANON_KEY = 'sb_publishable_4fRM66XdHhcZ__c1jnuj3g_hCD4Litw';
+}
+
 export default defineConfig({
   base: cleanBase,
   plugins: [
