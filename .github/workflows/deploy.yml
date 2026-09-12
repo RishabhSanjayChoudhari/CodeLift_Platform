@@ -34,7 +34,16 @@ jobs:
           VITE_BASE_PATH: /platform/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: npm run build
+        run: |
+          set +e
+          output=$(npm run build 2>&1)
+          status=$?
+          echo "$output"
+          if [ $status -ne 0 ]; then
+            clean_err=$(echo "$output" | tail -n 25 | tr '\r\n' '  ')
+            echo "::error title=Build Failure::$clean_err"
+            exit $status
+          fi
 
       - name: 📦 Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
