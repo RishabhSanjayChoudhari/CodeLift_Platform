@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import toast from 'react-hot-toast';
 import { FaCertificate, FaDownload, FaPrint, FaTimes, FaAward, FaShieldAlt } from 'react-icons/fa';
+import { FiAward } from 'react-icons/fi';
 import CertificateDocument from '../common/CertificateDocument';
 import { getCertificateDesign, generateCertificatePDF } from '../../services/certificateUtils';
 
@@ -255,12 +256,10 @@ export default function StudentCertificates() {
 
       {/* Certificates List */}
       {myCerts.length === 0 ? (
-        <div className="text-center py-5" style={{ color: 'var(--text-secondary)' }}>
-          <FaCertificate style={{ fontSize: '3rem', marginBottom: 12, opacity: 0.3 }} />
-          <h6 style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>No certificates issued yet</h6>
-          <p style={{ fontSize: '0.875rem', margin: 0 }}>
-            Complete all modules and topics in your curriculum. Once verified by your academy faculty, your credentials will appear here.
-          </p>
+        <div className="empty-state">
+          <FiAward size={48} />
+          <h3>No certificates issued yet</h3>
+          <p>Complete all modules and topics in your curriculum. Once verified by your academy faculty, your credentials will appear here.</p>
         </div>
       ) : (
         <div className="row g-4">

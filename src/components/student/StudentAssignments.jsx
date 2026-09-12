@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import toast from 'react-hot-toast';
 import { FaUpload, FaTimes, FaCheckCircle, FaClock, FaStar, FaClipboardList } from 'react-icons/fa';
+import { FiClipboard } from 'react-icons/fi';
 
 function statusInfo(assignment, submission) {
   if (!submission) {
@@ -78,9 +79,10 @@ export default function StudentAssignments() {
       </div>
 
       {myAssignments.length === 0 ? (
-        <div className="text-center py-5" style={{ color: 'var(--text-secondary)' }}>
-          <div className="mb-3 text-muted"><FaClipboardList size={44} /></div>
-          <p>No assignments have been posted for your batch yet.</p>
+        <div className="empty-state">
+          <FiClipboard size={48} />
+          <h3>No assignments yet</h3>
+          <p>Your instructor has not posted any assignments for your batch yet.</p>
         </div>
       ) : (
         <div className="d-flex flex-column gap-3">

@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { FaMoneyBillWave, FaCheckCircle, FaClock } from 'react-icons/fa';
+import { FiCreditCard } from 'react-icons/fi';
 
 export default function StudentFees() {
   const { auth } = useAuth();
@@ -83,8 +84,10 @@ export default function StudentFees() {
         <div className="card-body p-4">
           <h6 style={{ fontWeight: 800, color: 'var(--text-primary)', marginBottom: 16 }}>Payment History</h6>
           {myFees.length === 0 ? (
-            <div className="text-center py-4" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              No fee records found.
+            <div className="empty-state">
+              <FiCreditCard size={48} />
+              <h3>No fee records found</h3>
+              <p>You have no pending invoices or payment transactions recorded at this time.</p>
             </div>
           ) : (
             <div className="table-responsive">

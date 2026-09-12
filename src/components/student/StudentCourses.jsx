@@ -199,13 +199,9 @@ export default function StudentCourses() {
   const [expandedSections, setExpandedSections] = useState(() => new Set([0]));
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('notes');
-  const [isSidebarHidden, setIsSidebarHidden] = useState(() => {
-    try {
-      return localStorage.getItem('codelift_course_sidebar_hidden') === 'true';
-    } catch {
-      return false;
-    }
-  });
+  const [isSidebarHidden, setIsSidebarHidden] = useState(
+    () => (typeof window !== 'undefined' && window.innerWidth < 768) || false
+  );
 
   const toggleSidebar = () => {
     setIsSidebarHidden((prev) => {
@@ -224,6 +220,11 @@ export default function StudentCourses() {
     setExpandedSections(new Set([0]));
     setMobileDrawerOpen(false);
   }, [selectedCourseId]);
+
+  // Scroll to top on topic or module navigation
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentModuleIndex, currentTopicIndex]);
 
   // Current course modules and active lecture
   const modules = activeCourse?.modules || [];
@@ -410,14 +411,17 @@ export default function StudentCourses() {
                 <span>{isSidebarHidden ? 'Show Sidebar' : 'Hide Sidebar'}</span>
               </button>
 
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 rounded-pill px-3 py-1"
-                onClick={() => navigate('/student/tests')}
-              >
-                <FaClipboardList size={12} />
-                <span>Take Test</span>
-              </button>
+              {/* Only show if a test exists for this module */}
+              {(currentModule?.testId || currentModule?.test || currentModule?.hasTest) && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 rounded-pill px-3 py-1"
+                  onClick={() => navigate(currentModule?.testId ? `/student/tests?testId=${currentModule.testId}` : '/student/tests')}
+                >
+                  <FaClipboardList size={12} />
+                  <span>Take Test</span>
+                </button>
+              )}
 
               {/* Mobile Drawer Trigger (< 992px) */}
               <button
@@ -475,7 +479,7 @@ export default function StudentCourses() {
 
               {/* Sequential Prev & Next Navigation Buttons */}
               <div
-                className="d-flex justify-content-between align-items-center py-3 my-3 border-top border-bottom"
+                className="course-nav-buttons d-flex justify-content-between align-items-center py-3 my-3 border-top border-bottom"
                 style={{ borderColor: 'var(--border-color)' }}
               >
                 <button
@@ -519,14 +523,16 @@ export default function StudentCourses() {
                       <span>{isCurrentTopicCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
                     </button>
 
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2"
-                      onClick={() => navigate('/student/tests')}
-                    >
-                      <FaClipboardList size={13} />
-                      <span>Take Module Test</span>
-                    </button>
+                    {(currentModule?.testId || currentModule?.test || currentModule?.hasTest) && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2"
+                        onClick={() => navigate(currentModule?.testId ? `/student/tests?testId=${currentModule.testId}` : '/student/tests')}
+                      >
+                        <FaClipboardList size={13} />
+                        <span>Take Module Test</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -613,13 +619,10 @@ export default function StudentCourses() {
 
       {/* 2. Course Grid - Clean, Spacious Cards */}
       {allAvailableCourses.length === 0 ? (
-        <div
-          className="card border rounded-4 p-5 text-center shadow-sm"
-          style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
-        >
-          <FaBook size={42} className="text-muted mb-3 opacity-40 mx-auto" />
-          <h5 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>No Courses Assigned Yet</h5>
-          <p className="text-muted small mb-0">You currently do not have any courses assigned to your curriculum.</p>
+        <div className="empty-state">
+          <FaBook size={48} />
+          <h3>No courses enrolled yet</h3>
+          <p>Your cohort has not been assigned any courses yet. Check back once your batch commences.</p>
         </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">

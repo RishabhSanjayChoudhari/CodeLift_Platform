@@ -66,7 +66,7 @@ export default function Layout({
                 className="d-lg-none d-flex align-items-center justify-content-center p-1 px-2 border rounded-2"
                 title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
                 aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-                style={{ width: '36px', height: '36px' }}
+                style={{ width: '44px', height: '44px' }}
               >
                 {isSidebarOpen ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
               </Button>

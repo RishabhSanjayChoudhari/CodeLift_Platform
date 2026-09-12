@@ -24,7 +24,7 @@ function progressPercent(student, courses, batch) {
 function StatCard({ icon, label, value, color, to }) {
   const content = (
     <div
-      className="card border-0 rounded-4 h-100"
+      className="card border-0 rounded-4 h-100 dashboard-kpi-card"
       style={{ background: 'var(--card-bg)', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', transition: 'all 0.2s ease', cursor: to ? 'pointer' : 'default' }}
       onMouseEnter={e => { if (to) e.currentTarget.style.transform = 'translateY(-3px)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; }}
@@ -33,7 +33,7 @@ function StatCard({ icon, label, value, color, to }) {
         <div style={{ width: 40, height: 40, borderRadius: 10, background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, fontSize: '1.1rem', marginBottom: 10 }}>
           {icon}
         </div>
-        <div style={{ fontSize: '1.6rem', fontWeight: 800, color, lineHeight: 1, marginBottom: 4 }}>{value}</div>
+        <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color, lineHeight: 1, marginBottom: 4 }}>{value}</h3>
         <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</div>
       </div>
     </div>
@@ -148,17 +148,17 @@ export default function StudentDashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="row g-3 mb-4">
-        <div className="col-6 col-md-3">
+      <div className="dashboard-kpi-grid row g-3 mb-4">
+        <div className="col-12 col-md-3">
           <StatCard icon={<FaClipboardList />} label="Total Assignments" value={myAssignments.length} color="#15803D" to="/student/assignments" />
         </div>
-        <div className="col-6 col-md-3">
+        <div className="col-12 col-md-3">
           <StatCard icon={<FaCheckCircle />} label="Submitted" value={mySubmissions.length} color="#1d4ed8" to="/student/assignments" />
         </div>
-        <div className="col-6 col-md-3">
+        <div className="col-12 col-md-3">
           <StatCard icon={<FaFileAlt />} label="Tests Taken" value={myAttempts.length} color="#6d28d9" to="/student/tests" />
         </div>
-        <div className="col-6 col-md-3">
+        <div className="col-12 col-md-3">
           <StatCard icon={<FaCertificate />} label="Certificates" value={myCerts.length} color="#d97706" to="/student/certificates" />
         </div>
       </div>
@@ -193,14 +193,15 @@ export default function StudentDashboard() {
               </div>
               <button
                 type="button"
-                className="btn btn-sm btn-primary fw-bold px-3 py-2 d-flex align-items-center gap-1.5"
+                className="btn btn-primary fw-bold px-3 py-2 d-flex align-items-center justify-content-center gap-1.5"
+                style={{ minHeight: '44px' }}
                 onClick={() => {
                   const code = `LIFT-${(student?.name || 'STUDENT').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)}2026`;
                   navigator.clipboard.writeText(code);
                   toast.success('Referral code copied to clipboard.');
                 }}
               >
-                <FaCopy size={12} />
+                <FaCopy size={14} />
                 <span>Copy</span>
               </button>
             </div>
@@ -304,7 +305,7 @@ export default function StudentDashboard() {
               <div className="d-flex flex-column gap-2">
                 {[
                   { to: '/student/courses', icon: <FaBook />, label: 'Continue Learning', sub: `${progress}% complete`, color: '#15803D' },
-                  { to: '/student/assignments', icon: <FaClipboardList />, label: 'View Assignments', sub: `${myAssignments.length - mySubmissions.length} pending`, color: '#1d4ed8' },
+                  { to: '/student/assignments', icon: <FaClipboardList />, label: 'View Assignments', sub: `${Math.max(0, myAssignments.length - mySubmissions.length)} pending`, color: '#1d4ed8' },
                   { to: '/student/tests', icon: <FaFileAlt />, label: 'Take a Test', sub: `${myAttempts.length} completed`, color: '#6d28d9' },
                   { to: '/student/certificates', icon: <FaCertificate />, label: 'My Certificates', sub: `${myCerts.length} earned`, color: '#d97706' },
                 ].map(({ to, icon, label, sub, color }) => (

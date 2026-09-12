@@ -137,15 +137,17 @@ export default function Sidebar({
   const handleItemSelect = (item, e) => {
     const targetPath = item.to || item.route || item.path || '';
     const isAdmin = auth?.role === 'admin' || auth?.isAdmin;
-    const isFeesRoute = isAdmin && (targetPath.includes('/admin/fees') || (item.id === 'fees' && targetPath.startsWith('/admin')));
 
-    if (isFeesRoute && !isFeesUnlocked()) {
-      if (e && e.preventDefault) e.preventDefault();
-      setPendingFeesItem(item);
-      setFeesError('');
-      setFeesPassword('');
-      setShowFeesModal(true);
-      return;
+    // Only prompt for admin fees, never for students
+    if (isAdmin && (targetPath === '/admin/fees' || targetPath.includes('/admin/fees'))) {
+      if (!isFeesUnlocked()) {
+        if (e && e.preventDefault) e.preventDefault();
+        setPendingFeesItem(item);
+        setFeesError('');
+        setFeesPassword('');
+        setShowFeesModal(true);
+        return;
+      }
     }
 
     if (item.onClick) {
@@ -495,7 +497,7 @@ export default function Sidebar({
             className="d-flex align-items-center justify-content-center p-1 border rounded-2"
             title="Close sidebar"
             aria-label="Close sidebar"
-            style={{ width: '34px', height: '34px' }}
+            style={{ width: '44px', height: '44px' }}
           >
             <FiX size={20} />
           </Button>

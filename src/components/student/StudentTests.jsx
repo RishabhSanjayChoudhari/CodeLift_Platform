@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import toast from 'react-hot-toast';
 import { FaPlay, FaCheckCircle, FaFileAlt } from 'react-icons/fa';
-import { FiX, FiCheck, FiAlertCircle } from 'react-icons/fi';
+import { FiX, FiCheck, FiAlertCircle, FiClipboard } from 'react-icons/fi';
 
 function ScoreCircle({ score, total }) {
   const pct = total ? Math.round((score / total) * 100) : 0;
@@ -107,9 +107,10 @@ export default function StudentTests() {
       {!activeTest && (
         <>
           {myTests.length === 0 ? (
-            <div className="text-center py-5" style={{ color: 'var(--text-secondary)' }}>
-              <FaFileAlt style={{ fontSize: '3rem', marginBottom: 12, opacity: 0.4 }} />
-              <p>No tests assigned to your batch yet.</p>
+            <div className="empty-state">
+              <FiClipboard size={48} />
+              <h3>No tests assigned yet</h3>
+              <p>Your instructor will assign tests as you progress through the course.</p>
             </div>
           ) : (
             <div className="d-flex flex-column gap-3">

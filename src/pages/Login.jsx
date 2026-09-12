@@ -4,6 +4,7 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { FaUserGraduate, FaSignInAlt, FaArrowLeft, FaEnvelope, FaLock, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import LoginRadar from '../components/common/LoginRadar';
 import { supabase } from '../services/supabaseClient';
 import toast from 'react-hot-toast';
@@ -16,6 +17,7 @@ export default function Login() {
 
   const [studentEmail, setStudentEmail] = useState('');
   const [studentPassword, setStudentPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -132,8 +134,11 @@ export default function Login() {
                   <FaEnvelope className="login-input-icon" />
                   <input
                     type="email"
-                    required
+                    inputMode="email"
                     autoComplete="email"
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    required
                     className="login-input"
                     placeholder="e.g. student@example.com"
                     value={studentEmail}
@@ -148,7 +153,7 @@ export default function Login() {
                 <div className="login-input-wrapper">
                   <FaLock className="login-input-icon" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     autoComplete="current-password"
                     className="login-input"
@@ -157,6 +162,14 @@ export default function Login() {
                     onChange={(e) => setStudentPassword(e.target.value)}
                     disabled={isLoading}
                   />
+                  <button
+                    type="button"
+                    className="login-password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                  </button>
                 </div>
               </div>
 
