@@ -1,0 +1,1304 @@
+{
+  "id": "data-analyst-complete-course",
+  "title": "Data Analyst Complete Course: Excel to Python to BI",
+  "slug": "data-analyst-complete-course",
+  "description": "Become a job-ready Data Analyst. Master Excel, SQL, Python (Pandas, NumPy), Statistics, Data Visualization, EDA and Business Intelligence with real-world projects, edge cases, interview FAQs and module-wise quizzes.",
+  "categoryId": "cat-data",
+  "courseType": "cohort",
+  "course_type": "cohort",
+  "isCohort": true,
+  "isPublished": true,
+  "isApproved": true,
+  "isFree": false,
+  "price": 2499,
+  "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600",
+  "rating": 4.9,
+  "numReviews": 128,
+  "studentsEnrolled": 940,
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "updatedAt": "2026-02-15T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "da-m1",
+      "title": "Module 1: Data Analytics Foundations & Excel",
+      "topics": [
+        {
+          "id": "da-t1-1",
+          "title": "What is Data Analytics? Roles, Lifecycle & Tools",
+          "contentMd": "# Introduction to Data Analytics\n\n## What is Data Analytics?\nData analytics is the process of collecting, cleaning, transforming and interpreting data to extract insights for decision-making.\n\n## Types of Analytics\n- **Descriptive** – What happened?\n- **Diagnostic** – Why did it happen?\n- **Predictive** – What will happen?\n- **Prescriptive** – What should we do?\n\n## Role Comparison\n| Role | Focus | Tools |\n|------|-------|-------|\n| Data Analyst | Insights, reporting | Excel, SQL, Python, BI |\n| Data Engineer | Pipelines, storage | SQL, Spark, Airflow |\n| Data Scientist | Models, predictions | Python, ML, Stats |\n| BI Developer | Dashboards | Power BI, Tableau |\n\n## Analytics Lifecycle\n1. Business understanding\n2. Data collection\n3. Data cleaning\n4. EDA\n5. Modeling / Analysis\n6. Visualization & reporting\n7. Decision & monitoring\n\n## Edge Cases\n- Garbage in → garbage out (data quality matters)\n- Simpson's paradox – trends reverse when grouped\n- Confirmation bias – do not search only for what you expect\n\n## Interview FAQs\n**Q1: Analysis vs Analytics?**\nAnalysis is the process; analytics is the discipline.\n\n**Q2: What is EDA?**\nExploratory Data Analysis – understanding data before modeling.\n\n**Q3: What is data storytelling?**\nTranslating findings into a narrative that drives action.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t1-2",
+          "title": "Excel for Data Analysis – Formulas, Lookups, Pivot Tables",
+          "contentMd": "# Excel for Data Analysis\n\n## Essential Functions\n- `SUM`, `AVERAGE`, `COUNT`, `COUNTA`, `COUNTIF`, `SUMIF`\n- `IF`, `IFS`, `AND`, `OR`, `IFERROR`\n- `VLOOKUP`, `HLOOKUP`, `XLOOKUP`, `INDEX + MATCH`\n- `LEFT`, `RIGHT`, `MID`, `TRIM`, `TEXT`, `CONCAT`\n- `DATE`, `YEAR`, `MONTH`, `DATEDIF`, `EOMONTH`\n\n## VLOOKUP vs INDEX+MATCH\nVLOOKUP only looks to the right and breaks if columns move. INDEX+MATCH works both directions and is faster on large data.\n\n```excel\n=VLOOKUP(A2, Products!A:D, 4, FALSE)\n=INDEX(Products!D:D, MATCH(A2, Products!A:A, 0))\n```\n\n## Pivot Tables\n- Rows / Columns / Values / Filters\n- Group by date, category\n- % of total, running totals, show values as\n\n## Data Cleaning in Excel\n- Remove duplicates\n- Text to Columns\n- Flash Fill\n- TRIM + CLEAN for whitespace\n- Go To Special for blanks\n\n## Conditional Formatting\n- Highlight top/bottom\n- Data bars, color scales\n- Formula-based rules\n\n## Charts\n- Bar, line, pie, scatter\n- Combo charts\n- Sparklines\n\n## Edge Cases\n- VLOOKUP returns #N/A if no match\n- XLOOKUP not available in older Excel\n- Dates are serial numbers behind the scenes\n- Large files slow down – use Power Query\n\n## Interview FAQs\n**Q1: VLOOKUP vs INDEX-MATCH?**\nINDEX-MATCH is more flexible and faster on large data.\n\n**Q2: What is Power Query?**\nExcel's ETL tool for automating data cleaning.\n\n**Q3: How to remove duplicates?**\nData → Remove Duplicates, or use `UNIQUE()` in Excel 365.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: You need to find a product price when the ID column is to the right. Which is best?",
+              "options": [
+                "VLOOKUP",
+                "INDEX+MATCH",
+                "HLOOKUP",
+                "SUMIF"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which analytics type answers 'What happened?'",
+              "options": [
+                "Descriptive",
+                "Predictive",
+                "Prescriptive",
+                "Diagnostic"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `=SUMIF(A:A, \"Apple\", B:B)` – what does it do?",
+              "options": [
+                "Sums all B",
+                "Sums B where A = Apple",
+                "Counts Apple",
+                "Errors"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best tool to automate data cleaning in Excel?",
+              "options": [
+                "Formulas",
+                "Power Query",
+                "Pivot",
+                "Chart"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which function removes extra spaces?",
+              "options": [
+                "CLEAN",
+                "TRIM",
+                "LEFT",
+                "STRIP"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Excel dates are stored as what?",
+              "options": [
+                "Strings",
+                "Numbers (serial)",
+                "JSON",
+                "Objects"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is NOT a valid pivot table field area?",
+              "options": [
+                "Rows",
+                "Columns",
+                "Values",
+                "Charts"
+              ],
+              "correct": 3
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: You need to find a product price when the ID column is to the right. Which is best?",
+          "options": [
+            "VLOOKUP",
+            "INDEX+MATCH",
+            "HLOOKUP",
+            "SUMIF"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which analytics type answers 'What happened?'",
+          "options": [
+            "Descriptive",
+            "Predictive",
+            "Prescriptive",
+            "Diagnostic"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `=SUMIF(A:A, \"Apple\", B:B)` – what does it do?",
+          "options": [
+            "Sums all B",
+            "Sums B where A = Apple",
+            "Counts Apple",
+            "Errors"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best tool to automate data cleaning in Excel?",
+          "options": [
+            "Formulas",
+            "Power Query",
+            "Pivot",
+            "Chart"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which function removes extra spaces?",
+          "options": [
+            "CLEAN",
+            "TRIM",
+            "LEFT",
+            "STRIP"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Excel dates are stored as what?",
+          "options": [
+            "Strings",
+            "Numbers (serial)",
+            "JSON",
+            "Objects"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is NOT a valid pivot table field area?",
+          "options": [
+            "Rows",
+            "Columns",
+            "Values",
+            "Charts"
+          ],
+          "correct": 3
+        }
+      ]
+    },
+    {
+      "id": "da-m2",
+      "title": "Module 2: SQL for Data Analysis",
+      "topics": [
+        {
+          "id": "da-t2-1",
+          "title": "SQL Fundamentals – SELECT, WHERE, JOIN, GROUP BY",
+          "contentMd": "# SQL for Data Analysts\n\n## Why SQL?\nSQL is the universal language for querying relational databases. Analysts spend up to 80% of their time in SQL.\n\n## Query Structure\n```sql\nSELECT col1, col2\nFROM table\nWHERE condition\nGROUP BY col1\nHAVING agg_condition\nORDER BY col1 DESC\nLIMIT 10;\n```\n\n## Joins\n- **INNER JOIN** – matching rows only\n- **LEFT JOIN** – all left + matching right\n- **RIGHT JOIN** – all right + matching left\n- **FULL OUTER JOIN** – all rows both sides\n- **SELF JOIN** – table joined to itself\n- **CROSS JOIN** – Cartesian product\n\n```sql\nSELECT o.id, c.name\nFROM orders o\nINNER JOIN customers c ON o.customer_id = c.id;\n```\n\n## Aggregations\n```sql\nSELECT department, COUNT(*), AVG(salary)\nFROM employees\nGROUP BY department\nHAVING AVG(salary) > 50000;\n```\n\n## Subqueries\n```sql\nSELECT name FROM employees\nWHERE salary > (SELECT AVG(salary) FROM employees);\n```\n\n## CTEs (WITH clause)\n```sql\nWITH dept_avg AS (\n  SELECT department, AVG(salary) AS avg_sal\n  FROM employees\n  GROUP BY department\n)\nSELECT * FROM dept_avg WHERE avg_sal > 50000;\n```\n\n## Window Functions\n```sql\nSELECT name, salary,\n  RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS rnk\nFROM employees;\n```\n\n## Edge Cases\n- NULL comparisons: use `IS NULL`, not `= NULL`\n- `COUNT(*)` vs `COUNT(col)` – the latter ignores NULLs\n- WHERE filters before GROUP BY; HAVING filters after\n- Duplicates on join keys multiply rows\n\n## Interview FAQs\n**Q1: WHERE vs HAVING?**\nWHERE filters rows; HAVING filters aggregated groups.\n\n**Q2: INNER vs LEFT JOIN?**\nINNER keeps matches only; LEFT keeps all left rows.\n\n**Q3: What is a window function?**\nAggregation that does not collapse rows.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t2-2",
+          "title": "Advanced SQL, Performance & Analytics Queries",
+          "contentMd": "# Advanced SQL\n\n## CASE Expressions\n```sql\nSELECT name,\n  CASE WHEN salary > 100000 THEN 'High'\n       WHEN salary > 50000 THEN 'Mid'\n       ELSE 'Low' END AS band\nFROM employees;\n```\n\n## Window Function Variants\n- `ROW_NUMBER()` – unique rank\n- `RANK()` – ties + gaps\n- `DENSE_RANK()` – ties no gaps\n- `LAG()`, `LEAD()` – previous/next row\n- `SUM() OVER (ORDER BY ...)` – running total\n- `NTILE(n)` – buckets\n\n## Indexing\n- Speeds up WHERE, JOIN, ORDER BY\n- Slows INSERT/UPDATE\n- Use on high-cardinality columns\n\n## Query Optimization\n- Avoid `SELECT *`\n- Use WHERE early\n- Prefer EXISTS over IN for large subqueries\n- Avoid functions on indexed columns in WHERE\n- Understand EXPLAIN plans\n\n## Edge Cases\n- Functions on columns disable indexes\n- Cartesian joins blow up memory\n- Nested subqueries often become JOINs\n\n## Interview FAQs\n**Q1: What does an index do?**\nSpeeds lookup at cost of write speed.\n\n**Q2: ROW_NUMBER vs RANK?**\nROW_NUMBER = unique; RANK ties share + gaps.\n\n**Q3: Why avoid SELECT *?**\nFetches unnecessary columns, slower, brittle.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: You want all customers even if they have no orders. Which JOIN?",
+              "options": [
+                "INNER",
+                "LEFT",
+                "RIGHT",
+                "CROSS"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Filter aggregated results. Use?",
+              "options": [
+                "WHERE",
+                "HAVING",
+                "GROUP BY",
+                "ORDER BY"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does ROW_NUMBER() return?",
+              "options": [
+                "Unique rank per row",
+                "Same rank for ties",
+                "Random number",
+                "Row ID"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `WHERE col = NULL` – what happens?",
+              "options": [
+                "Finds NULLs",
+                "Matches nothing",
+                "Errors",
+                "Returns all"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best for performance on large tables?",
+              "options": [
+                "SELECT *",
+                "Use indexes",
+                "Cartesian join",
+                "Nested loops"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `COUNT(col)` ignore?",
+              "options": [
+                "0",
+                "NULLs",
+                "Duplicates",
+                "Strings"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Running total by date. Use?",
+              "options": [
+                "GROUP BY",
+                "SUM() OVER (ORDER BY date)",
+                "WHERE",
+                "HAVING"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: You want all customers even if they have no orders. Which JOIN?",
+          "options": [
+            "INNER",
+            "LEFT",
+            "RIGHT",
+            "CROSS"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Filter aggregated results. Use?",
+          "options": [
+            "WHERE",
+            "HAVING",
+            "GROUP BY",
+            "ORDER BY"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does ROW_NUMBER() return?",
+          "options": [
+            "Unique rank per row",
+            "Same rank for ties",
+            "Random number",
+            "Row ID"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `WHERE col = NULL` – what happens?",
+          "options": [
+            "Finds NULLs",
+            "Matches nothing",
+            "Errors",
+            "Returns all"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best for performance on large tables?",
+          "options": [
+            "SELECT *",
+            "Use indexes",
+            "Cartesian join",
+            "Nested loops"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does `COUNT(col)` ignore?",
+          "options": [
+            "0",
+            "NULLs",
+            "Duplicates",
+            "Strings"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Running total by date. Use?",
+          "options": [
+            "GROUP BY",
+            "SUM() OVER (ORDER BY date)",
+            "WHERE",
+            "HAVING"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m3",
+      "title": "Module 3: Python for Data Analysts",
+      "topics": [
+        {
+          "id": "da-t3-1",
+          "title": "Python Refresher for Analytics",
+          "contentMd": "# Python for Data Analysis\n\n## Why Python?\nReadable, powerful libraries, integrates with SQL and BI tools.\n\n## Data Structures Used Daily\n- **list** – ordered dynamic\n- **dict** – key-value lookups\n- **set** – unique membership\n- **tuple** – immutable records\n\n## Comprehensions\n```python\nevens = [x for x in range(20) if x % 2 == 0]\nfreq = {w: len(w) for w in [\"a\", \"bb\", \"ccc\"]}\n```\n\n## Functions & Lambdas\n```python\ndef profit(revenue, cost): return revenue - cost\napply_tax = lambda x: x * 1.18\n```\n\n## File I/O\n```python\nimport csv\nwith open(\"data.csv\") as f:\n    for row in csv.DictReader(f):\n        print(row)\n```\n\n## Virtual Environments\n```bash\npython -m venv venv\nsource venv/bin/activate  # macOS/Linux\nvenv\\Scripts\\activate     # Windows\npip install pandas numpy matplotlib\n```\n\n## Edge Cases\n- Beware mutable default arguments\n- Use `with` to close files\n- Pin library versions in requirements.txt\n\n## Interview FAQs\n**Q1: Why a virtual environment?**\nIsolates dependencies per project.\n\n**Q2: List vs tuple?**\nList mutable; tuple immutable and hashable.\n\n**Q3: What is a comprehension?**\nConcise loop returning a list/dict/set.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t3-2",
+          "title": "Pandas Deep Dive – DataFrames, Cleaning, GroupBy",
+          "contentMd": "# Pandas Deep Dive\n\n## Loading Data\n```python\nimport pandas as pd\ndf = pd.read_csv(\"sales.csv\")\ndf = pd.read_excel(\"sales.xlsx\", sheet_name=\"Sheet1\")\ndf = pd.read_sql(\"SELECT * FROM sales\", conn)\n```\n\n## Exploring\n```python\ndf.head(); df.info(); df.describe()\ndf.shape; df.columns; df.dtypes\ndf.isnull().sum(); df.nunique()\n```\n\n## Selecting & Filtering\n```python\ndf[\"col\"]\ndf.loc[df[\"qty\"] > 10, [\"name\", \"qty\"]]\ndf.iloc[0:5, 0:3]\ndf.query(\"qty > 10 and price < 100\")\n```\n\n## Cleaning\n```python\ndf.dropna(subset=[\"amount\"])\ndf.fillna({\"amount\": 0, \"region\": \"Unknown\"})\ndf.drop_duplicates(subset=[\"order_id\"])\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\ndf[\"name\"] = df[\"name\"].str.strip().str.title()\n```\n\n## Feature Engineering\n```python\ndf[\"revenue\"] = df[\"qty\"] * df[\"price\"]\ndf[\"month\"] = df[\"date\"].dt.month\ndf[\"is_weekend\"] = df[\"date\"].dt.dayofweek >= 5\n```\n\n## GroupBy & Aggregation\n```python\ndf.groupby(\"region\")[\"revenue\"].sum()\ndf.groupby([\"region\", \"month\"]).agg({\n  \"revenue\": [\"sum\", \"mean\"],\n  \"qty\": \"max\"\n})\n```\n\n## Merge & Concat\n```python\npd.merge(orders, customers, on=\"customer_id\", how=\"left\")\npd.concat([df1, df2], axis=0, ignore_index=True)\n```\n\n## Pivot\n```python\npd.pivot_table(df, values=\"revenue\", index=\"region\", columns=\"month\", aggfunc=\"sum\")\n```\n\n## Edge Cases\n- `.loc` label, `.iloc` position – do not mix\n- Chained indexing may produce SettingWithCopyWarning\n- `merge` multiplies rows on duplicate keys\n- Datetime parsing must be explicit\n\n## Interview FAQs\n**Q1: groupby vs pivot_table?**\ngroupby returns flat aggregated frame; pivot_table reshapes into matrix.\n\n**Q2: How to handle large CSV?**\nUse `chunksize=10000` in read_csv or specify `dtype`.\n\n**Q3: What is a SettingWithCopyWarning?**\nYou modified a slice instead of the original DataFrame.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: `df.loc[df['age'] > 30, 'name']`. What does this do?",
+              "options": [
+                "Filters rows and selects a column",
+                "Sorts",
+                "Drops column",
+                "Errors"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Best way to sum revenue per region?",
+              "options": [
+                "df.sum()",
+                "df.groupby('region')['revenue'].sum()",
+                "df.mean()",
+                "df.pivot()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `df.isnull().sum()` returns?",
+              "options": [
+                "Bool",
+                "Count of missing per column",
+                "List",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `.loc` use?",
+              "options": [
+                "Integer positions",
+                "Labels",
+                "Random",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Convert 'date' string column to datetime?",
+              "options": [
+                "df['date'].astype(date)",
+                "pd.to_datetime(df['date'])",
+                "strptime",
+                "df['date'] = datetime"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which merge keeps all left rows?",
+              "options": [
+                "inner",
+                "left",
+                "right",
+                "outer"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best way to handle missing numeric values?",
+              "options": [
+                "Drop all",
+                "Fill with mean/median",
+                "Set to 999",
+                "Ignore"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: `df.loc[df['age'] > 30, 'name']`. What does this do?",
+          "options": [
+            "Filters rows and selects a column",
+            "Sorts",
+            "Drops column",
+            "Errors"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Best way to sum revenue per region?",
+          "options": [
+            "df.sum()",
+            "df.groupby('region')['revenue'].sum()",
+            "df.mean()",
+            "df.pivot()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `df.isnull().sum()` returns?",
+          "options": [
+            "Bool",
+            "Count of missing per column",
+            "List",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does `.loc` use?",
+          "options": [
+            "Integer positions",
+            "Labels",
+            "Random",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Convert 'date' string column to datetime?",
+          "options": [
+            "df['date'].astype(date)",
+            "pd.to_datetime(df['date'])",
+            "strptime",
+            "df['date'] = datetime"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which merge keeps all left rows?",
+          "options": [
+            "inner",
+            "left",
+            "right",
+            "outer"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best way to handle missing numeric values?",
+          "options": [
+            "Drop all",
+            "Fill with mean/median",
+            "Set to 999",
+            "Ignore"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m4",
+      "title": "Module 4: Statistics for Analysts",
+      "topics": [
+        {
+          "id": "da-t4-1",
+          "title": "Descriptive & Inferential Statistics",
+          "contentMd": "# Statistics for Analysts\n\n## Descriptive\n- Mean, Median, Mode\n- Variance, Std Dev, Range, IQR\n- Percentiles, Quartiles\n- Skewness, Kurtosis\n\n```python\nimport statistics\nnums = [1, 2, 2, 3, 4, 4, 4, 5]\nstatistics.mean(nums)     # 3.125\nstatistics.median(nums)   # 3.5\nstatistics.mode(nums)     # 4\nstatistics.stdev(nums)\n```\n\n## Inferential\n- Hypothesis testing\n- t-test, chi-square, ANOVA\n- p-value, confidence interval\n- A/B testing\n\n## Sampling\n- Random, stratified, systematic\n- Sample size and margin of error\n\n## Distributions\n- Normal, Binomial, Poisson, Uniform\n- Central Limit Theorem\n\n## Edge Cases\n- Mean is sensitive to outliers\n- p-value is not the probability the null is true\n- Correlation ≠ causation\n- Small sample → high variance\n\n## Interview FAQs\n**Q1: Mean vs median?**\nMean uses all values; median is robust.\n\n**Q2: What is the Central Limit Theorem?**\nSample means approach normal distribution as n grows.\n\n**Q3: What is a p-value?**\nProbability of observing the result if null hypothesis is true.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t4-2",
+          "title": "Probability, Correlation & A/B Testing",
+          "contentMd": "# Probability & Correlation\n\n## Basic Rules\n- P(A ∪ B) = P(A) + P(B) − P(A ∩ B)\n- P(A | B) = P(A ∩ B) / P(B)\n- Independent: P(A ∩ B) = P(A) × P(B)\n\n## Correlation\n- Pearson r: linear relationship, −1 to 1\n- Spearman: rank-based, robust to outliers\n- Covariance: direction but not scaled\n\n```python\ndf[[\"price\", \"sales\"]].corr(method=\"pearson\")\n```\n\n## A/B Testing Flow\n1. Form hypothesis (H0, H1)\n2. Pick metric and sample size\n3. Randomize into control and variant\n4. Run test, compute p-value\n5. Decide with significance level (α = 0.05)\n\n## Edge Cases\n- Multiple comparisons inflate false positives\n- Peeking early inflates Type I error\n- Simpson's paradox can flip conclusions\n\n## Interview FAQs\n**Q1: What is Type I vs Type II error?**\nType I: false positive. Type II: false negative.\n\n**Q2: What is power?**\nProbability of detecting a real effect.\n\n**Q3: How to choose sample size?**\nBased on expected effect size, α, and desired power.",
+          "quizQuestions": [
+            {
+              "text": "Which is most affected by outliers?",
+              "options": [
+                "Mean",
+                "Median",
+                "Mode",
+                "Range"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `statistics.mode([1,2,2,3])`. Output?",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "2.5"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does standard deviation measure?",
+              "options": [
+                "Center",
+                "Spread",
+                "Shape",
+                "Size"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "In a normal distribution, what % lies within 1 std dev?",
+              "options": [
+                "50%",
+                "68%",
+                "95%",
+                "99%"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which library is used for `np.random.normal`?",
+              "options": [
+                "statistics",
+                "math",
+                "numpy",
+                "random"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: IQR = 10, Q1 = 20. Upper fence?",
+              "options": [
+                "30",
+                "35",
+                "40",
+                "45"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Correlation implies what?",
+              "options": [
+                "Causation",
+                "Relationship",
+                "No relation",
+                "Error"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which is most affected by outliers?",
+          "options": [
+            "Mean",
+            "Median",
+            "Mode",
+            "Range"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `statistics.mode([1,2,2,3])`. Output?",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "2.5"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does standard deviation measure?",
+          "options": [
+            "Center",
+            "Spread",
+            "Shape",
+            "Size"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "In a normal distribution, what % lies within 1 std dev?",
+          "options": [
+            "50%",
+            "68%",
+            "95%",
+            "99%"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which library is used for `np.random.normal`?",
+          "options": [
+            "statistics",
+            "math",
+            "numpy",
+            "random"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: IQR = 10, Q1 = 20. Upper fence?",
+          "options": [
+            "30",
+            "35",
+            "40",
+            "45"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Correlation implies what?",
+          "options": [
+            "Causation",
+            "Relationship",
+            "No relation",
+            "Error"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m5",
+      "title": "Module 5: Data Visualization & BI",
+      "topics": [
+        {
+          "id": "da-t5-1",
+          "title": "Matplotlib & Seaborn",
+          "contentMd": "# Matplotlib & Seaborn\n\n## Matplotlib Basics\n```python\nimport matplotlib.pyplot as plt\nplt.plot([1, 2, 3], [4, 5, 6])\nplt.title(\"Trend\")\nplt.xlabel(\"X\")\nplt.ylabel(\"Y\")\nplt.show()\n```\n\n## Common Plot Types\n- Line – trends over time\n- Bar – categorical comparison\n- Histogram – distribution\n- Scatter – relationship between two variables\n- Boxplot – spread and outliers\n- Heatmap – correlation matrix\n\n## Seaborn\n```python\nimport seaborn as sns\nsns.barplot(x=\"region\", y=\"sales\", data=df)\nsns.heatmap(df.corr(), annot=True)\nsns.pairplot(df)\n```\n\n## Design Principles\n- Label axes\n- Keep charts simple\n- Use color meaningfully\n- Title = the insight, not the plot type\n\n## Edge Cases\n- Truncated y-axis misleads\n- Pie charts bad for many categories\n- 3D charts hard to read\n- Overplotting hides patterns – use jitter or alpha\n\n## Interview FAQs\n**Q1: When to use a bar chart vs histogram?**\nBar for categories; histogram for numeric bins.\n\n**Q2: How to plot correlation?**\nHeatmap of `df.corr()`.\n\n**Q3: What is overplotting?**\nToo many points overlap; use alpha or sampling.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t5-2",
+          "title": "Power BI / Tableau Essentials",
+          "contentMd": "# Power BI / Tableau Essentials\n\n## Power BI Workflow\n1. Connect data (Excel, SQL, APIs)\n2. Transform in Power Query\n3. Model relationships\n4. Write DAX measures\n5. Build visuals\n6. Publish to service\n\n## DAX Examples\n```dax\nTotal Sales = SUM(Sales[Amount])\nYTD Sales = TOTALYTD([Total Sales], Sales[Date])\nYoY % = DIVIDE([Total Sales] - [Last Year Sales], [Last Year Sales])\n```\n\n## Tableau Key Concepts\n- Dimensions vs Measures\n- Calculated fields\n- Filters, Parameters, Sets\n- Dashboards and Stories\n\n## Dashboard Design\n- KPIs at the top\n- Filters on the side\n- Detail drill-down at bottom\n- Consistent color palette\n\n## Edge Cases\n- Relationship cardinality mistakes cause wrong aggregates\n- DAX filter context is critical\n- Too many visuals slow dashboards\n\n## Interview FAQs\n**Q1: Dimension vs Measure?**\nDimension = categorical; Measure = numeric aggregated.\n\n**Q2: What is filter context in DAX?**\nSet of filters applied when a measure is evaluated.\n\n**Q3: Row-level security?**\nRestrict data per user role.",
+          "quizQuestions": [
+            {
+              "text": "Which plot for a numeric distribution?",
+              "options": [
+                "Bar",
+                "Histogram",
+                "Pie",
+                "Line"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `sns.heatmap(df.corr())` shows?",
+              "options": [
+                "Distribution",
+                "Correlation matrix",
+                "Trend",
+                "Rank"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which chart is best for time trends?",
+              "options": [
+                "Bar",
+                "Line",
+                "Pie",
+                "Box"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "In Power BI, DAX is used for?",
+              "options": [
+                "Visuals",
+                "Measures and calculations",
+                "Data load",
+                "Refresh"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Pie chart with 15 categories. Problem?",
+              "options": [
+                "Fine",
+                "Hard to read",
+                "Fast",
+                "Accurate"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Dimension in Tableau is?",
+              "options": [
+                "Numeric aggregate",
+                "Categorical field",
+                "Measure",
+                "Filter"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best KPI placement in a dashboard?",
+              "options": [
+                "Bottom",
+                "Top",
+                "Hidden",
+                "Sidebar only"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which plot for a numeric distribution?",
+          "options": [
+            "Bar",
+            "Histogram",
+            "Pie",
+            "Line"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `sns.heatmap(df.corr())` shows?",
+          "options": [
+            "Distribution",
+            "Correlation matrix",
+            "Trend",
+            "Rank"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which chart is best for time trends?",
+          "options": [
+            "Bar",
+            "Line",
+            "Pie",
+            "Box"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "In Power BI, DAX is used for?",
+          "options": [
+            "Visuals",
+            "Measures and calculations",
+            "Data load",
+            "Refresh"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Pie chart with 15 categories. Problem?",
+          "options": [
+            "Fine",
+            "Hard to read",
+            "Fast",
+            "Accurate"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Dimension in Tableau is?",
+          "options": [
+            "Numeric aggregate",
+            "Categorical field",
+            "Measure",
+            "Filter"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best KPI placement in a dashboard?",
+          "options": [
+            "Bottom",
+            "Top",
+            "Hidden",
+            "Sidebar only"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m6",
+      "title": "Module 6: Data Cleaning & EDA",
+      "topics": [
+        {
+          "id": "da-t6-1",
+          "title": "Data Cleaning Techniques",
+          "contentMd": "# Data Cleaning\n\n## Common Issues\n- Missing values\n- Duplicates\n- Inconsistent formats\n- Outliers\n- Wrong data types\n- Whitespace and case issues\n\n## Handling Missing Values\n```python\ndf.isnull().sum()\ndf.dropna(subset=[\"amount\"])\ndf.fillna({\"amount\": 0, \"region\": \"Unknown\"})\ndf[\"age\"].interpolate()\n```\n\n## Outliers\n- Z-score: |z| > 3\n- IQR: below Q1 − 1.5·IQR or above Q3 + 1.5·IQR\n- Cap, remove, or model separately\n\n## Standardization\n- Dates → ISO format\n- Categories → lowercase, trimmed\n- Phone numbers → digits only\n\n## Edge Cases\n- Dropping rows may bias results\n- Imputing mean reduces variance\n- Duplicates must be defined on key columns only\n\n## Interview FAQs\n**Q1: Drop or fill missing values?**\nDepends on missingness mechanism and volume.\n\n**Q2: What is MCAR?**\nMissing Completely At Random – safe to drop.\n\n**Q3: What is data leakage?**\nUsing future/target information during cleaning or modeling.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t6-2",
+          "title": "Exploratory Data Analysis (EDA)",
+          "contentMd": "# EDA\n\n## Steps\n1. Understand shape and dtypes\n2. Summary statistics\n3. Univariate analysis\n4. Bivariate analysis\n5. Multivariate analysis\n6. Feature engineering\n7. Hypothesis generation\n\n## Univariate\n- Histogram, boxplot, countplot\n- Mean, median, std, skew\n\n## Bivariate\n- Scatter, grouped boxplot\n- Correlation matrix\n\n## Multivariate\n- Pairplot\n- Heatmap\n- PCA (advanced)\n\n## Feature Engineering\n```python\ndf[\"tenure_days\"] = (pd.Timestamp.today() - df[\"join_date\"]).dt.days\ndf[\"is_new\"] = df[\"tenure_days\"] < 30\ndf[\"price_band\"] = pd.cut(df[\"price\"], bins=[0, 100, 500, 1000, np.inf], labels=[\"Low\", \"Mid\", \"High\", \"Premium\"])\n```\n\n## Edge Cases\n- Overplotting hides patterns\n- Correlations with categorical need encoding\n- Don't confuse causation with correlation\n\n## Interview FAQs\n**Q1: What is EDA?**\nStructured exploration before modeling.\n\n**Q2: Best way to detect skew?**\nHistogram + skew() value.\n\n**Q3: Why feature engineer?**\nImproves signal, interpretability and model performance.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: Detect outliers using IQR. Which rule?",
+              "options": [
+                "±1 std",
+                "1.5 × IQR",
+                "2 × IQR",
+                "3 × median"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `df.isnull().sum()` return?",
+              "options": [
+                "Bool mask",
+                "Count of missing per column",
+                "Mean",
+                "Total rows"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Imputing mean will most likely?",
+              "options": [
+                "Increase variance",
+                "Reduce variance",
+                "No change",
+                "Increase skew"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best plot to see distribution?",
+              "options": [
+                "Bar",
+                "Histogram",
+                "Pie",
+                "Line"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `pd.cut` is used for?",
+              "options": [
+                "Clustering",
+                "Binning numeric values",
+                "Sorting",
+                "Merging"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "MCAR means?",
+              "options": [
+                "Missing caused by data",
+                "Missing completely at random",
+                "Missing not at random",
+                "Missing and complete"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Data leakage happens when?",
+              "options": [
+                "You drop rows",
+                "You use future/target info",
+                "You rename columns",
+                "You plot"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: Detect outliers using IQR. Which rule?",
+          "options": [
+            "±1 std",
+            "1.5 × IQR",
+            "2 × IQR",
+            "3 × median"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does `df.isnull().sum()` return?",
+          "options": [
+            "Bool mask",
+            "Count of missing per column",
+            "Mean",
+            "Total rows"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Imputing mean will most likely?",
+          "options": [
+            "Increase variance",
+            "Reduce variance",
+            "No change",
+            "Increase skew"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best plot to see distribution?",
+          "options": [
+            "Bar",
+            "Histogram",
+            "Pie",
+            "Line"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `pd.cut` is used for?",
+          "options": [
+            "Clustering",
+            "Binning numeric values",
+            "Sorting",
+            "Merging"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "MCAR means?",
+          "options": [
+            "Missing caused by data",
+            "Missing completely at random",
+            "Missing not at random",
+            "Missing and complete"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Data leakage happens when?",
+          "options": [
+            "You drop rows",
+            "You use future/target info",
+            "You rename columns",
+            "You plot"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m7",
+      "title": "Module 7: Business Analytics & Storytelling",
+      "topics": [
+        {
+          "id": "da-t7-1",
+          "title": "Business Metrics, KPIs & Storytelling",
+          "contentMd": "# Business Analytics\n\n## Common KPIs\n- Revenue, GMV, ARPU\n- DAU / MAU, Retention, Churn\n- CAC, LTV, LTV:CAC ratio\n- Conversion, Funnel drop-off\n\n## Cohort Analysis\nGroup users by signup month and track behaviour over time. Reveals retention patterns.\n\n## Funnel Analysis\n```\nVisit → Signup → Activation → Purchase → Repeat\n```\nDrop-off at each stage shows where UX or marketing fails.\n\n## Data Storytelling\n1. Start with the insight\n2. Show evidence\n3. Explain impact\n4. Recommend next step\n\n## Framework – Pyramid Principle\nLead with the answer, then supporting arguments, then data.\n\n## Edge Cases\n- Vanity metrics (pageviews) mislead\n- Averages hide segment differences\n- Time zone issues in daily reporting\n\n## Interview FAQs\n**Q1: What is a KPI?**\nQuantifiable measure tied to a business goal.\n\n**Q2: LTV:CAC ratio?**\nIndicates profitability of acquiring a customer.\n\n**Q3: What is churn?**\nRate at which customers stop using the product.",
+          "quizQuestions": [
+            {
+              "text": "Which metric tracks repeat usage?",
+              "options": [
+                "CAC",
+                "Retention",
+                "GMV",
+                "Pageviews"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "LTV:CAC of 3 means?",
+              "options": [
+                "Loss",
+                "Healthy profitability",
+                "Neutral",
+                "Churn"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best first sentence of an insight?",
+              "options": [
+                "Raw numbers",
+                "The key finding",
+                "Methodology",
+                "Tool used"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Cohort analysis groups users by?",
+              "options": [
+                "Age",
+                "Signup period",
+                "Region",
+                "Revenue"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Funnel drop-off indicates?",
+              "options": [
+                "Growth",
+                "Where users abandon",
+                "Retention",
+                "Profit"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Vanity metric example?",
+              "options": [
+                "Revenue",
+                "Pageviews",
+                "Conversion",
+                "Churn"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Pyramid Principle says?",
+              "options": [
+                "End with answer",
+                "Lead with answer",
+                "Avoid visuals",
+                "Use raw data only"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which metric tracks repeat usage?",
+          "options": [
+            "CAC",
+            "Retention",
+            "GMV",
+            "Pageviews"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "LTV:CAC of 3 means?",
+          "options": [
+            "Loss",
+            "Healthy profitability",
+            "Neutral",
+            "Churn"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best first sentence of an insight?",
+          "options": [
+            "Raw numbers",
+            "The key finding",
+            "Methodology",
+            "Tool used"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Cohort analysis groups users by?",
+          "options": [
+            "Age",
+            "Signup period",
+            "Region",
+            "Revenue"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Funnel drop-off indicates?",
+          "options": [
+            "Growth",
+            "Where users abandon",
+            "Retention",
+            "Profit"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Vanity metric example?",
+          "options": [
+            "Revenue",
+            "Pageviews",
+            "Conversion",
+            "Churn"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Pyramid Principle says?",
+          "options": [
+            "End with answer",
+            "Lead with answer",
+            "Avoid visuals",
+            "Use raw data only"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "da-m8",
+      "title": "Module 8: Capstone Project & Interview Prep",
+      "topics": [
+        {
+          "id": "da-t8-1",
+          "title": "End-to-End Analyst Project",
+          "contentMd": "# Capstone Project\n\n## Goal\nBuild an end-to-end analysis from raw data to dashboard and recommendation.\n\n## Steps\n1. Choose a dataset (sales, marketing, HR, e-commerce)\n2. Load into SQL / Pandas\n3. Clean and validate\n4. Perform EDA\n5. Compute KPIs\n6. Build 3–5 visualizations\n7. Write recommendations\n8. Present in 5 slides\n\n## Sample Deliverables\n- Jupyter Notebook with analysis\n- SQL queries file\n- Power BI / Tableau dashboard\n- Executive summary PDF\n\n## Evaluation Rubric\n- Data quality handling (20%)\n- Analytical depth (25%)\n- Visualization clarity (20%)\n- Business insight (25%)\n- Presentation (10%)\n\n## Edge Cases\n- Bad data sources\n- Unclear business question\n- No baseline to compare\n\n## Interview FAQs\n**Q1: How to present analysis?**\nInsight first, then evidence, then recommendation.\n\n**Q2: What if data is dirty?**\nDocument assumptions and quantify impact of cleaning.\n\n**Q3: What makes a good portfolio project?**\nClear question, clean code, strong visuals, sharp conclusions.",
+          "quizQuestions": []
+        },
+        {
+          "id": "da-t8-2",
+          "title": "Top Data Analyst Interview Questions",
+          "contentMd": "# Top Interview Questions\n\n## SQL\n1. Explain INNER vs LEFT JOIN\n2. Where vs HAVING\n3. Window functions – RANK, ROW_NUMBER, LAG\n4. Find the second highest salary\n5. Running totals\n6. Self-join use cases\n\n## Python\n7. Pandas groupby and agg\n8. Merge types and pitfalls\n9. Handling missing data\n10. Vectorization vs apply\n\n## Statistics\n11. Mean vs median\n12. p-value explanation\n13. Type I vs Type II error\n14. Confidence intervals\n15. A/B test design\n\n## Excel\n16. VLOOKUP vs INDEX-MATCH\n17. Pivot table\n18. Power Query\n\n## Business\n19. Define a KPI\n20. Churn analysis\n21. Cohort analysis\n22. Funnel analysis\n\n## Scenario\n23. Metric dropped 20% overnight – what do you do?\n24. How to measure feature success?\n25. How to explain a complex insight to a non-technical stakeholder?\n\n## Interview FAQs\n**Q1: How to prepare?**\nPractice SQL daily, build 2–3 projects, rehearse storytelling.\n\n**Q2: What impresses interviewers?**\nClarity of thought, business framing, clean code.",
+          "quizQuestions": [
+            {
+              "text": "Best first step in a project?",
+              "options": [
+                "Modeling",
+                "Business understanding",
+                "Visualization",
+                "Deployment"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: A metric dropped 20% overnight. First step?",
+              "options": [
+                "Panic",
+                "Check data pipeline and definitions",
+                "Fire staff",
+                "Change KPI"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which SQL clause filters groups?",
+              "options": [
+                "WHERE",
+                "HAVING",
+                "GROUP BY",
+                "ORDER BY"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "How to find second highest salary?",
+              "options": [
+                "MAX()",
+                "ORDER BY DESC LIMIT 1 OFFSET 1",
+                "AVG()",
+                "COUNT()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Type I error is?",
+              "options": [
+                "False negative",
+                "False positive",
+                "Missing data",
+                "Outlier"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best way to explain to stakeholders?",
+              "options": [
+                "Dump raw data",
+                "Insight first, then evidence",
+                "Code only",
+                "Skip visuals"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Portfolio project must include?",
+              "options": [
+                "Long code",
+                "Clear question + clean code + insight",
+                "Only charts",
+                "Only SQL"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Best first step in a project?",
+          "options": [
+            "Modeling",
+            "Business understanding",
+            "Visualization",
+            "Deployment"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: A metric dropped 20% overnight. First step?",
+          "options": [
+            "Panic",
+            "Check data pipeline and definitions",
+            "Fire staff",
+            "Change KPI"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which SQL clause filters groups?",
+          "options": [
+            "WHERE",
+            "HAVING",
+            "GROUP BY",
+            "ORDER BY"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "How to find second highest salary?",
+          "options": [
+            "MAX()",
+            "ORDER BY DESC LIMIT 1 OFFSET 1",
+            "AVG()",
+            "COUNT()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Type I error is?",
+          "options": [
+            "False negative",
+            "False positive",
+            "Missing data",
+            "Outlier"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best way to explain to stakeholders?",
+          "options": [
+            "Dump raw data",
+            "Insight first, then evidence",
+            "Code only",
+            "Skip visuals"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Portfolio project must include?",
+          "options": [
+            "Long code",
+            "Clear question + clean code + insight",
+            "Only charts",
+            "Only SQL"
+          ],
+          "correct": 1
+        }
+      ]
+    }
+  ]
+}

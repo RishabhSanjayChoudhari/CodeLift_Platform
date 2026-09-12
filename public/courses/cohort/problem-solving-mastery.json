@@ -1,0 +1,1322 @@
+{
+  "id": "problem-solving-mastery",
+  "title": "Problem Solving Mastery: Approach, Edge Cases & Coding Rounds",
+  "slug": "problem-solving-mastery",
+  "description": "Learn HOW to think, not just what to code. Master the art of approaching problems, breaking them down, handling edge cases (especially zero and empty inputs), and cracking coding rounds with confidence. Includes real examples, scenario walkthroughs, and interview-style quizzes.",
+  "categoryId": "cat-dsa",
+  "courseType": "cohort",
+  "course_type": "cohort",
+  "isCohort": true,
+  "isPublished": true,
+  "isApproved": true,
+  "isFree": false,
+  "price": 1499,
+  "thumbnail": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600",
+  "rating": 4.9,
+  "numReviews": 176,
+  "studentsEnrolled": 1320,
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "updatedAt": "2026-02-15T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "ps-m1",
+      "title": "Module 1: The Problem Solving Mindset",
+      "topics": [
+        {
+          "id": "ps-t1-1",
+          "title": "Why Most Beginners Fail in Coding Rounds",
+          "contentMd": "# Why Most Beginners Fail in Coding Rounds\n\n## The Real Reason\nIt is rarely the syntax. Most candidates fail because they:\n- Jump to code without understanding the problem\n- Ignore edge cases until the interviewer points them out\n- Never verify their logic with a dry run\n- Panic when the problem is unfamiliar\n- Cannot explain their approach in plain words\n\n## The 5-Layer Problem Solving Model\n1. **Understand** – Restate the problem in your own words\n2. **Explore** – Try small examples by hand\n3. **Plan** – Write pseudocode before coding\n4. **Code** – Translate plan into clean code\n5. **Verify** – Dry run, edge cases, complexity\n\n## What Interviewers Actually Look For\n- Communication: Can you explain your thought process?\n- Structure: Do you have a method or do you guess?\n- Edge case awareness: Do you think of 0, empty, negatives, duplicates?\n- Clean code: Variables named well, functions small, no magic numbers\n- Testing: Do you verify with sample inputs?\n\n## Edge Case Example – The Zero Trap\n**Problem:** Find the maximum number in a list.\n\n**Naive code:**\n```python\ndef find_max(nums):\n    max_val = 0   # ❌ assumes all numbers are positive\n    for n in nums:\n        if n > max_val:\n            max_val = n\n    return max_val\n```\n\n**What happens with `[-5, -2, -9]`?**\nReturns 0, but correct answer is -2. The initial value 0 broke the logic.\n\n**Fix:**\n```python\ndef find_max(nums):\n    if not nums:\n        return None\n    max_val = nums[0]\n    for n in nums[1:]:\n        if n > max_val:\n            max_val = n\n    return max_val\n```\n\n## Edge Cases\n- Initializing with 0 when values can be negative\n- Assuming non-empty input when empty is possible\n- Assuming integers when floats are possible\n- Assuming sorted data when it is not guaranteed\n\n## Interview FAQs\n**Q1: What do you do if you are stuck?**\nTalk through what you know, try a smaller example, ask a clarifying question.\n\n**Q2: Should you say the complexity out loud?**\nYes – it shows awareness. Say both time and space.\n\n**Q3: What if you cannot find the optimal solution?**\nState the brute force, then discuss how you would improve it.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t1-2",
+          "title": "How to Read a Problem Statement Like a Pro",
+          "contentMd": "# How to Read a Problem Statement\n\n## The 6 Questions You Must Ask\n1. **Input** – What type? How big? Are negatives or zeros possible?\n2. **Output** – Exact format? Return or print? List or count?\n3. **Constraints** – Size limits? Time limits? Memory?\n4. **Edge Cases** – Empty? One element? Duplicates? All same?\n5. **Examples** – Do they cover edge cases or only happy path?\n6. **Assumptions** – Is it sorted? Unique? Non-negative?\n\n## Example – Restate Before You Code\n**Problem:** \"Given a list of integers, return the pair that sums to a target.\"\n\n**Restate:**\n- Input: list of ints, may contain duplicates, may be empty\n- Target: integer (could be negative, could be zero)\n- Output: return two numbers (not indices) – ask the interviewer\n- Constraint: assume unique pair exists\n\nNow you have a plan for input validation and edge cases.\n\n## The \"Zero Trap\" Revisited\nWhenever you see:\n- \"maximum\", \"minimum\", \"product\", \"division\", \"sum\"\n- **Ask yourself:** Can any value be 0?\n- If yes, your initialization, division, and comparison logic must handle it.\n\n## Edge Case Checklist (Print this)\n- [ ] Empty input\n- [ ] Single element\n- [ ] All same values\n- [ ] Contains 0\n- [ ] Contains negatives\n- [ ] Contains duplicates\n- [ ] Very large input (performance)\n- [ ] Very small input (base case)\n- [ ] Input already sorted\n- [ ] Input reverse sorted\n\n## Interview FAQs\n**Q1: Should you repeat the question back?**\nYes – it prevents misunderstandings.\n\n**Q2: How to handle ambiguity?**\nAsk a specific question, do not guess silently.\n\n**Q3: What if the interviewer says \"no edge cases\"?**\nStill mention them; it shows depth.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: You need to find the maximum in a list that may contain negatives. What is the safest initial value?",
+              "options": [
+                "0",
+                "-1",
+                "nums[0]",
+                "float('inf')"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "What is the FIRST thing you should do in a coding round?",
+              "options": [
+                "Start coding",
+                "Understand and restate the problem",
+                "Ask for the answer",
+                "Write tests"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which of these is NOT an edge case you should check?",
+              "options": [
+                "Empty list",
+                "Duplicates",
+                "Colour of the UI",
+                "Contains zero"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: Sum of a list starting with `total = 0`. What input breaks it?",
+              "options": [
+                "Large numbers",
+                "Negatives",
+                "Both – negatives can be summed starting from 0 incorrectly",
+                "No input breaks it"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Why is talking out loud important in interviews?",
+              "options": [
+                "Shows you are confident",
+                "Shows your thought process",
+                "Fills silence",
+                "Not important"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Problem says 'find max product of two numbers'. Edge case to consider?",
+              "options": [
+                "Only positives matter",
+                "Two large negatives give a positive product",
+                "Zero always wins",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does the 5-Layer Model start with?",
+              "options": [
+                "Code",
+                "Verify",
+                "Understand",
+                "Plan"
+              ],
+              "correct": 2
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: You need to find the maximum in a list that may contain negatives. What is the safest initial value?",
+          "options": [
+            "0",
+            "-1",
+            "nums[0]",
+            "float('inf')"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "What is the FIRST thing you should do in a coding round?",
+          "options": [
+            "Start coding",
+            "Understand and restate the problem",
+            "Ask for the answer",
+            "Write tests"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which of these is NOT an edge case you should check?",
+          "options": [
+            "Empty list",
+            "Duplicates",
+            "Colour of the UI",
+            "Contains zero"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: Sum of a list starting with `total = 0`. What input breaks it?",
+          "options": [
+            "Large numbers",
+            "Negatives",
+            "Both – negatives can be summed starting from 0 incorrectly",
+            "No input breaks it"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Why is talking out loud important in interviews?",
+          "options": [
+            "Shows you are confident",
+            "Shows your thought process",
+            "Fills silence",
+            "Not important"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Problem says 'find max product of two numbers'. Edge case to consider?",
+          "options": [
+            "Only positives matter",
+            "Two large negatives give a positive product",
+            "Zero always wins",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does the 5-Layer Model start with?",
+          "options": [
+            "Code",
+            "Verify",
+            "Understand",
+            "Plan"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    {
+      "id": "ps-m2",
+      "title": "Module 2: The Zero & Empty Trap – Edge Case Thinking",
+      "topics": [
+        {
+          "id": "ps-t2-1",
+          "title": "Zero as the Silent Killer of Logic",
+          "contentMd": "# Zero as the Silent Killer\n\n## Why Zero Breaks Code\nZero is a valid number but breaks many assumptions:\n- Initialization values (max = 0)\n- Division (`x / 0` → ZeroDivisionError)\n- Multiplication (products collapse to 0)\n- Truthiness (0 is falsy in Python/JS)\n- Sign detection (`if x > 0` fails for 0)\n\n## Classic Failure Examples\n\n### Example 1 – Max of negatives\n```python\nmax_val = 0\nfor n in [-3, -5, -1]:\n    if n > max_val: max_val = n\nprint(max_val)   # prints 0, but correct is -1\n```\n\n### Example 2 – Product of list\n```python\ndef product(nums):\n    result = 0   # ❌ should be 1\n    for n in nums:\n        result *= n\n    return result\n```\nReturns 0 for `[2, 3]`. Correct answer is 6.\n\n### Example 3 – Zero division\n```python\ndef average(nums):\n    return sum(nums) / len(nums)   # ❌ breaks on empty list\n```\n\n## The Rule\n**Before initializing any accumulator, ask: can 0 be a legitimate value here?**\n\n| Use Case | Safe Initial Value |\n|----------|---------------------|\n| Sum | 0 |\n| Product | 1 |\n| Max | First element or -inf |\n| Min | First element or +inf |\n| Count | 0 |\n| Concatenate strings | \"\" |\n| Union of sets | set() |\n\n## Edge Cases\n- Zero as valid input (must be handled, not filtered)\n- Zero in the middle of a product\n- Zero as denominator\n- Zero as index (valid)\n- Empty list produces ZeroDivisionError in averages\n\n## Interview FAQs\n**Q1: Why is 0 dangerous?**\nIt breaks multiplicative identities and division.\n\n**Q2: How to compute product safely?**\nInitialize result = 1, not 0.\n\n**Q3: What if empty input is possible?**\nReturn 0, None, or raise a clear error depending on spec.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t2-2",
+          "title": "Empty Inputs, Single Elements & Degenerate Cases",
+          "contentMd": "# Empty Inputs & Degenerate Cases\n\n## Degenerate Case\nA case where the general logic collapses – too few elements, all same, all zero.\n\n## Common Degenerate Cases\n| Case | What breaks |\n|------|-------------|\n| Empty list | max, min, avg, first, last |\n| One element | swap, sort, window with size > 1 |\n| All same | \"unique\" logic, partitions |\n| All zero | division, ratio, sign checks |\n| Sorted already | quicksort worst case |\n| Reverse sorted | binary search assumptions |\n\n## Example – Two Sum with Empty Array\n```python\ndef two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []   # ✅ safe fallback\n```\nWithout `return []`, an empty input returns None and the caller crashes.\n\n## Example – Average\n```python\ndef average(nums):\n    if not nums:\n        return 0   # or None, or raise ValueError\n    return sum(nums) / len(nums)\n```\n\n## Example – Reverse a List\n```python\ndef reverse(nums):\n    if len(nums) <= 1:\n        return nums   # single or empty → already reversed\n    return nums[::-1]\n```\n\n## Pattern – Guard Clauses\nPut edge case checks at the top of the function:\n```python\ndef solve(nums):\n    if not nums:\n        return 0\n    if len(nums) == 1:\n        return nums[0]\n    # main logic here\n```\n\n## Interview FAQs\n**Q1: Why add guard clauses?**\nThey keep the main logic clean and readable.\n\n**Q2: Return None or raise?**\nDepends on the problem. Return None for \"no result\". Raise for \"invalid input\".\n\n**Q3: What is a good test list?**\n`[]`, `[x]`, `[x, x]`, `[0]`, `[0, 0]`, `[-1]`, `[1, 2, 3]`.",
+          "quizQuestions": [
+            {
+              "text": "What is the safe initial value for a product accumulator?",
+              "options": [
+                "0",
+                "1",
+                "-1",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `average([])`. What happens without a guard?",
+              "options": [
+                "Returns 0",
+                "ZeroDivisionError",
+                "Returns None",
+                "Returns NaN"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which edge case breaks a swap-first-last function?",
+              "options": [
+                "Empty list",
+                "One element",
+                "Both A and B",
+                "None"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: Find max in `[-2, -5, -1]` with max=0. Output?",
+              "options": [
+                "-1",
+                "0",
+                "-2",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What is a guard clause?",
+              "options": [
+                "A security feature",
+                "An early return for edge cases",
+                "A loop condition",
+                "A type checker"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "For counts, the safe initial value is?",
+              "options": [
+                "1",
+                "0",
+                "-1",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: All elements are 0 in a division-heavy problem. Risk?",
+              "options": [
+                "No risk",
+                "ZeroDivisionError",
+                "Slower code",
+                "None of these"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "What is the safe initial value for a product accumulator?",
+          "options": [
+            "0",
+            "1",
+            "-1",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `average([])`. What happens without a guard?",
+          "options": [
+            "Returns 0",
+            "ZeroDivisionError",
+            "Returns None",
+            "Returns NaN"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which edge case breaks a swap-first-last function?",
+          "options": [
+            "Empty list",
+            "One element",
+            "Both A and B",
+            "None"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: Find max in `[-2, -5, -1]` with max=0. Output?",
+          "options": [
+            "-1",
+            "0",
+            "-2",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What is a guard clause?",
+          "options": [
+            "A security feature",
+            "An early return for edge cases",
+            "A loop condition",
+            "A type checker"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "For counts, the safe initial value is?",
+          "options": [
+            "1",
+            "0",
+            "-1",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: All elements are 0 in a division-heavy problem. Risk?",
+          "options": [
+            "No risk",
+            "ZeroDivisionError",
+            "Slower code",
+            "None of these"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "ps-m3",
+      "title": "Module 3: Brute Force to Optimal – Approach Patterns",
+      "topics": [
+        {
+          "id": "ps-t3-1",
+          "title": "The Approach Ladder: Brute → Better → Best",
+          "contentMd": "# The Approach Ladder\n\n## Why Start with Brute Force?\n- It always works\n- It proves you understand the problem\n- It gives a baseline for optimization\n- Interviewers respect a systematic climb\n\n## The Ladder\n1. **Brute force** – nested loops, try everything\n2. **Better** – sort, precompute, or use a simple data structure\n3. **Best** – optimal time/space using a known pattern\n\n## Example – Two Sum\n\n### Step 1 – Brute Force O(n²)\n```python\ndef two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []\n```\n\n### Step 2 – Better: Sort + Two Pointers O(n log n)\n```python\ndef two_sum_sorted(nums, target):\n    sorted_nums = sorted(enumerate(nums), key=lambda x: x[1])\n    l, r = 0, len(sorted_nums) - 1\n    while l < r:\n        s = sorted_nums[l][1] + sorted_nums[r][1]\n        if s == target:\n            return [sorted_nums[l][0], sorted_nums[r][0]]\n        elif s < target:\n            l += 1\n        else:\n            r -= 1\n    return []\n```\n\n### Step 3 – Best: HashMap O(n)\n```python\ndef two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        diff = target - n\n        if diff in seen:\n            return [seen[diff], i]\n        seen[n] = i\n    return []\n```\n\n## Trade-off Table\n| Approach | Time | Space | When to use |\n|----------|------|-------|-------------|\n| Brute | O(n²) | O(1) | Small n, clarity |\n| Sort + pointers | O(n log n) | O(n) | Sorted input or index-less |\n| HashMap | O(n) | O(n) | Best general case |\n\n## Interview FAQs\n**Q1: Should I always aim for optimal?**\nNo – start with brute, then improve. Interviewers want to see progression.\n\n**Q2: When is brute force acceptable?**\nn small (< 1000) or clarity matters more than speed.\n\n**Q3: What if I cannot find the optimal?**\nState the brute force confidently; discuss a possible direction.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t3-2",
+          "title": "Core Patterns: Two Pointers, Sliding Window, Hashmap, Recursion",
+          "contentMd": "# Core Patterns\n\n## 1. Two Pointers\nWhen: sorted array, pair/triplet problems, palindrome.\n```python\ndef two_sum_sorted(arr, target):\n    l, r = 0, len(arr) - 1\n    while l < r:\n        s = arr[l] + arr[r]\n        if s == target: return [l, r]\n        elif s < target: l += 1\n        else: r -= 1\n    return []\n```\n\n## 2. Sliding Window\nWhen: longest/shortest subarray or substring with a condition.\n```python\ndef max_sum_k(arr, k):\n    if len(arr) < k: return 0\n    window = sum(arr[:k])\n    best = window\n    for i in range(k, len(arr)):\n        window += arr[i] - arr[i - k]\n        best = max(best, window)\n    return best\n```\n\n## 3. Frequency Map / Hashmap\nWhen: count, detect duplicates, group by property.\n```python\nfrom collections import Counter\ndef has_duplicate(nums):\n    return len(set(nums)) < len(nums)\n```\n\n## 4. Recursion + Memoization\nWhen: overlapping subproblems, trees, combinatorics.\n```python\ndef fib(n, memo={}):\n    if n in memo: return memo[n]\n    if n <= 1: return n\n    memo[n] = fib(n - 1, memo) + fib(n - 2, memo)\n    return memo[n]\n```\n\n## 5. Prefix Sum\nWhen: many range sum queries.\n```python\nprefix = [0]\nfor n in nums:\n    prefix.append(prefix[-1] + n)\n# sum(i, j) = prefix[j+1] - prefix[i]\n```\n\n## Choosing the Right Pattern\n| Problem hint | Pattern |\n|--------------|---------|\n| Sorted array + pair | Two pointers |\n| Subarray with condition | Sliding window |\n| Counts / duplicates | Hashmap |\n| Overlapping subproblems | DP / memoization |\n| Range sums | Prefix sum |\n\n## Interview FAQs\n**Q1: How to know which pattern?**\nRead the hint words: sorted, subarray, count, longest, pair, target.\n\n**Q2: Can I mix patterns?**\nYes – e.g., sort + two pointers, hashmap + sliding window.\n\n**Q3: What about DP?**\nDP is recursion + memoization with a clean table.",
+          "quizQuestions": [
+            {
+              "text": "Best pattern for 'longest substring without repeating characters'?",
+              "options": [
+                "Two pointers",
+                "Sliding window",
+                "Recursion",
+                "Sorting"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Two Sum optimal complexity?",
+              "options": [
+                "O(n²)",
+                "O(n log n)",
+                "O(n)",
+                "O(1)"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Which pattern for range sum queries?",
+              "options": [
+                "Two pointers",
+                "Sliding window",
+                "Prefix sum",
+                "Recursion"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: Sorted array + target sum. Best approach?",
+              "options": [
+                "Nested loops",
+                "Two pointers",
+                "Hashmap",
+                "Recursion"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What should you do first in an interview?",
+              "options": [
+                "Optimal solution",
+                "Brute force",
+                "Ask the answer",
+                "Skip clarifying"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Memoization helps when?",
+              "options": [
+                "No overlap",
+                "Overlapping subproblems",
+                "Sorting",
+                "Searching"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which pattern for detecting duplicates in O(n)?",
+              "options": [
+                "Two pointers",
+                "Hashmap/Set",
+                "Sorting",
+                "Recursion"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Best pattern for 'longest substring without repeating characters'?",
+          "options": [
+            "Two pointers",
+            "Sliding window",
+            "Recursion",
+            "Sorting"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Two Sum optimal complexity?",
+          "options": [
+            "O(n²)",
+            "O(n log n)",
+            "O(n)",
+            "O(1)"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Which pattern for range sum queries?",
+          "options": [
+            "Two pointers",
+            "Sliding window",
+            "Prefix sum",
+            "Recursion"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: Sorted array + target sum. Best approach?",
+          "options": [
+            "Nested loops",
+            "Two pointers",
+            "Hashmap",
+            "Recursion"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What should you do first in an interview?",
+          "options": [
+            "Optimal solution",
+            "Brute force",
+            "Ask the answer",
+            "Skip clarifying"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Memoization helps when?",
+          "options": [
+            "No overlap",
+            "Overlapping subproblems",
+            "Sorting",
+            "Searching"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which pattern for detecting duplicates in O(n)?",
+          "options": [
+            "Two pointers",
+            "Hashmap/Set",
+            "Sorting",
+            "Recursion"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "ps-m4",
+      "title": "Module 4: Real Problem Walkthroughs (With Edge Cases)",
+      "topics": [
+        {
+          "id": "ps-t4-1",
+          "title": "Walkthrough 1: Find the Largest Number in a List",
+          "contentMd": "# Walkthrough: Find the Largest Number\n\n## Problem\nGiven a list of integers, return the largest number.\n\n## Step 1 – Restate\n- Input: list of ints, possibly empty, possibly all negatives\n- Output: largest integer (or None if empty)\n\n## Step 2 – Examples\n- `[45, 78, 12, 89, 34, 67]` → 89\n- `[-5, -2, -9]` → -2 (not 0!)\n- `[]` → None\n- `[7]` → 7\n\n## Step 3 – Naive (Broken)\n```python\ndef largest(nums):\n    max_val = 0   # ❌ fails on all-negative\n    for n in nums:\n        if n > max_val: max_val = n\n    return max_val\n```\n\n**Trace with `[-5, -2, -9]`:**\n- max_val = 0\n- -5 > 0? no\n- -2 > 0? no\n- -9 > 0? no\n- returns 0 ❌\n\n## Step 4 – Fixed\n```python\ndef largest(nums):\n    if not nums:\n        return None\n    max_val = nums[0]\n    for n in nums[1:]:\n        if n > max_val:\n            max_val = n\n    return max_val\n```\n\n**Trace with `[-5, -2, -9]`:**\n- max_val = -5\n- -2 > -5 → max_val = -2\n- -9 > -2? no\n- returns -2 ✅\n\n## Step 5 – Dry Run Table\n| Step | n | max_val |\n|------|---|---------|\n| start | – | -5 |\n| 1 | -2 | -2 |\n| 2 | -9 | -2 |\n\n## Step 6 – Complexity\n- Time: O(n)\n- Space: O(1)\n\n## Interview FAQs\n**Q1: Why not initialize with 0?**\nBecause 0 is not the multiplicative/additive identity for maximum – it excludes valid negatives.\n\n**Q2: How to handle empty?**\nReturn None or raise; agree with the interviewer.\n\n**Q3: What is the alternative?**\nUse built-in `max(nums, default=None)`.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t4-2",
+          "title": "Walkthrough 2: Count Occurrences of a Value",
+          "contentMd": "# Walkthrough: Count Occurrences\n\n## Problem\nCount how many times a value appears in a list.\n\n## Step 1 – Restate\n- Input: list, target value\n- Output: integer count (0 if not found)\n- Edge cases: empty list, target not present, target appears 0 times, duplicates\n\n## Step 2 – Examples\n- `[1,2,3,2,4,2,5]`, target 2 → 3\n- `[]`, target 1 → 0\n- `[1,1,1]`, target 2 → 0\n- `[0, 0, 0]`, target 0 → 3\n\n## Step 3 – Plan\nInitialize count = 0. Loop. Increment when match. Return count.\n\n## Step 4 – Code\n```python\ndef count_occurrences(nums, target):\n    count = 0\n    for n in nums:\n        if n == target:\n            count += 1\n    return count\n```\n\n## Step 5 – Dry Run\nInput: `[1,2,3,2,4,2,5]`, target 2\n\n| i | n | match? | count |\n|---|----|--------|-------|\n| 0 | 1 | no | 0 |\n| 1 | 2 | yes | 1 |\n| 2 | 3 | no | 1 |\n| 3 | 2 | yes | 2 |\n| 4 | 4 | no | 2 |\n| 5 | 2 | yes | 3 |\n| 6 | 5 | no | 3 |\n\nResult: 3 ✅\n\n## Step 6 – Edge Cases\n- Empty list → 0 ✅\n- Target not present → 0 ✅\n- Target equals 0 → works because we compare with `==`, not truthiness ✅\n\n## Step 7 – Complexity\n- Time: O(n)\n- Space: O(1)\n\n## Interview FAQs\n**Q1: Why is comparing with `==` safe for zero?**\nBecause `n == 0` is explicit; only `if n:` (truthiness) would fail.\n\n**Q2: Could you use `.count()`?**\nYes, but the interviewer may want you to implement it.\n\n**Q3: What if the list is huge?**\nStreaming/incremental counting still O(n), memory O(1).",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t4-3",
+          "title": "Walkthrough 3: Remove Duplicates Preserving Order",
+          "contentMd": "# Walkthrough: Remove Duplicates\n\n## Problem\nGiven a list, remove duplicates while preserving first-occurrence order.\n\n## Step 1 – Restate\n- Input: list (may have duplicates)\n- Output: new list, unique, order preserved\n\n## Step 2 – Examples\n- `[1,2,2,3,4,4,4,5]` → `[1,2,3,4,5]`\n- `[]` → `[]`\n- `[7]` → `[7]`\n- `[0, 0, 0]` → `[0]`\n\n## Step 3 – Naive: Nested Loops O(n²)\n```python\ndef unique_order(nums):\n    result = []\n    for n in nums:\n        if n not in result:\n            result.append(n)\n    return result\n```\n\n**Problem:** `n not in result` is O(n), so total is O(n²).\n\n## Step 4 – Better: Set + List O(n)\n```python\ndef unique_order(nums):\n    seen = set()\n    result = []\n    for n in nums:\n        if n not in seen:\n            seen.add(n)\n            result.append(n)\n    return result\n```\n\n## Step 5 – One-Liner Using dict.fromkeys\n```python\ndef unique_order(nums):\n    return list(dict.fromkeys(nums))\n```\n\n## Step 6 – Dry Run\nInput: `[1,2,2,3,4,4,4,5]`\n\n| n | in seen? | action | result |\n|---|----------|--------|--------|\n| 1 | no | add + append | [1] |\n| 2 | no | add + append | [1,2] |\n| 2 | yes | skip | [1,2] |\n| 3 | no | add + append | [1,2,3] |\n| 4 | no | add + append | [1,2,3,4] |\n| 4 | yes | skip | [1,2,3,4] |\n| 4 | yes | skip | [1,2,3,4] |\n| 5 | no | add + append | [1,2,3,4,5] |\n\nResult: `[1,2,3,4,5]` ✅\n\n## Step 7 – Edge Cases\n- Empty list → `[]` ✅\n- All same → single element ✅\n- Zero → handled as a normal value (do not skip via truthiness) ✅\n- Unhashable elements (lists) → cannot use a set; fall back to O(n²)\n\n## Step 8 – Complexity\n- Time: O(n)\n- Space: O(n)\n\n## Interview FAQs\n**Q1: Why is `set` fast?**\nHash-based O(1) average membership.\n\n**Q2: Does order matter?**\nYes – do not use `set(nums)` directly because it loses order.\n\n**Q3: What if elements are unhashable?**\nUse a list with O(n²) membership or convert to tuples.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t4-4",
+          "title": "Walkthrough 4: Sum of Digits of Numbers in a List",
+          "contentMd": "# Walkthrough: Sum of Digits\n\n## Problem\nGiven a list of positive integers, return a new list where each element is the sum of digits of the original.\n\n## Step 1 – Restate\n- Input: list of positive ints\n- Output: list of same length\n\n## Step 2 – Examples\n- `[12, 34, 56]` → `[3, 7, 11]`\n- `[0]` → `[0]`\n- `[9]` → `[9]`\n- `[]` → `[]`\n\n## Step 3 – Plan\nFor each number, extract digits using `% 10` and `// 10` until the number becomes 0.\n\n## Step 4 – Code\n```python\ndef sum_digits(nums):\n    result = []\n    for n in nums:\n        if n == 0:\n            result.append(0)\n            continue\n        total = 0\n        while n > 0:\n            total += n % 10\n            n //= 10\n        result.append(total)\n    return result\n```\n\n## Step 5 – The Zero Trap\nIf you skip the `if n == 0` check, `while n > 0` never runs, so the result for 0 would be skipped or wrong.\n\nAlternatively, use `abs(n)` for negatives and handle sign separately.\n\n## Step 6 – Dry Run\nInput: `[12, 0, 345]`\n\n| num | inner loop digits | sum |\n|-----|-------------------|-----|\n| 12 | 2, 1 | 3 |\n| 0 | (special case) | 0 |\n| 345 | 5, 4, 3 | 12 |\n\nResult: `[3, 0, 12]` ✅\n\n## Step 7 – Edge Cases\n- Single digit → itself\n- Zero → 0 (guard needed)\n- Negative → use `abs(n)` or clarify spec\n- Very large numbers → Python handles big ints\n- Empty list → `[]`\n\n## Step 8 – Complexity\n- Time: O(n · d), d = digits\n- Space: O(n)\n\n## Interview FAQs\n**Q1: Why not convert to string?**\nBoth work. Math is faster and shows understanding.\n\n**Q2: What about floats?**\nNot well-defined – clarify with interviewer.\n\n**Q3: How to handle negatives?**\nSum digits of `abs(n)`, keep the sign as a separate question to ask.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: `[45, 78, 12]` – largest via naive max=0?",
+              "options": [
+                "78",
+                "0",
+                "45",
+                "Error"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `[-5, -2, -9]` – largest via naive max=0?",
+              "options": [
+                "-2",
+                "0",
+                "-5",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best complexity for remove-duplicates preserving order?",
+              "options": [
+                "O(n²)",
+                "O(n)",
+                "O(log n)",
+                "O(1)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `[0, 0, 0]` count target 0 using `if n:` – result?",
+              "options": [
+                "3",
+                "0",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Sum of digits of 0 requires?",
+              "options": [
+                "Nothing",
+                "Special guard",
+                "Recursion",
+                "Sorting"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Remove duplicates loses order with?",
+              "options": [
+                "dict.fromkeys",
+                "set()",
+                "loop+seen set",
+                "sorted"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Two Sum best time complexity?",
+              "options": [
+                "O(n²)",
+                "O(n log n)",
+                "O(n)",
+                "O(1)"
+              ],
+              "correct": 2
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: `[45, 78, 12]` – largest via naive max=0?",
+          "options": [
+            "78",
+            "0",
+            "45",
+            "Error"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `[-5, -2, -9]` – largest via naive max=0?",
+          "options": [
+            "-2",
+            "0",
+            "-5",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best complexity for remove-duplicates preserving order?",
+          "options": [
+            "O(n²)",
+            "O(n)",
+            "O(log n)",
+            "O(1)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `[0, 0, 0]` count target 0 using `if n:` – result?",
+          "options": [
+            "3",
+            "0",
+            "Error",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Sum of digits of 0 requires?",
+          "options": [
+            "Nothing",
+            "Special guard",
+            "Recursion",
+            "Sorting"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Remove duplicates loses order with?",
+          "options": [
+            "dict.fromkeys",
+            "set()",
+            "loop+seen set",
+            "sorted"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Two Sum best time complexity?",
+          "options": [
+            "O(n²)",
+            "O(n log n)",
+            "O(n)",
+            "O(1)"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    {
+      "id": "ps-m5",
+      "title": "Module 5: Coding Round Simulation",
+      "topics": [
+        {
+          "id": "ps-t5-1",
+          "title": "How Coding Rounds Are Actually Conducted",
+          "contentMd": "# Coding Round Structure\n\n## Round Types\n1. **Online Assessment (OA)** – 60–90 min, 2–3 problems, auto-graded\n2. **Live Pair Programming** – 45–60 min, 1–2 problems, think out loud\n3. **Take-Home** – 24–48 hours, depth over speed\n4. **Whiteboard / Doc** – pseudo-code, no compiler\n\n## Scoring Criteria\n- Correctness on visible tests\n- Correctness on hidden tests (edge cases!)\n- Time and space complexity\n- Code readability\n- Communication\n\n## The Hidden Test Trap\nMost OA failures happen on hidden tests:\n- Empty input\n- All zero\n- All negative\n- Single element\n- Large input (timeout)\n- Duplicate-heavy input\n\n## Sample OA Round – 60 Minutes\n\n### Problem A (Easy)\nGiven a list, return True if it contains duplicates.\n```python\ndef has_dup(nums):\n    return len(set(nums)) < len(nums)\n```\n\n### Problem B (Medium)\nGiven a string, return the first non-repeating character.\n```python\ndef first_unique(s):\n    from collections import Counter\n    freq = Counter(s)\n    for c in s:\n        if freq[c] == 1:\n            return c\n    return None\n```\n**Edge cases:**\n- Empty string → None\n- All repeating → None\n- Single character → that character\n- Spaces and punctuation → treat as normal characters\n\n### Problem C (Hard)\nLongest substring without repeating characters – sliding window.\n\n## Time Budgeting\n- Problem A: 10 min\n- Problem B: 20 min\n- Problem C: 30 min\n\n## Interview FAQs\n**Q1: What if you run out of time?**\nSubmit the brute force with correct edge cases; partial credit beats nothing.\n\n**Q2: How to avoid timeouts?**\nEstimate complexity vs input size (1e5 → O(n log n) max).\n\n**Q3: Should I comment my code?**\nYes, but keep it minimal and useful.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t5-2",
+          "title": "Communicating Your Solution in a Live Interview",
+          "contentMd": "# Live Interview Communication\n\n## The 5-Phase Script\n1. **Clarify** – \"Let me restate: given X, return Y. Are negatives possible? Can it be empty?\"\n2. **Examples** – Write 3 examples on the board, including one edge case\n3. **Plan** – \"I'll use two pointers here because...\"\n4. **Code** – Narrate as you type, but do not over-narrate\n5. **Verify** – Trace the edge case and one normal case\n\n## Things to Say Out Loud\n- \"Time complexity would be O(n) because we iterate once.\"\n- \"Space is O(n) due to the hashmap.\"\n- \"The edge case here is empty input; I'll guard with early return.\"\n- \"I can improve this by using a set to bring it to O(n).\"\n\n## Things to Avoid\n- Silence for long stretches\n- Defending a broken solution\n- Over-engineering small problems\n- Ignoring interviewer hints\n\n## Handling \"Can You Do Better?\"\n1. Acknowledge the current complexity\n2. Explain the bottleneck\n3. Propose a known pattern (hashmap, sort, DP)\n4. Code the improvement\n\n## Sample Dialogue (Two Sum)\n> I: Can you find two numbers that sum to a target?\n>\n> C: Sure. First, is the list sorted? Are duplicates allowed? Should I return indices or the values?\n>\n> I: Unsorted, duplicates allowed, return indices.\n>\n> C: Brute force is nested loops O(n²). I can improve to O(n) with a hashmap storing seen values and their indices. Let me code that.\n\n## Interview FAQs\n**Q1: What if I freeze?**\nPause, take a breath, restate the problem. Do not force code.\n\n**Q2: Should I write pseudocode?**\nYes, briefly. It prevents rewrite.\n\n**Q3: What if my code has a bug?**\nTrace it with a small example, fix the specific line, move on.",
+          "quizQuestions": [
+            {
+              "text": "Most OA failures happen because of?",
+              "options": [
+                "Syntax errors",
+                "Hidden edge cases",
+                "Slow typing",
+                "Wrong language"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: 1e5 input, optimal complexity target?",
+              "options": [
+                "O(n²)",
+                "O(n log n) or O(n)",
+                "O(2^n)",
+                "O(n³)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "First step in a live interview?",
+              "options": [
+                "Code",
+                "Clarify and restate",
+                "Guess",
+                "Skip examples"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Interviewer asks 'can you do better?' What should you NOT do?",
+              "options": [
+                "Explain current complexity",
+                "Propose a pattern",
+                "Defend the current solution",
+                "Code improvement"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Longest substring without repeating chars uses?",
+              "options": [
+                "Two pointers only",
+                "Sliding window",
+                "Recursion",
+                "Sorting"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best practice for time budget?",
+              "options": [
+                "Spend all on hard",
+                "Allocate proportional to difficulty",
+                "Skip easy",
+                "Random"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "When you find a bug mid-interview, you should?",
+              "options": [
+                "Restart",
+                "Trace, fix, continue",
+                "Ignore",
+                "Blame the language"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Most OA failures happen because of?",
+          "options": [
+            "Syntax errors",
+            "Hidden edge cases",
+            "Slow typing",
+            "Wrong language"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: 1e5 input, optimal complexity target?",
+          "options": [
+            "O(n²)",
+            "O(n log n) or O(n)",
+            "O(2^n)",
+            "O(n³)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "First step in a live interview?",
+          "options": [
+            "Code",
+            "Clarify and restate",
+            "Guess",
+            "Skip examples"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Interviewer asks 'can you do better?' What should you NOT do?",
+          "options": [
+            "Explain current complexity",
+            "Propose a pattern",
+            "Defend the current solution",
+            "Code improvement"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Longest substring without repeating chars uses?",
+          "options": [
+            "Two pointers only",
+            "Sliding window",
+            "Recursion",
+            "Sorting"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best practice for time budget?",
+          "options": [
+            "Spend all on hard",
+            "Allocate proportional to difficulty",
+            "Skip easy",
+            "Random"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "When you find a bug mid-interview, you should?",
+          "options": [
+            "Restart",
+            "Trace, fix, continue",
+            "Ignore",
+            "Blame the language"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "ps-m6",
+      "title": "Module 6: 30 Practice Problems With Approach & Edge Cases",
+      "topics": [
+        {
+          "id": "ps-t6-1",
+          "title": "Problem Set A – Arrays & Strings (10 Problems)",
+          "contentMd": "# Problem Set A – Arrays & Strings\n\nFor each problem, think through the 5-Layer Model before reading the solution sketch.\n\n---\n\n## Problem 1: Reverse a String\n**Input:** `\"hello\"` → **Output:** `\"olleh\"`\n\n**Approach:** Slice `[::-1]` or two pointers swap.\n\n**Edge Cases:**\n- Empty string\n- Single char\n- Unicode characters\n- Spaces only `\"   \"`\n\n---\n\n## Problem 2: Palindrome Check\n**Input:** `\"madam\"` → **Output:** `True`\n\n**Approach:** Compare with reverse, or two pointers.\n\n**Edge Cases:**\n- Empty string (usually True)\n- One char (True)\n- Case sensitivity (usually ignore)\n- Spaces and punctuation (usually ignore)\n\n---\n\n## Problem 3: Two Sum (Indices)\n**Input:** `[2,7,11,15], 9` → **Output:** `[0,1]`\n\n**Approach:** Hashmap of seen values → O(n).\n\n**Edge Cases:**\n- No pair exists → return `[]`\n- Duplicates like `[3,3], 6` → `[0,1]`\n- Negative numbers\n- Target is 0\n\n---\n\n## Problem 4: Move Zeros to End\n**Input:** `[0,1,0,3,12]` → **Output:** `[1,3,12,0,0]`\n\n**Approach:** Two pointers: write index vs read index.\n\n**Edge Cases:**\n- All zeros\n- No zeros\n- Empty list\n- Single zero\n\n---\n\n## Problem 5: Find Missing Number (1..n)\n**Input:** `[1,2,4,5,6]` → **Output:** `3`\n\n**Approach:** Sum formula `n(n+1)/2` minus actual sum.\n\n**Edge Cases:**\n- Missing first (1)\n- Missing last (n)\n- Empty (n=0)\n- n = 1\n\n---\n\n## Problem 6: Best Time to Buy and Sell Stock\n**Input:** `[7,1,5,3,6,4]` → **Output:** `5`\n\n**Approach:** Track min so far, compute profit.\n\n**Edge Cases:**\n- Decreasing prices → 0\n- Single day → 0\n- Empty → 0\n- All same prices → 0\n\n---\n\n## Problem 7: Remove Duplicates from Sorted Array\n**Input:** `[0,0,1,1,1,2,2,3,3,4]` → **Output:** length 5\n\n**Approach:** Two pointers, in-place.\n\n**Edge Cases:**\n- Empty\n- Single element\n- All same\n- No duplicates\n\n---\n\n## Problem 8: Rotate Array Right by k\n**Input:** `[1,2,3,4,5,6,7], k=3` → **Output:** `[5,6,7,1,2,3,4]`\n\n**Approach:** `k = k % n`, then reverse trick.\n\n**Edge Cases:**\n- k = 0\n- k > n\n- Empty\n- k = n\n\n---\n\n## Problem 9: Contains Duplicate\n**Input:** `[1,2,3,1]` → **Output:** `True`\n\n**Approach:** Set or sort.\n\n**Edge Cases:**\n- Empty → False\n- Single → False\n- All duplicates → True\n- All zeros → True if n > 1\n\n---\n\n## Problem 10: Longest Common Prefix\n**Input:** `[\"flower\",\"flow\",\"flight\"]` → **Output:** `\"fl\"`\n\n**Approach:** Compare characters column-wise.\n\n**Edge Cases:**\n- Empty list → `\"\"`\n- Single string → itself\n- No common prefix → `\"\"`\n- Empty string inside list → `\"\"`\n",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t6-2",
+          "title": "Problem Set B – Loops, Recursion & Patterns (10 Problems)",
+          "contentMd": "# Problem Set B – Loops, Recursion & Patterns\n\n---\n\n## Problem 11: Factorial (Iterative & Recursive)\n**Input:** 5 → **Output:** 120\n\n**Edge Cases:**\n- 0! = 1\n- 1! = 1\n- Negative → undefined (raise)\n\n---\n\n## Problem 12: Fibonacci (nth term)\n**Input:** 7 → **Output:** 13\n\n**Edge Cases:**\n- n=0 → 0\n- n=1 → 1\n- Large n (memoize!)\n\n---\n\n## Problem 13: Sum of Digits\n**Input:** 1234 → **Output:** 10\n\n**Edge Cases:**\n- 0 → 0\n- Single digit → itself\n- Negative → clarify sign handling\n\n---\n\n## Problem 14: Reverse a Number\n**Input:** 123 → **Output:** 321\n\n**Edge Cases:**\n- 0 → 0\n- Negative → -321 (keep sign)\n- Trailing zeros: 120 → 21\n- Overflow (language dependent)\n\n---\n\n## Problem 15: Check Prime\n**Input:** 17 → **Output:** True\n\n**Approach:** Trial division up to sqrt(n).\n\n**Edge Cases:**\n- 0 and 1 → not prime\n- 2 → prime\n- Negative → not prime (usually)\n- Large n\n\n---\n\n## Problem 16: Print Prime Numbers up to N\n**Input:** 10 → **Output:** 2,3,5,7\n\n**Approach:** Sieve of Eratosthenes.\n\n**Edge Cases:**\n- N<2 → empty\n- N=2 → 2\n- Large N\n\n---\n\n## Problem 17: GCD of Two Numbers\n**Input:** 12, 18 → **Output:** 6\n\n**Approach:** Euclid's algorithm.\n\n**Edge Cases:**\n- One is 0 → other\n- Both 0 → undefined\n- Negatives → use abs\n\n---\n\n## Problem 18: Count Vowels in a String\n**Input:** `\"Hello World\"` → **Output:** 3\n\n**Edge Cases:**\n- Empty string → 0\n- All vowels → length\n- Case sensitivity\n- Non-ASCII characters\n\n---\n\n## Problem 19: Power of a Number\n**Input:** 2^10 → **Output:** 1024\n\n**Approach:** Fast exponentiation O(log n).\n\n**Edge Cases:**\n- 0^0 = 1 (convention)\n- Negative exponent → 1/(base^abs)\n- Base 0 with positive exp → 0\n- Base 1\n\n---\n\n## Problem 20: Sum of First N Natural Numbers\n**Input:** 100 → **Output:** 5050\n\n**Approach:** Formula n(n+1)/2 (O(1)).\n\n**Edge Cases:**\n- n=0 → 0\n- n=1 → 1\n- Negative → clarify\n- Overflow in other languages (not Python)\n",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t6-3",
+          "title": "Problem Set C – Sorting, Searching & Interview Scenarios (10 Problems)",
+          "contentMd": "# Problem Set C – Sorting, Searching & Scenarios\n\n---\n\n## Problem 21: Binary Search\n**Input:** `[1,3,5,7,9], 5` → **Output:** index 2\n\n**Edge Cases:**\n- Empty array\n- Target smaller than min\n- Target greater than max\n- Duplicates → leftmost or rightmost?\n- Overflow in mid calc (Python safe)\n\n---\n\n## Problem 22: Find Peak Element\n**Input:** `[1,2,3,1]` → **Output:** index 2\n\n**Edge Cases:**\n- Single element → index 0\n- Monotonic increasing → last\n- Monotonic decreasing → first\n- Multiple peaks → any is fine\n\n---\n\n## Problem 23: Merge Two Sorted Arrays\n**Input:** `[1,3,5], [2,4,6]` → **Output:** `[1,2,3,4,5,6]`\n\n**Edge Cases:**\n- One empty\n- Both empty\n- Duplicates across arrays\n- One all smaller than other\n\n---\n\n## Problem 24: Sort Colors (0,1,2)\n**Input:** `[2,0,1,2,1,0]` → **Output:** `[0,0,1,1,2,2]`\n\n**Approach:** Dutch national flag, three pointers.\n\n**Edge Cases:**\n- All same\n- Empty\n- Already sorted\n- Two distinct values\n\n---\n\n## Problem 25: Kth Largest Element\n**Input:** `[3,2,1,5,6,4], k=2` → **Output:** 5\n\n**Approach:** Sort O(n log n) or heap O(n log k).\n\n**Edge Cases:**\n- k=1 → max\n- k=n → min\n- Duplicates\n- Empty or k>n → error\n\n---\n\n## Problem 26: Subarray with Given Sum (Non-negative)\n**Input:** `[1,4,20,3,10,5], target=33` → **Output:** indices 2–4\n\n**Approach:** Sliding window.\n\n**Edge Cases:**\n- Zero in array\n- All elements greater than target\n- No solution → return []\n- Target = 0\n\n---\n\n## Problem 27: Longest Substring Without Repeating Characters\n**Input:** `\"abcabcbb\"` → **Output:** 3\n\n**Approach:** Sliding window + hashmap of last index.\n\n**Edge Cases:**\n- Empty\n- All same char → 1\n- All unique → length\n- Unicode\n\n---\n\n## Problem 28: Group Anagrams\n**Input:** `[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]` → **Output:** groups\n\n**Approach:** Hashmap keyed by sorted string.\n\n**Edge Cases:**\n- Empty strings (all in one group)\n- One word\n- Case sensitivity\n- Unicode\n\n---\n\n## Problem 29: Top K Frequent Elements\n**Input:** `[1,1,1,2,2,3], k=2` → **Output:** `[1,2]`\n\n**Approach:** Counter + heap.\n\n**Edge Cases:**\n- k=1\n- k = unique count\n- All same\n- Empty list\n\n---\n\n## Problem 30: Course Schedule (Cycle Detection)\n**Input:** `[[1,0],[0,1]]` → **Output:** False\n\n**Approach:** Topological sort / DFS cycle detection.\n\n**Edge Cases:**\n- No prerequisites → True\n- Empty → True\n- Self-loop\n- Disconnected graph\n",
+          "quizQuestions": [
+            {
+              "text": "Reverse string `\"\"` should return?",
+              "options": [
+                "None",
+                "\"\"",
+                "Error",
+                "space"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Two Sum on `[3, 3], 6` should return?",
+              "options": [
+                "[0,0]",
+                "[0,1]",
+                "[]",
+                "[1,0]"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Missing number in `[1, 2]` (n=3)?",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "0"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Best time to buy stock `[7, 6, 4, 3, 1]`?",
+              "options": [
+                "-1",
+                "0",
+                "6",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Factorial(0) equals?",
+              "options": [
+                "0",
+                "1",
+                "-1",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Prime check on 1 returns?",
+              "options": [
+                "True",
+                "False",
+                "Error",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Longest substring in `\"aaaa\"`?",
+              "options": [
+                "0",
+                "1",
+                "4",
+                "Error"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Reverse string `\"\"` should return?",
+          "options": [
+            "None",
+            "\"\"",
+            "Error",
+            "space"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Two Sum on `[3, 3], 6` should return?",
+          "options": [
+            "[0,0]",
+            "[0,1]",
+            "[]",
+            "[1,0]"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Missing number in `[1, 2]` (n=3)?",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "0"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Best time to buy stock `[7, 6, 4, 3, 1]`?",
+          "options": [
+            "-1",
+            "0",
+            "6",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Factorial(0) equals?",
+          "options": [
+            "0",
+            "1",
+            "-1",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Prime check on 1 returns?",
+          "options": [
+            "True",
+            "False",
+            "Error",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Longest substring in `\"aaaa\"`?",
+          "options": [
+            "0",
+            "1",
+            "4",
+            "Error"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "ps-m7",
+      "title": "Module 7: Complexity & Optimization",
+      "topics": [
+        {
+          "id": "ps-t7-1",
+          "title": "Time & Space Complexity Without Fear",
+          "contentMd": "# Time & Space Complexity\n\n## Why It Matters\nInterviewers use complexity to judge whether your code scales. Hidden tests often include 1e5 or 1e6 inputs.\n\n## Big-O Cheat Sheet\n| Notation | Example | n=1e5 acceptable? |\n|----------|---------|-------------------|\n| O(1) | hashmap lookup | yes |\n| O(log n) | binary search | yes |\n| O(n) | single pass | yes |\n| O(n log n) | sort, heap | yes |\n| O(n²) | nested loops | no |\n| O(2^n) | subset enumeration | no (except tiny) |\n\n## Estimating From n\n- n ≤ 10 → O(n!) possible\n- n ≤ 20 → O(2^n) possible\n- n ≤ 500 → O(n³) possible\n- n ≤ 5000 → O(n²) possible\n- n ≤ 1e5 → O(n log n) target\n- n ≤ 1e6 → O(n) target\n- n ≤ 1e9 → O(log n) target\n\n## Space Complexity\n- O(1) – no extra memory\n- O(n) – extra list, hashmap, recursion stack\n- Watch recursion depth (Python default 1000)\n\n## Common Traps\n- Hidden O(n) inside a loop (e.g., `x in list` is O(n))\n- String concatenation in a loop → O(n²)\n- Sorting inside a loop → O(n² log n)\n\n## Interview FAQs\n**Q1: How do you compute complexity of nested loops?**\nMultiply the ranges; sum if sequential.\n\n**Q2: What is amortized complexity?**\nAverage per operation (e.g., list append is amortized O(1)).\n\n**Q3: Does complexity include constants?**\nNo – Big-O drops constants but they matter in practice.",
+          "quizQuestions": []
+        },
+        {
+          "id": "ps-t7-2",
+          "title": "Optimization Techniques That Win Interviews",
+          "contentMd": "# Optimization Techniques\n\n## 1. Trade Space for Time\nAdd a hashmap or set to cut nested loops to a single pass.\n\n## 2. Sort First\nSorting unlocks two-pointer and binary-search patterns.\nCost: O(n log n) – often worth it.\n\n## 3. Precompute Prefix / Suffix\nReplace repeated sums with a prefix array.\n\n## 4. Sliding Window\nReplaces O(n²) subarray checks with O(n).\n\n## 5. Two Pointers\nReplaces nested loops when data is sorted.\n\n## 6. Memoization / DP\nReplace exponential recursion with polynomial tables.\n\n## 7. Bit Manipulation\nFor XOR, masks, and set operations on small ints.\n\n## Before vs After Examples\n\n### Example: Find pair sum equals target\n- Brute: O(n²)\n- Optimal: hashmap O(n)\n\n### Example: Longest substring without repeating\n- Brute: O(n³)\n- Optimal: sliding window O(n)\n\n### Example: Sum of subarray range queries\n- Brute: O(n) per query\n- Optimal: prefix sum O(1) per query\n\n## What NOT to Optimize\n- Early in the interview\n- Small inputs where clarity wins\n- At the cost of correctness\n\n## Interview FAQs\n**Q1: When to stop optimizing?**\nWhen complexity is acceptable for the input size and code is clean.\n\n**Q2: What if the optimal is hard to explain?**\nWrite it anyway, add a comment describing the idea.\n\n**Q3: Is O(n) always better than O(n log n)?**\nIn theory yes; in practice, for small n, constants dominate.",
+          "quizQuestions": [
+            {
+              "text": "For n = 1e5, acceptable complexity?",
+              "options": [
+                "O(n²)",
+                "O(n log n)",
+                "O(2^n)",
+                "O(n!)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is amortized O(1)?",
+              "options": [
+                "List append",
+                "List insert at 0",
+                "Sort",
+                "Search in list"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Sliding window converts which complexity to O(n)?",
+              "options": [
+                "O(1)",
+                "O(n²)",
+                "O(log n)",
+                "O(2^n)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Prefix sum helps with?",
+              "options": [
+                "Sorting",
+                "Range sum queries",
+                "Recursion",
+                "Tree traversal"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Python recursion depth default?",
+              "options": [
+                "100",
+                "1000",
+                "10000",
+                "Unlimited"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best complexity to target for n = 1e6?",
+              "options": [
+                "O(n²)",
+                "O(n log n)",
+                "O(n)",
+                "O(log n)"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Optimization should be done?",
+              "options": [
+                "Before correctness",
+                "After correctness",
+                "Never",
+                "Always first"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "For n = 1e5, acceptable complexity?",
+          "options": [
+            "O(n²)",
+            "O(n log n)",
+            "O(2^n)",
+            "O(n!)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is amortized O(1)?",
+          "options": [
+            "List append",
+            "List insert at 0",
+            "Sort",
+            "Search in list"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Sliding window converts which complexity to O(n)?",
+          "options": [
+            "O(1)",
+            "O(n²)",
+            "O(log n)",
+            "O(2^n)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Prefix sum helps with?",
+          "options": [
+            "Sorting",
+            "Range sum queries",
+            "Recursion",
+            "Tree traversal"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Python recursion depth default?",
+          "options": [
+            "100",
+            "1000",
+            "10000",
+            "Unlimited"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best complexity to target for n = 1e6?",
+          "options": [
+            "O(n²)",
+            "O(n log n)",
+            "O(n)",
+            "O(log n)"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Optimization should be done?",
+          "options": [
+            "Before correctness",
+            "After correctness",
+            "Never",
+            "Always first"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "ps-m8",
+      "title": "Module 8: Capstone – 60-Minute Mock Coding Round",
+      "topics": [
+        {
+          "id": "ps-t8-1",
+          "title": "Full Mock Round With Solutions & Edge Case Analysis",
+          "contentMd": "# 60-Minute Mock Coding Round\n\nYou have 60 minutes. Solve all three problems. Write tests for edge cases.\n\n---\n\n## Problem 1 (Easy – 10 min)\n**Find the Second Largest Number in a List**\n\nInput: `[10, 45, 78, 23, 56]`\nOutput: `56`\n\n**Edge Cases to Handle:**\n- Empty list\n- Single element\n- All same elements\n- Two distinct elements\n- Negative numbers\n- Zero values\n\n**Reference Solution:**\n```python\ndef second_largest(nums):\n    if len(nums) < 2:\n        return None\n    first = second = float('-inf')\n    for n in nums:\n        if n > first:\n            second = first\n            first = n\n        elif n > second and n != first:\n            second = n\n    return second if second != float('-inf') else None\n```\n\n**Dry Run on `[5, 5, 5]`:**\n- first=5, second remains -inf → returns None ✅ (no second distinct)\n\n**Dry Run on `[-3, -1, -7]`:**\n- first=-3, second=-inf\n- -1 > -3 → second=-3, first=-1\n- -7 > -1? no\n- Result: -3 ✅ (correct second largest)\n\n---\n\n## Problem 2 (Medium – 20 min)\n**Group Anagrams**\n\nInput: `[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]`\nOutput: `[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]`\n\n**Edge Cases:**\n- Empty list → `[]`\n- Empty strings → all in one group\n- Single string → one group\n- Case sensitivity → decide (usually lowercase)\n- Unicode characters\n\n**Reference Solution:**\n```python\ndef group_anagrams(words):\n    from collections import defaultdict\n    groups = defaultdict(list)\n    for w in words:\n        key = tuple(sorted(w))\n        groups[key].append(w)\n    return list(groups.values())\n```\n\n---\n\n## Problem 3 (Hard – 30 min)\n**Longest Substring Without Repeating Characters**\n\nInput: `\"abcabcbb\"`\nOutput: 3 (`\"abc\"`)\n\n**Edge Cases:**\n- Empty string → 0\n- All same chars → 1\n- All unique → length\n- Spaces and symbols count\n- Unicode\n\n**Reference Solution:**\n```python\ndef longest_unique_substring(s):\n    if not s:\n        return 0\n    last_seen = {}\n    left = 0\n    best = 0\n    for right, ch in enumerate(s):\n        if ch in last_seen and last_seen[ch] >= left:\n            left = last_seen[ch] + 1\n        last_seen[ch] = right\n        best = max(best, right - left + 1)\n    return best\n```\n\n**Dry Run on `\"pwwkew\"`:**\n- p w w k e w\n- best after 'pw' = 2\n- second w → left=2\n- 'wke' → best=3\n- next w → left=4\n- 'ew' → best=3\n- Result 3 ✅\n\n---\n\n## Self-Evaluation Rubric\n- 3/3 solved with edges → strong hire\n- 2/3 solved, 1 partial → hire signal\n- Only easy solved → needs practice\n- Did not clarify → red flag\n\n## Post-Mortem Questions\n1. Which edge cases did you miss?\n2. Which pattern did you overlook?\n3. How would you explain the optimal solution in 30 seconds?\n4. What would you refactor for readability?\n\n## Interview FAQs\n**Q1: How to choose between hashmap and sort?**\nHashmap for O(n), sort for O(n log n) when ordering matters.\n\n**Q2: How to avoid missing zero?**\nNever use truthiness on numeric data – always compare explicitly.\n\n**Q3: How to prepare for hard problems?**\nPractice patterns, not memorized solutions.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: Second largest in `[5, 5, 5]` should return?",
+              "options": [
+                "5",
+                "None",
+                "0",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Second largest in `[-3, -1, -7]`?",
+              "options": [
+                "-1",
+                "-3",
+                "-7",
+                "None"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Group anagrams uses which key?",
+              "options": [
+                "Length",
+                "Sorted word",
+                "First letter",
+                "Hash"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Longest unique substring of `\"\"`?",
+              "options": [
+                "0",
+                "1",
+                "None",
+                "Error"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Longest unique substring of `\"bbbb\"`?",
+              "options": [
+                "0",
+                "1",
+                "4",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Longest unique substring of `\"pwwkew\"`?",
+              "options": [
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best tool for grouping by property?",
+              "options": [
+                "Sorted list",
+                "Hashmap / defaultdict",
+                "Recursion",
+                "Stack"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: Second largest in `[5, 5, 5]` should return?",
+          "options": [
+            "5",
+            "None",
+            "0",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Second largest in `[-3, -1, -7]`?",
+          "options": [
+            "-1",
+            "-3",
+            "-7",
+            "None"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Group anagrams uses which key?",
+          "options": [
+            "Length",
+            "Sorted word",
+            "First letter",
+            "Hash"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Longest unique substring of `\"\"`?",
+          "options": [
+            "0",
+            "1",
+            "None",
+            "Error"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Longest unique substring of `\"bbbb\"`?",
+          "options": [
+            "0",
+            "1",
+            "4",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Longest unique substring of `\"pwwkew\"`?",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best tool for grouping by property?",
+          "options": [
+            "Sorted list",
+            "Hashmap / defaultdict",
+            "Recursion",
+            "Stack"
+          ],
+          "correct": 1
+        }
+      ]
+    }
+  ]
+}

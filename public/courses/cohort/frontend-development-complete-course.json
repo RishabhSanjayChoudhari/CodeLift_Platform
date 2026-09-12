@@ -1,0 +1,1310 @@
+{
+  "id": "frontend-development-complete-course",
+  "title": "Frontend Development Complete Course: HTML to AJAX",
+  "slug": "frontend-development-complete-course",
+  "description": "Master frontend development from HTML5, CSS3, JavaScript, jQuery, AJAX and Bootstrap. Learn to build dynamic tables, forms, API-driven UIs and fully responsive websites with module-wise quizzes.",
+  "categoryId": "cat-web",
+  "courseType": "cohort",
+  "course_type": "cohort",
+  "isCohort": true,
+  "isPublished": true,
+  "isApproved": true,
+  "isFree": false,
+  "price": 1999,
+  "thumbnail": "https://images.unsplash.com/photo-1547658719-da2b51169166?w=600",
+  "rating": 4.8,
+  "numReviews": 142,
+  "studentsEnrolled": 1130,
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "updatedAt": "2026-02-15T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "fe-m1",
+      "title": "Module 1: HTML5 Fundamentals",
+      "topics": [
+        {
+          "id": "fe-t1-1",
+          "title": "HTML Structure, Semantic Elements & Forms",
+          "contentMd": "# HTML5 Fundamentals\n\n## Document Structure\n```html\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Page</title>\n</head>\n<body>\n  <h1>Hello</h1>\n</body>\n</html>\n```\n\n## Semantic Elements\n- `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`\n- Improves SEO, accessibility and readability\n\n## Common Tags\n- Text: `h1–h6`, `p`, `strong`, `em`, `span`\n- Lists: `ul`, `ol`, `li`, `dl`\n- Media: `img`, `video`, `audio`, `picture`\n- Links: `a href`\n\n## Forms\n```html\n<form action=\"/submit\" method=\"POST\">\n  <label for=\"email\">Email</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n  <input type=\"password\" name=\"pwd\">\n  <select name=\"city\">\n    <option value=\"del\">Delhi</option>\n  </select>\n  <textarea name=\"msg\"></textarea>\n  <button type=\"submit\">Send</button>\n</form>\n```\n\n## Input Types\n`text, email, password, number, date, time, color, range, file, checkbox, radio, hidden, submit`\n\n## Edge Cases\n- Always pair `<label>` with `for`\n- `<img>` needs `alt`\n- Missing `name` attribute → value not submitted\n- Self-closing tags: `img`, `br`, `hr`, `input`\n\n## Interview FAQs\n**Q1: Why semantic HTML?**\nSEO, accessibility, maintainability.\n\n**Q2: Difference between id and class?**\nid is unique; class is reusable.\n\n**Q3: Block vs inline elements?**\nBlock starts new line and takes full width; inline does not.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t1-2",
+          "title": "Tables, Lists & Accessibility (a11y)",
+          "contentMd": "# Tables & Accessibility\n\n## Tables\n```html\n<table>\n  <thead>\n    <tr><th>Name</th><th>Age</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Alice</td><td>25</td></tr>\n  </tbody>\n  <tfoot>\n    <tr><td colspan=\"2\">Total: 1</td></tr>\n  </tfoot>\n</table>\n```\n\n## Attributes\n- `colspan`, `rowspan` – merge cells\n- `<caption>` – title for accessibility\n- `<th scope=\"col|row\">` – clearer for screen readers\n\n## Accessibility Basics\n- Use semantic elements\n- `alt` on images\n- `aria-label` when no text visible\n- Keyboard-navigable forms\n- Colour contrast ratio ≥ 4.5:1\n\n## Edge Cases\n- Tables must not be used for layout\n- Nested tables hurt accessibility\n- `aria-*` should not replace semantics\n\n## Interview FAQs\n**Q1: Why avoid tables for layout?**\nSemantically wrong, not responsive, hurts a11y.\n\n**Q2: What is `scope` in a table header?**\nTells screen readers whether header applies to column or row.\n\n**Q3: What is ARIA?**\nAccessible Rich Internet Applications – attributes for a11y.",
+          "quizQuestions": [
+            {
+              "text": "Which tag represents the main content of a page?",
+              "options": [
+                "<section>",
+                "<main>",
+                "<div>",
+                "<article>"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Missing `name` on an input. Effect?",
+              "options": [
+                "Renders wrong",
+                "Value not submitted",
+                "Breaks CSS",
+                "Nothing"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which input type validates email format?",
+              "options": [
+                "text",
+                "email",
+                "url",
+                "search"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `alt` on an image provide?",
+              "options": [
+                "Style",
+                "Alternate text for a11y",
+                "Link",
+                "Size"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "colspan does what?",
+              "options": [
+                "Merge rows",
+                "Merge columns",
+                "Add colour",
+                "Wrap"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Why pair label with input?",
+              "options": [
+                "Style",
+                "Accessibility and click focus",
+                "Colour",
+                "Font"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is NOT semantic?",
+              "options": [
+                "<header>",
+                "<div>",
+                "<nav>",
+                "<footer>"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which tag represents the main content of a page?",
+          "options": [
+            "<section>",
+            "<main>",
+            "<div>",
+            "<article>"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Missing `name` on an input. Effect?",
+          "options": [
+            "Renders wrong",
+            "Value not submitted",
+            "Breaks CSS",
+            "Nothing"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which input type validates email format?",
+          "options": [
+            "text",
+            "email",
+            "url",
+            "search"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does `alt` on an image provide?",
+          "options": [
+            "Style",
+            "Alternate text for a11y",
+            "Link",
+            "Size"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "colspan does what?",
+          "options": [
+            "Merge rows",
+            "Merge columns",
+            "Add colour",
+            "Wrap"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Why pair label with input?",
+          "options": [
+            "Style",
+            "Accessibility and click focus",
+            "Colour",
+            "Font"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is NOT semantic?",
+          "options": [
+            "<header>",
+            "<div>",
+            "<nav>",
+            "<footer>"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m2",
+      "title": "Module 2: CSS3 & Responsive Design",
+      "topics": [
+        {
+          "id": "fe-t2-1",
+          "title": "CSS Selectors, Box Model & Flexbox/Grid",
+          "contentMd": "# CSS3 Fundamentals\n\n## Selectors\n- Element: `p`\n- Class: `.btn`\n- ID: `#header`\n- Attribute: `input[type=\"text\"]`\n- Pseudo: `:hover`, `:nth-child(2)`, `::before`\n\n## Box Model\n```\ncontent → padding → border → margin\n```\nUse `box-sizing: border-box;` so width includes padding + border.\n\n## Display\n- block, inline, inline-block, flex, grid, none\n\n## Flexbox\n```css\n.container {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 16px;\n}\n```\n\n## Grid\n```css\n.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 16px;\n}\n```\n\n## Positioning\n- static, relative, absolute, fixed, sticky\n\n## Edge Cases\n- Margin collapse between adjacent blocks\n- `z-index` only works on positioned elements\n- 100vh mobile bug – use dvh or JS fix\n\n## Interview FAQs\n**Q1: Flexbox vs Grid?**\nFlex for 1D layout; Grid for 2D layout.\n\n**Q2: What is box-sizing?**\nHow width/height are calculated relative to padding and border.\n\n**Q3: How does z-index work?**\nStacking order among positioned elements with a stacking context.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t2-2",
+          "title": "Responsive Design, Media Queries & Variables",
+          "contentMd": "# Responsive Design\n\n## Media Queries\n```css\n@media (max-width: 768px) {\n  .container { flex-direction: column; }\n}\n```\n\n## Mobile-First\nStart with mobile styles, then layer up with min-width.\n\n## Units\n- px – fixed\n- % – relative to parent\n- em – relative to parent font\n- rem – relative to root font\n- vw/vh – viewport\n\n## CSS Variables\n```css\n:root {\n  --primary: #2563eb;\n  --radius: 8px;\n}\n.btn { background: var(--primary); border-radius: var(--radius); }\n```\n\n## Images\n```css\nimg { max-width: 100%; height: auto; display: block; }\n```\n\n## Edge Cases\n- Fixed widths break small screens\n- Too many breakpoints → maintenance pain\n- Test on real devices\n\n## Interview FAQs\n**Q1: Mobile-first vs desktop-first?**\nMobile-first improves performance and forces prioritization.\n\n**Q2: Why rem over px?**\nBetter for accessibility and scaling.\n\n**Q3: How to make images responsive?**\nmax-width 100%, height auto.",
+          "quizQuestions": [
+            {
+              "text": "Which property makes width include padding and border?",
+              "options": [
+                "box-shadow",
+                "box-sizing: border-box",
+                "margin: auto",
+                "position: relative"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Center items horizontally in a flex container. Use?",
+              "options": [
+                "align-items",
+                "justify-content",
+                "text-align",
+                "margin"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is 2D layout tool?",
+              "options": [
+                "Flexbox",
+                "Grid",
+                "Float",
+                "Inline-block"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "rem unit is relative to?",
+              "options": [
+                "Parent",
+                "Root font size",
+                "Viewport",
+                "Screen"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Mobile-first means?",
+              "options": [
+                "Write desktop CSS first",
+                "Write mobile CSS first",
+                "No media queries",
+                "Only mobile site"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: z-index not working. Likely reason?",
+              "options": [
+                "Wrong value",
+                "Element not positioned",
+                "No colour",
+                "Missing class"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "How to make an image responsive?",
+              "options": [
+                "width: 100%",
+                "max-width: 100%; height: auto",
+                "position: absolute",
+                "display: none"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which property makes width include padding and border?",
+          "options": [
+            "box-shadow",
+            "box-sizing: border-box",
+            "margin: auto",
+            "position: relative"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Center items horizontally in a flex container. Use?",
+          "options": [
+            "align-items",
+            "justify-content",
+            "text-align",
+            "margin"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is 2D layout tool?",
+          "options": [
+            "Flexbox",
+            "Grid",
+            "Float",
+            "Inline-block"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "rem unit is relative to?",
+          "options": [
+            "Parent",
+            "Root font size",
+            "Viewport",
+            "Screen"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Mobile-first means?",
+          "options": [
+            "Write desktop CSS first",
+            "Write mobile CSS first",
+            "No media queries",
+            "Only mobile site"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: z-index not working. Likely reason?",
+          "options": [
+            "Wrong value",
+            "Element not positioned",
+            "No colour",
+            "Missing class"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "How to make an image responsive?",
+          "options": [
+            "width: 100%",
+            "max-width: 100%; height: auto",
+            "position: absolute",
+            "display: none"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m3",
+      "title": "Module 3: JavaScript Fundamentals",
+      "topics": [
+        {
+          "id": "fe-t3-1",
+          "title": "Variables, Data Types, Operators & Control Flow",
+          "contentMd": "# JavaScript Fundamentals\n\n## Variables\n- `var` – function scoped, avoid\n- `let` – block scoped, reassignable\n- `const` – block scoped, not reassignable\n\n## Data Types\n- Primitives: string, number, boolean, null, undefined, symbol, bigint\n- Objects: object, array, function\n\n```js\nlet name = \"Alice\";\nconst age = 25;\nlet isStudent = true;\nlet arr = [1, 2, 3];\nlet obj = { a: 1, b: 2 };\n```\n\n## Operators\n- Arithmetic: `+ - * / % **`\n- Comparison: `== != === !== > < >= <=`\n- Logical: `&& || !`\n- Nullish: `??`\n- Optional chaining: `?.`\n\n## Control Flow\n```js\nif (score > 80) {\n  grade = \"A\";\n} else if (score > 60) {\n  grade = \"B\";\n} else {\n  grade = \"F\";\n}\n\nfor (let i = 0; i < 5; i++) { ... }\nfor (const x of arr) { ... }\nfor (const k in obj) { ... }\nwhile (cond) { ... }\n```\n\n## Edge Cases\n- `==` performs type coercion; use `===`\n- `NaN !== NaN`\n- `typeof null === \"object\"` (historical bug)\n- `const obj = {}; obj.x = 1` is allowed (only binding is constant)\n\n## Interview FAQs\n**Q1: `==` vs `===`?**\n`===` compares type and value without coercion.\n\n**Q2: `let` vs `var`?**\n`let` is block scoped; `var` is function scoped and hoisted.\n\n**Q3: What is hoisting?**\nDeclarations moved to top of scope at compile time.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t3-2",
+          "title": "Functions, Arrays, Objects & ES6+",
+          "contentMd": "# Functions & ES6+\n\n## Functions\n```js\nfunction add(a, b) { return a + b; }\nconst mul = (a, b) => a * b;\nconst greet = (name = \"Guest\") => `Hi ${name}`;\n```\n\n## Array Methods\n```js\narr.map(x => x * 2)\narr.filter(x => x > 0)\narr.reduce((a, b) => a + b, 0)\narr.find(x => x === 3)\narr.some(x => x > 5)\narr.every(x => x > 0)\narr.sort((a, b) => a - b)\n```\n\n## Object Utilities\n```js\nconst { a, b } = obj;\nconst merged = { ...obj1, ...obj2 };\nObject.keys(obj); Object.values(obj); Object.entries(obj);\n```\n\n## Template Literals\n```js\nconsole.log(`${name} is ${age}`);\n```\n\n## Destructuring & Spread\n```js\nconst [first, ...rest] = [1, 2, 3];\nfunction sum(...nums) { return nums.reduce((a, b) => a + b, 0); }\n```\n\n## Edge Cases\n- Arrow functions do not have their own `this`\n- `sort()` mutates the original array\n- `map` returns new array; `forEach` returns undefined\n\n## Interview FAQs\n**Q1: map vs forEach?**\nmap returns a new array; forEach returns undefined.\n\n**Q2: What is destructuring?**\nExtracting values from arrays/objects into variables.\n\n**Q3: What is the spread operator?**\nExpands iterable into individual elements.",
+          "quizQuestions": [
+            {
+              "text": "Which keyword gives block scoping?",
+              "options": [
+                "var",
+                "let",
+                "function",
+                "with"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `console.log(0 == \"0\")` output?",
+              "options": [
+                "true",
+                "false",
+                "Error",
+                "NaN"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which method returns a new array?",
+              "options": [
+                "forEach",
+                "map",
+                "push",
+                "pop"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `typeof null` returns?",
+              "options": [
+                "null",
+                "object",
+                "undefined",
+                "string"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Arrow functions lack?",
+              "options": [
+                "return",
+                "their own this",
+                "parameters",
+                "body"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Sum array values with one method?",
+              "options": [
+                "map",
+                "filter",
+                "reduce",
+                "find"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Which is NOT a primitive?",
+              "options": [
+                "string",
+                "number",
+                "array",
+                "boolean"
+              ],
+              "correct": 2
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which keyword gives block scoping?",
+          "options": [
+            "var",
+            "let",
+            "function",
+            "with"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `console.log(0 == \"0\")` output?",
+          "options": [
+            "true",
+            "false",
+            "Error",
+            "NaN"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Which method returns a new array?",
+          "options": [
+            "forEach",
+            "map",
+            "push",
+            "pop"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `typeof null` returns?",
+          "options": [
+            "null",
+            "object",
+            "undefined",
+            "string"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Arrow functions lack?",
+          "options": [
+            "return",
+            "their own this",
+            "parameters",
+            "body"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Sum array values with one method?",
+          "options": [
+            "map",
+            "filter",
+            "reduce",
+            "find"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Which is NOT a primitive?",
+          "options": [
+            "string",
+            "number",
+            "array",
+            "boolean"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    {
+      "id": "fe-m4",
+      "title": "Module 4: DOM Manipulation & Events",
+      "topics": [
+        {
+          "id": "fe-t4-1",
+          "title": "Selecting, Creating & Modifying DOM Elements",
+          "contentMd": "# DOM Manipulation\n\n## Selecting Elements\n```js\ndocument.getElementById(\"id\")\ndocument.querySelector(\".btn\")\ndocument.querySelectorAll(\".card\")\n```\n\n## Modifying\n```js\nel.textContent = \"Hi\";\nel.innerHTML = \"<b>Hi</b>\";\nel.style.color = \"red\";\nel.classList.add(\"active\");\nel.classList.toggle(\"hidden\");\nel.setAttribute(\"data-id\", 10);\n```\n\n## Creating & Inserting\n```js\nconst div = document.createElement(\"div\");\ndiv.textContent = \"New\";\nparent.appendChild(div);\nparent.insertBefore(div, parent.firstChild);\nparent.removeChild(div);\n```\n\n## Traversal\n- `parentElement`, `children`, `nextElementSibling`, `previousElementSibling`\n\n## Edge Cases\n- `querySelectorAll` returns NodeList (not array) – use `[...list]`\n- `innerHTML` with user data risks XSS\n- Frequent DOM updates are slow – use DocumentFragment\n\n## Interview FAQs\n**Q1: textContent vs innerHTML?**\ntextContent is safe; innerHTML parses HTML and risks XSS.\n\n**Q2: How to improve DOM performance?**\nBatch updates, use DocumentFragment, minimize reflows.\n\n**Q3: How to remove all children?**\n`el.replaceChildren()` or loop removeChild.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t4-2",
+          "title": "Events – Listeners, Bubbling & Delegation",
+          "contentMd": "# Events\n\n## Adding Listeners\n```js\nbtn.addEventListener(\"click\", (e) => {\n  console.log(e.target);\n});\n```\n\n## Common Events\n- Mouse: click, dblclick, mouseover, mouseout\n- Keyboard: keydown, keyup\n- Form: submit, change, input, focus, blur\n- Document: DOMContentLoaded, load\n\n## Event Object\n- `e.target` – element that fired\n- `e.currentTarget` – element with listener\n- `e.preventDefault()`\n- `e.stopPropagation()`\n\n## Bubbling & Capturing\nBy default events bubble from target up to document. Use the third arg of addEventListener to capture.\n\n## Event Delegation\nAttach one listener to a parent to handle many children – efficient for dynamic lists.\n\n```js\ntable.addEventListener(\"click\", (e) => {\n  if (e.target.matches(\".delete-btn\")) {\n    e.target.closest(\"tr\").remove();\n  }\n});\n```\n\n## Edge Cases\n- Removing element does not remove its listeners automatically\n- `preventDefault` does not stop bubbling\n- `stopPropagation` can break other listeners\n\n## Interview FAQs\n**Q1: What is event delegation?**\nUsing one parent listener for many dynamic children.\n\n**Q2: Bubbling vs capturing?**\nBubbling goes up; capturing goes down.\n\n**Q3: Why is delegation useful for dynamic tables?**\nNew rows are automatically handled without reattaching listeners.",
+          "quizQuestions": [
+            {
+              "text": "Which method selects a single element?",
+              "options": [
+                "querySelectorAll",
+                "querySelector",
+                "getElementsByClassName",
+                "getElementsByTagName"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Safe way to insert user text?",
+              "options": [
+                "innerHTML",
+                "textContent",
+                "outerHTML",
+                "document.write"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Event bubbles from?",
+              "options": [
+                "Document to target",
+                "Target to document",
+                "Only window",
+                "Nowhere"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best way to handle clicks on dynamic rows?",
+              "options": [
+                "Add listener per row",
+                "Event delegation on table",
+                "Inline onclick",
+                "setInterval"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which stops default form submission?",
+              "options": [
+                "stopPropagation",
+                "preventDefault",
+                "return true",
+                "stopImmediate"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: querySelectorAll returns?",
+              "options": [
+                "Array",
+                "NodeList",
+                "HTMLCollection",
+                "Object"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which event fires after HTML parsed?",
+              "options": [
+                "load",
+                "DOMContentLoaded",
+                "readystatechange",
+                "ready"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which method selects a single element?",
+          "options": [
+            "querySelectorAll",
+            "querySelector",
+            "getElementsByClassName",
+            "getElementsByTagName"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Safe way to insert user text?",
+          "options": [
+            "innerHTML",
+            "textContent",
+            "outerHTML",
+            "document.write"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Event bubbles from?",
+          "options": [
+            "Document to target",
+            "Target to document",
+            "Only window",
+            "Nowhere"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best way to handle clicks on dynamic rows?",
+          "options": [
+            "Add listener per row",
+            "Event delegation on table",
+            "Inline onclick",
+            "setInterval"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which stops default form submission?",
+          "options": [
+            "stopPropagation",
+            "preventDefault",
+            "return true",
+            "stopImmediate"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: querySelectorAll returns?",
+          "options": [
+            "Array",
+            "NodeList",
+            "HTMLCollection",
+            "Object"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which event fires after HTML parsed?",
+          "options": [
+            "load",
+            "DOMContentLoaded",
+            "readystatechange",
+            "ready"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m5",
+      "title": "Module 5: jQuery Fundamentals",
+      "topics": [
+        {
+          "id": "fe-t5-1",
+          "title": "jQuery Selectors, Effects & Events",
+          "contentMd": "# jQuery Fundamentals\n\n## Why jQuery?\nConcise syntax, cross-browser, easy DOM manipulation and AJAX. Still used in legacy projects.\n\n## Include\n```html\n<script src=\"https://code.jquery.com/jquery-3.7.1.min.js\"></script>\n```\n\n## Selectors\n```js\n$(\"#id\");\n$(\".class\");\n$(\"ul li\");\n$(\"input[type='text']\");\n```\n\n## Manipulation\n```js\n$(\"#box\").text(\"Hi\");\n$(\"#box\").html(\"<b>Hi</b>\");\n$(\"#box\").addClass(\"active\");\n$(\"#box\").attr(\"data-id\", 5);\n$(\"#box\").css(\"color\", \"red\");\n$(\"#box\").append(\"<span>New</span>\");\n$(\"#box\").remove();\n```\n\n## Events\n```js\n$(\"#btn\").on(\"click\", function () { ... });\n$(\"#list\").on(\"click\", \".item\", function () { ... }); // delegation\n$(\"#btn\").off(\"click\");\n```\n\n## Effects\n```js\n$(\"#box\").hide();\n$(\"#box\").show();\n$(\"#box\").fadeIn(300);\n$(\"#box\").slideToggle();\n```\n\n## Chaining\n```js\n$(\"#box\").addClass(\"active\").fadeIn(200).css(\"margin\", \"10px\");\n```\n\n## Edge Cases\n- `$(this)` inside handlers\n- jQuery object is not an array but is array-like\n- `.on()` is preferred over deprecated `.bind()` and `.click()` for dynamic elements\n\n## Interview FAQs\n**Q1: `$(document).ready()` vs `window.onload`?**\nready fires after DOM parsed; onload waits for all assets.\n\n**Q2: How does jQuery delegation work?**\n`$(parent).on(event, selector, handler)`.\n\n**Q3: Is jQuery still relevant?**\nFor legacy codebases yes; for new apps modern frameworks or vanilla JS preferred.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t5-2",
+          "title": "DOM Traversal & Form Handling with jQuery",
+          "contentMd": "# jQuery Traversal & Forms\n\n## Traversal\n```js\n$(\"#item\").parent();\n$(\"#item\").children();\n$(\"#item\").closest(\"tr\");\n$(\"#item\").find(\".price\");\n$(\"#item\").siblings();\n$(\"#item\").next();\n$(\"#item\").prev();\n```\n\n## Iteration\n```js\n$(\".row\").each(function (i, el) {\n  console.log(i, $(el).text());\n});\n```\n\n## Forms\n```js\n$(\"#form\").on(\"submit\", function (e) {\n  e.preventDefault();\n  const data = $(this).serialize();\n  const obj = $(this).serializeArray();\n  console.log(data, obj);\n});\n\n$(\"#city\").val();\n$(\"#city\").val(\"Delhi\");\n$(\"input[name='gender']:checked\").val();\n```\n\n## Attributes & Data\n```js\n$el.attr(\"href\");\n$el.data(\"userId\");    // reads data-user-id\n$el.data(\"userId\", 5);\n```\n\n## Edge Cases\n- `.val()` returns string; cast for numbers\n- `serialize()` skips disabled fields\n- `data-*` attributes are cached after first read\n\n## Interview FAQs\n**Q1: attr vs prop?**\nattr for HTML attributes; prop for live DOM properties (e.g., checked).\n\n**Q2: How to read all form fields?**\n`$(form).serialize()` or `serializeArray()`.\n\n**Q3: How to get selected radio value?**\n`$('input[name=gender]:checked').val()`.",
+          "quizQuestions": [
+            {
+              "text": "Which symbol starts a jQuery selection?",
+              "options": [
+                "document.",
+                "$",
+                "jq",
+                "select"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Attach click on dynamically added items. Best?",
+              "options": [
+                "$('.item').click()",
+                "$(parent).on('click', '.item', fn)",
+                "inline onclick",
+                "setInterval"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which fires after DOM is parsed?",
+              "options": [
+                "window.onload",
+                "$(document).ready()",
+                "setTimeout",
+                "DOMContentLoaded"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Read value of an input?",
+              "options": [
+                ".text()",
+                ".html()",
+                ".val()",
+                ".attr()"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "attr vs prop?",
+              "options": [
+                "Same",
+                "attr for HTML attrs, prop for live DOM state",
+                "prop for HTML",
+                "attr only for images"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "How to serialize a form to a query string?",
+              "options": [
+                "$(form).data()",
+                "$(form).serialize()",
+                "$(form).json()",
+                "$(form).form()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which method reads data-user-id?",
+              "options": [
+                ".attr('user-id')",
+                ".data('userId')",
+                ".prop('data-id')",
+                ".val('user-id')"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which symbol starts a jQuery selection?",
+          "options": [
+            "document.",
+            "$",
+            "jq",
+            "select"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Attach click on dynamically added items. Best?",
+          "options": [
+            "$('.item').click()",
+            "$(parent).on('click', '.item', fn)",
+            "inline onclick",
+            "setInterval"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which fires after DOM is parsed?",
+          "options": [
+            "window.onload",
+            "$(document).ready()",
+            "setTimeout",
+            "DOMContentLoaded"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Read value of an input?",
+          "options": [
+            ".text()",
+            ".html()",
+            ".val()",
+            ".attr()"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "attr vs prop?",
+          "options": [
+            "Same",
+            "attr for HTML attrs, prop for live DOM state",
+            "prop for HTML",
+            "attr only for images"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "How to serialize a form to a query string?",
+          "options": [
+            "$(form).data()",
+            "$(form).serialize()",
+            "$(form).json()",
+            "$(form).form()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which method reads data-user-id?",
+          "options": [
+            ".attr('user-id')",
+            ".data('userId')",
+            ".prop('data-id')",
+            ".val('user-id')"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m6",
+      "title": "Module 6: AJAX & REST APIs",
+      "topics": [
+        {
+          "id": "fe-t6-1",
+          "title": "AJAX with jQuery $.ajax, $.get, $.post",
+          "contentMd": "# AJAX with jQuery\n\n## What is AJAX?\nAsynchronous JavaScript And XML – fetch data from a server without reloading the page. Modern usage typically JSON.\n\n## Basic GET\n```js\n$.ajax({\n  url: \"/api/users\",\n  method: \"GET\",\n  dataType: \"json\",\n  success: function (data) { console.log(data); },\n  error: function (xhr, status, err) { console.error(err); },\n  complete: function () { console.log(\"done\"); }\n});\n```\n\n## Shortcuts\n```js\n$.get(\"/api/users\", function (data) { ... });\n$.post(\"/api/users\", { name: \"Alice\" }, function (res) { ... });\n$.getJSON(\"/api/users\", function (data) { ... });\n```\n\n## Sending JSON\n```js\n$.ajax({\n  url: \"/api/users\",\n  method: \"POST\",\n  contentType: \"application/json\",\n  data: JSON.stringify({ name: \"Alice\", age: 25 }),\n  success: res => console.log(res)\n});\n```\n\n## Error Handling\n- status 400 – Bad request\n- 401 – Unauthorized\n- 403 – Forbidden\n- 404 – Not found\n- 500 – Server error\n\n## Edge Cases\n- CORS must be enabled server-side\n- Always check `xhr.status`\n- `dataType` mismatch causes parse errors\n- Never trust client data\n\n## Interview FAQs\n**Q1: AJAX vs fetch?**\nfetch is native, promise-based; AJAX is jQuery-specific.\n\n**Q2: What is CORS?**\nCross-Origin Resource Sharing – server policy to allow cross-domain requests.\n\n**Q3: GET vs POST?**\nGET fetches data; POST sends data in the request body.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t6-2",
+          "title": "Fetch API, Promises & Async/Await",
+          "contentMd": "# Fetch, Promises & Async/Await\n\n## Fetch Basic\n```js\nfetch(\"/api/users\")\n  .then(res => {\n    if (!res.ok) throw new Error(res.status);\n    return res.json();\n  })\n  .then(data => console.log(data))\n  .catch(err => console.error(err));\n```\n\n## POST\n```js\nfetch(\"/api/users\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ name: \"Alice\" })\n})\n  .then(r => r.json())\n  .then(console.log);\n```\n\n## Async/Await\n```js\nasync function loadUsers() {\n  try {\n    const res = await fetch(\"/api/users\");\n    if (!res.ok) throw new Error(res.status);\n    const data = await res.json();\n    console.log(data);\n  } catch (e) {\n    console.error(e);\n  }\n}\n```\n\n## Promise Combinators\n```js\nPromise.all([p1, p2, p3]);     // waits all, fails if any fails\nPromise.allSettled([...]);     // resolves with all results\nPromise.race([...]);           // first to finish\nPromise.any([...]);            // first to succeed\n```\n\n## Edge Cases\n- fetch does not reject on HTTP error (only network)\n- Always check `res.ok`\n- No default timeout – use AbortController\n- Body can only be read once\n\n## Interview FAQs\n**Q1: Does fetch reject on 404?**\nNo – you must check `res.ok`.\n\n**Q2: Promise vs callback?**\nPromises avoid callback hell and support chaining.\n\n**Q3: What is async/await?**\nSyntactic sugar over promises for sequential async code.",
+          "quizQuestions": [
+            {
+              "text": "Which jQuery method sends a GET request?",
+              "options": [
+                "$.post",
+                "$.get",
+                "$.put",
+                "$.delete"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: fetch returns 404. What happens?",
+              "options": [
+                "Throws error",
+                "Resolves with ok=false",
+                "Hangs",
+                "Crashes browser"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which Promise combinator waits for all to succeed?",
+              "options": [
+                "Promise.race",
+                "Promise.all",
+                "Promise.any",
+                "Promise.allSettled"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Content-Type for JSON POST?",
+              "options": [
+                "text/plain",
+                "application/json",
+                "multipart/form-data",
+                "application/x-www-form-urlencoded"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "CORS error means?",
+              "options": [
+                "Server down",
+                "Server did not allow cross-origin",
+                "Wrong URL",
+                "Slow network"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which status is Unauthorized?",
+              "options": [
+                "400",
+                "401",
+                "403",
+                "404"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: read fetch body twice?",
+              "options": [
+                "Works fine",
+                "Second read fails – body used once",
+                "Returns null",
+                "Returns same"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which jQuery method sends a GET request?",
+          "options": [
+            "$.post",
+            "$.get",
+            "$.put",
+            "$.delete"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: fetch returns 404. What happens?",
+          "options": [
+            "Throws error",
+            "Resolves with ok=false",
+            "Hangs",
+            "Crashes browser"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which Promise combinator waits for all to succeed?",
+          "options": [
+            "Promise.race",
+            "Promise.all",
+            "Promise.any",
+            "Promise.allSettled"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Content-Type for JSON POST?",
+          "options": [
+            "text/plain",
+            "application/json",
+            "multipart/form-data",
+            "application/x-www-form-urlencoded"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "CORS error means?",
+          "options": [
+            "Server down",
+            "Server did not allow cross-origin",
+            "Wrong URL",
+            "Slow network"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which status is Unauthorized?",
+          "options": [
+            "400",
+            "401",
+            "403",
+            "404"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: read fetch body twice?",
+          "options": [
+            "Works fine",
+            "Second read fails – body used once",
+            "Returns null",
+            "Returns same"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m7",
+      "title": "Module 7: Bootstrap 5 & UI Components",
+      "topics": [
+        {
+          "id": "fe-t7-1",
+          "title": "Bootstrap Grid, Utilities & Components",
+          "contentMd": "# Bootstrap 5\n\n## Include via CDN\n```html\n<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\"></script>\n```\n\n## Container & Grid\n```html\n<div class=\"container\">\n  <div class=\"row\">\n    <div class=\"col-md-6\">Left</div>\n    <div class=\"col-md-6\">Right</div>\n  </div>\n</div>\n```\nBreakpoints: `sm ≥576`, `md ≥768`, `lg ≥992`, `xl ≥1200`, `xxl ≥1400`\n\n## Common Components\n- Navbar, Buttons, Alerts, Badges, Cards, Modal, Dropdown, Tabs, Accordion, Toast, Tooltip\n\n## Utilities\n- Spacing: `m-3`, `p-2`, `mt-4`, `px-5`\n- Flex: `d-flex`, `justify-content-between`, `align-items-center`\n- Text: `text-center`, `fw-bold`, `text-muted`\n- Colors: `bg-primary`, `text-danger`, `border-success`\n\n## Forms\n```html\n<div class=\"mb-3\">\n  <label class=\"form-label\">Email</label>\n  <input type=\"email\" class=\"form-control\" required>\n</div>\n<select class=\"form-select\">...</select>\n<button class=\"btn btn-primary\">Submit</button>\n```\n\n## Edge Cases\n- Must use proper nesting: container → row → col\n- JS components need bootstrap.bundle.js\n- Customize with CSS variables to override\n\n## Interview FAQs\n**Q1: What is Bootstrap?**\nCSS framework for responsive, mobile-first UIs.\n\n**Q2: Bootstrap 5 vs 4?**\nBS5 drops jQuery and IE support; adds utility API.\n\n**Q3: What is the grid system?**\n12-column responsive layout.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t7-2",
+          "title": "Bootstrap Modal, Navbar & JS Components",
+          "contentMd": "# Bootstrap JS Components\n\n## Modal\n```html\n<button class=\"btn btn-primary\" data-bs-toggle=\"modal\" data-bs-target=\"#myModal\">Open</button>\n\n<div class=\"modal fade\" id=\"myModal\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <h5 class=\"modal-title\">Title</h5>\n        <button class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\n      </div>\n      <div class=\"modal-body\">Body</div>\n      <div class=\"modal-footer\">\n        <button class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>\n      </div>\n    </div>\n  </div>\n</div>\n```\n\n## Modal via JS\n```js\nconst myModal = new bootstrap.Modal(\"#myModal\");\nmyModal.show();\nmyModal.hide();\n```\n\n## Navbar\n```html\n<nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\n  <div class=\"container\">\n    <a class=\"navbar-brand\" href=\"#\">Brand</a>\n    <button class=\"navbar-toggler\" data-bs-toggle=\"collapse\" data-bs-target=\"#nav\">\n      <span class=\"navbar-toggler-icon\"></span>\n    </button>\n    <div class=\"collapse navbar-collapse\" id=\"nav\">\n      <ul class=\"navbar-nav ms-auto\">\n        <li class=\"nav-item\"><a class=\"nav-link\" href=\"#\">Home</a></li>\n      </ul>\n    </div>\n  </div>\n</nav>\n```\n\n## Other Components\n- Dropdown, Tooltip, Popover, Toast, Offcanvas, Carousel\n\n## Edge Cases\n- Nested modals do not work well\n- Modals block body scroll\n- Tooltips need manual init in JS\n\n## Interview FAQs\n**Q1: How to open a modal programmatically?**\n`new bootstrap.Modal('#id').show()`.\n\n**Q2: Why does a tooltip not show?**\nNeeds `new bootstrap.Tooltip(el)`.\n\n**Q3: How to prevent body scroll with modal open?**\nBootstrap adds `.modal-open` automatically.",
+          "quizQuestions": [
+            {
+              "text": "Bootstrap grid uses how many columns?",
+              "options": [
+                "10",
+                "12",
+                "16",
+                "24"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which class makes a container responsive?",
+              "options": [
+                ".wrap",
+                ".container",
+                ".grid",
+                ".layout"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Open a Bootstrap modal by button attribute?",
+              "options": [
+                "data-bs-toggle='modal'",
+                "data-toggle='popup'",
+                "onclick",
+                "data-modal"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Which is a Bootstrap 5 spacing utility?",
+              "options": [
+                "mt-3",
+                "space-top",
+                "margin-top",
+                "gap-3"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "bootstrap.bundle.js includes?",
+              "options": [
+                "Only CSS",
+                "JS + Popper",
+                "Only Popper",
+                "Only jQuery"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which class makes a form input styled?",
+              "options": [
+                "form-control",
+                "input-style",
+                "form-input",
+                "input-group"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Bootstrap 5 requires jQuery?",
+              "options": [
+                "Yes",
+                "No",
+                "Only for modals",
+                "Only for navbar"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Bootstrap grid uses how many columns?",
+          "options": [
+            "10",
+            "12",
+            "16",
+            "24"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which class makes a container responsive?",
+          "options": [
+            ".wrap",
+            ".container",
+            ".grid",
+            ".layout"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Open a Bootstrap modal by button attribute?",
+          "options": [
+            "data-bs-toggle='modal'",
+            "data-toggle='popup'",
+            "onclick",
+            "data-modal"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Which is a Bootstrap 5 spacing utility?",
+          "options": [
+            "mt-3",
+            "space-top",
+            "margin-top",
+            "gap-3"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "bootstrap.bundle.js includes?",
+          "options": [
+            "Only CSS",
+            "JS + Popper",
+            "Only Popper",
+            "Only jQuery"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which class makes a form input styled?",
+          "options": [
+            "form-control",
+            "input-style",
+            "form-input",
+            "input-group"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Bootstrap 5 requires jQuery?",
+          "options": [
+            "Yes",
+            "No",
+            "Only for modals",
+            "Only for navbar"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "fe-m8",
+      "title": "Module 8: Dynamic Tables, AJAX Tables & Project",
+      "topics": [
+        {
+          "id": "fe-t8-1",
+          "title": "Building Dynamic HTML Tables with JS & jQuery",
+          "contentMd": "# Dynamic HTML Tables\n\n## Goal\nRender tabular data from an API, add search, sort, pagination and CRUD.\n\n## Minimal HTML\n```html\n<input id=\"search\" placeholder=\"Search...\">\n<table class=\"table table-striped\" id=\"usersTable\">\n  <thead>\n    <tr><th data-key=\"id\">ID</th><th data-key=\"name\">Name</th><th>Actions</th></tr>\n  </thead>\n  <tbody id=\"tbody\"></tbody>\n</table>\n```\n\n## Rendering Rows (Vanilla JS)\n```js\nfunction render(rows) {\n  const tbody = document.getElementById(\"tbody\");\n  tbody.innerHTML = \"\";\n  rows.forEach(r => {\n    const tr = document.createElement(\"tr\");\n    tr.innerHTML = `\n      <td>${r.id}</td>\n      <td>${r.name}</td>\n      <td><button class=\"btn btn-sm btn-danger delete\" data-id=\"${r.id}\">Delete</button></td>`;\n    tbody.appendChild(tr);\n  });\n}\n```\n\n## Rendering Rows (jQuery)\n```js\nfunction render(rows) {\n  const $tbody = $(\"#tbody\").empty();\n  rows.forEach(r => {\n    $tbody.append(`\n      <tr>\n        <td>${r.id}</td>\n        <td>${r.name}</td>\n        <td><button class=\"btn btn-sm btn-danger delete\" data-id=\"${r.id}\">Delete</button></td>\n      </tr>`);\n  });\n}\n```\n\n## Search Filter\n```js\n$(\"#search\").on(\"input\", function () {\n  const q = $(this).val().toLowerCase();\n  $(\"#tbody tr\").filter(function () {\n    $(this).toggle($(this).text().toLowerCase().includes(q));\n  });\n});\n```\n\n## Sort by Column\n```js\n$(\"th[data-key]\").on(\"click\", function () {\n  const key = $(this).data(\"key\");\n  const dir = $(this).data(\"dir\") === \"asc\" ? \"desc\" : \"asc\";\n  $(this).data(\"dir\", dir);\n  data.sort((a, b) => dir === \"asc\" ? (a[key] > b[key] ? 1 : -1) : (a[key] < b[key] ? 1 : -1));\n  render(data);\n});\n```\n\n## Pagination (Client-side)\n```js\nlet page = 1, perPage = 5;\nfunction paginate(rows) {\n  const start = (page - 1) * perPage;\n  render(rows.slice(start, start + perPage));\n}\n```\n\n## Delete Row with Delegation\n```js\n$(\"#tbody\").on(\"click\", \".delete\", function () {\n  const id = $(this).data(\"id\");\n  $(this).closest(\"tr\").remove();\n  // optionally call DELETE API\n});\n```\n\n## Edge Cases\n- Escape HTML to prevent XSS\n- Do not rebind events for each render – use delegation\n- Large datasets: paginate server-side\n- Preserve state (page, sort) after re-render\n\n## Interview FAQs\n**Q1: How to avoid XSS when building rows from data?**\nUse textContent or escape user strings.\n\n**Q2: Why is delegation best for dynamic tables?**\nHandles newly added rows without rebinding.\n\n**Q3: Client vs server pagination?**\nClient good for small data; server for large.",
+          "quizQuestions": []
+        },
+        {
+          "id": "fe-t8-2",
+          "title": "Full CRUD Table with AJAX – Project",
+          "contentMd": "# CRUD Table with AJAX – Complete Project\n\n## Goal\nBuild a user management table using Bootstrap + jQuery + AJAX.\n\n## Features\n1. List users from API\n2. Add user (modal)\n3. Edit user (modal)\n4. Delete user (confirm)\n5. Search + sort + pagination\n6. Toasts for feedback\n7. Loading spinner\n\n## Folder Structure\n```\nproject/\n├── index.html\n├── js/app.js\n├── js/api.js\n└── css/style.css\n```\n\n## api.js\n```js\nconst API = {\n  base: \"https://jsonplaceholder.typicode.com\",\n  getUsers: () => $.get(`${API.base}/users`),\n  createUser: (u) => $.ajax({ url: `${API.base}/users`, method: \"POST\", contentType: \"application/json\", data: JSON.stringify(u) }),\n  updateUser: (id, u) => $.ajax({ url: `${API.base}/users/${id}`, method: \"PUT\", contentType: \"application/json\", data: JSON.stringify(u) }),\n  deleteUser: (id) => $.ajax({ url: `${API.base}/users/${id}`, method: \"DELETE\" })\n};\n```\n\n## app.js\n```js\nlet users = [];\n\n$(document).ready(async function () {\n  await load();\n});\n\nasync function load() {\n  $(\"#loading\").show();\n  users = await API.getUsers();\n  render(users);\n  $(\"#loading\").hide();\n}\n\nfunction render(rows) {\n  const $tbody = $(\"#tbody\").empty();\n  rows.forEach(u => $tbody.append(rowHtml(u)));\n}\n\nfunction rowHtml(u) {\n  return `<tr>\n    <td>${u.id}</td>\n    <td>${u.name}</td>\n    <td>${u.email}</td>\n    <td>\n      <button class=\"btn btn-sm btn-warning edit\" data-id=\"${u.id}\">Edit</button>\n      <button class=\"btn btn-sm btn-danger delete\" data-id=\"${u.id}\">Delete</button>\n    </td>\n  </tr>`;\n}\n\n$(\"#tbody\").on(\"click\", \".delete\", async function () {\n  const id = $(this).data(\"id\");\n  if (!confirm(\"Delete this user?\")) return;\n  await API.deleteUser(id);\n  users = users.filter(u => u.id !== id);\n  render(users);\n  toast(\"User deleted\");\n});\n\n$(\"#saveUser\").on(\"click\", async function () {\n  const name = $(\"#name\").val().trim();\n  const email = $(\"#email\").val().trim();\n  if (!name || !email) return toast(\"Fill all fields\");\n  await API.createUser({ name, email });\n  toast(\"User added\");\n  bootstrap.Modal.getInstance($(\"#userModal\")[0]).hide();\n  load();\n});\n\nfunction toast(msg) {\n  const id = \"t\" + Date.now();\n  $(\"#toasts\").append(`<div id=\"${id}\" class=\"toast show\"><div class=\"toast-body\">${msg}</div></div>`);\n  setTimeout(() => $(\"#\" + id).remove(), 3000);\n}\n```\n\n## Edge Cases\n- Always show loading state\n- Confirm destructive actions\n- Validate before sending\n- Handle API failure with try/catch\n- Avoid XSS by escaping user input in HTML\n\n## Interview FAQs\n**Q1: How to structure API calls?**\nSeparate API module, keep UI logic in app.\n\n**Q2: How to make it optimistic?**\nUpdate UI immediately, roll back on failure.\n\n**Q3: How to test?**\nManual test with network tab and API mocking (Postman / MSW).",
+          "quizQuestions": [
+            {
+              "text": "Best way to handle click on dynamically added row buttons?",
+              "options": [
+                "Attach per button",
+                "Event delegation on tbody",
+                "onclick inline",
+                "setInterval"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Prevent XSS when rendering row data?",
+              "options": [
+                "Use innerHTML",
+                "Escape user input or use textContent",
+                "Use eval",
+                "Use document.write"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Client-side pagination is best when?",
+              "options": [
+                "Millions of rows",
+                "Small dataset",
+                "No data",
+                "Only images"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "For large datasets, use?",
+              "options": [
+                "Client pagination",
+                "Server-side pagination",
+                "Render all",
+                "No pagination"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Before destructive delete, do?",
+              "options": [
+                "Silent delete",
+                "Confirm dialog",
+                "Delete instantly",
+                "Random delete"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "jQuery method to empty a tbody?",
+              "options": [
+                ".remove()",
+                ".empty()",
+                ".clear()",
+                ".delete()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best place for API calls in a project?",
+              "options": [
+                "Inline in HTML",
+                "Separate api.js module",
+                "In CSS",
+                "In README"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Best way to handle click on dynamically added row buttons?",
+          "options": [
+            "Attach per button",
+            "Event delegation on tbody",
+            "onclick inline",
+            "setInterval"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Prevent XSS when rendering row data?",
+          "options": [
+            "Use innerHTML",
+            "Escape user input or use textContent",
+            "Use eval",
+            "Use document.write"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Client-side pagination is best when?",
+          "options": [
+            "Millions of rows",
+            "Small dataset",
+            "No data",
+            "Only images"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "For large datasets, use?",
+          "options": [
+            "Client pagination",
+            "Server-side pagination",
+            "Render all",
+            "No pagination"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Before destructive delete, do?",
+          "options": [
+            "Silent delete",
+            "Confirm dialog",
+            "Delete instantly",
+            "Random delete"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "jQuery method to empty a tbody?",
+          "options": [
+            ".remove()",
+            ".empty()",
+            ".clear()",
+            ".delete()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best place for API calls in a project?",
+          "options": [
+            "Inline in HTML",
+            "Separate api.js module",
+            "In CSS",
+            "In README"
+          ],
+          "correct": 1
+        }
+      ]
+    }
+  ]
+}

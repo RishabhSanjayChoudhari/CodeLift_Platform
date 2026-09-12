@@ -62,7 +62,7 @@ class ErrorBoundary extends React.Component {
     try {
       localStorage.clear();
     } catch (_) { }
-    window.location.href = '/login';
+    window.location.href = `${import.meta.env.BASE_URL}login`;
   };
 
   render() {
@@ -87,7 +87,7 @@ class ErrorBoundary extends React.Component {
                 Reset & Reload
               </button>
               <button
-                onClick={() => { window.location.href = '/'; }}
+                onClick={() => { window.location.href = import.meta.env.BASE_URL; }}
                 style={{ background: 'var(--card-bg-alt, #162032)', color: 'var(--text-primary, #F1F5F9)', border: '1px solid var(--border-color, #334155)', borderRadius: 12, padding: '10px 20px', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit' }}
               >
                 Home
@@ -107,7 +107,7 @@ export default function App() {
       <ThemeProvider>
         <DataProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
               <Routes>
                 {/* Public Landing & Marketplace Pages */}
                 <Route path="/" element={<Home />} />

@@ -1,4 +1,4 @@
-name: Deploy with Backup & Restore
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -6,83 +6,37 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
-jobs:
-  backup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: 📦 Backup all JSON files
-        run: |
-          mkdir -p backup
-          if [ -d "data" ] && [ "$(ls -A data/*.json 2>/dev/null)" ]; then
-            cp data/*.json backup/
-            echo "✅ Data files backed up"
-          else
-            echo "⚠️ No data JSON files found, proceeding with default schemas"
-          fi
-          DATE=$(date +%Y-%m-%d_%H-%M-%S)
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git checkout -b backup/data-$DATE
-          git add data/*.json || true
-          git commit -m "Backup all JSON files - $DATE" || true
-          git push origin backup/data-$DATE || true
-      - name: 📤 Upload backup artifact
-        uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: data-backup
-          path: backup/
-          retention-days: 30
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
 
+jobs:
   build:
-    needs: backup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - name: 📥 Download backup artifact
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: data-backup
-          path: ./backup
-      - name: 🔄 Restore all JSON files
-        run: |
-          if [ -d "backup" ] && [ "$(ls -A backup/*.json 2>/dev/null)" ]; then
-            cp backup/*.json data/
-            echo "✅ All JSON files restored"
-          else
-            echo "⚠️ No backup found, using existing data"
-          fi
-      - name: 🔨 Build CodeLift
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔨 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
       - name: 🔨 Run CodeLift Vite Build
-        id: build
-        continue-on-error: false
         env:
-          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || '/codelift/' }}
+          VITE_BASE_PATH: /CodeLift_Platform/
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: |
-          if npm run build; then
-            echo "✅ Build successful"
-          else
-            echo "❌ Build failed" >&2
-            exit 1
-          fi
-      - name: 📦 Upload build artifact
+        run: npm run build
+
+      - name: 📦 Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -94,5 +48,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/deploy-pages@v4
+      - name: 🚀 Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
         id: deployment

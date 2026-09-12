@@ -52,7 +52,7 @@ function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
 // ==============================================================================
 export async function getStaticCohortCourses() {
   try {
-    const basePath = import.meta.env.BASE_URL || '/codelift/';
+    const basePath = import.meta.env.BASE_URL || '/CodeLift_Platform/';
     const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
     const res = await fetch(`${cleanBase}courses/cohort/index.json`);
     if (!res.ok) return [];
@@ -66,7 +66,9 @@ export async function getStaticCohortCourses() {
           const data = await r.json();
           return {
             ...data,
+            courseType: 'cohort',
             course_type: 'cohort',
+            isCohort: true,
             isPublished: true,
             isApproved: true
           };
@@ -94,14 +96,21 @@ export async function getAllCourses() {
     console.warn('[supabaseDataService] Failed to fetch elective courses from Supabase:', error);
   }
 
-  const electiveCourses = (electiveRaw || []).map((c) => ({
-    ...c,
-    course_type: 'elective',
-    price: Number(c.price || 0),
-    isFree: Boolean(c.is_free),
-    isPublished: Boolean(c.is_published),
-    isApproved: Boolean(c.is_approved)
-  }));
+  const cohortIds = new Set(cohortCourses.map((c) => c.id || c.slug));
+  const cohortSlugs = new Set(cohortCourses.map((c) => c.slug).filter(Boolean));
+
+  const electiveCourses = (electiveRaw || [])
+    .filter((c) => !cohortIds.has(c.id) && !cohortSlugs.has(c.slug))
+    .map((c) => ({
+      ...c,
+      courseType: 'elective',
+      course_type: 'elective',
+      isCohort: false,
+      price: Number(c.price || 0),
+      isFree: Boolean(c.is_free),
+      isPublished: Boolean(c.is_published),
+      isApproved: Boolean(c.is_approved)
+    }));
 
   return [...cohortCourses, ...electiveCourses];
 }
@@ -250,8 +259,13 @@ export async function fetchAllData() {
       };
     });
 
-    // Merge static cohort courses + dynamic elective courses
-    const courses = [...cohortCourses, ...electiveCourses];
+    // Merge static cohort courses + dynamic elective courses (cohort courses take precedence)
+    const cohortIds = new Set(cohortCourses.map((c) => c.id || c.slug));
+    const cohortSlugs = new Set(cohortCourses.map((c) => c.slug).filter(Boolean));
+    const nonDuplicateElectives = electiveCourses.filter(
+      (ec) => !cohortIds.has(ec.id) && !cohortSlugs.has(ec.slug)
+    );
+    const courses = [...cohortCourses, ...nonDuplicateElectives];
 
     // Reassemble Tests
     const tests = rawTests.map((t) => {

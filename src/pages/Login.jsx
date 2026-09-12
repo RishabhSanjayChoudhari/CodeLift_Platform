@@ -197,9 +197,18 @@ export default function Login() {
             </form>
 
             <div className="mt-4 pt-3 border-top text-center" style={{ borderColor: 'var(--border-color)' }}>
-              <span className="small text-muted" style={{ fontSize: '0.78rem' }}>
+              <span className="small text-muted d-block" style={{ fontSize: '0.78rem' }}>
                 Need an account? Contact your institute faculty or batch coordinator.
               </span>
+              <div className="mt-2">
+                <Link
+                  to="/admin/login"
+                  className="small fw-semibold text-decoration-none"
+                  style={{ fontSize: '0.8rem', color: 'var(--bs-primary)' }}
+                >
+                  🔒 Institutional Administrator Portal →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

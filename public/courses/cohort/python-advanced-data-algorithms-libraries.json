@@ -1,0 +1,1173 @@
+{
+  "id": "python-advanced-data-algorithms-libraries",
+  "title": "Python Advanced: Data, Algorithms & Libraries",
+  "slug": "python-advanced-data-algorithms-libraries",
+  "description": "Level up with advanced functions, decorators, generators, algorithms, sorting techniques, statistics, NumPy and Pandas. Prepares you for data-driven full-stack and analytics careers.",
+  "categoryId": "cat-python",
+  "courseType": "cohort",
+  "course_type": "cohort",
+  "isCohort": true,
+  "isPublished": true,
+  "isApproved": true,
+  "isFree": false,
+  "price": 1999,
+  "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600",
+  "rating": 4.8,
+  "numReviews": 96,
+  "studentsEnrolled": 720,
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "updatedAt": "2026-02-15T00:00:00.000Z",
+  "modules": [
+    {
+      "id": "pa-m1",
+      "title": "Module 1: Advanced Functions",
+      "topics": [
+        {
+          "id": "pa-t1-1",
+          "title": "Closures & First-Class Functions",
+          "contentMd": "# Closures & First-Class Functions\n\n## First-Class Functions\nFunctions are objects. Can be assigned, passed, returned.\n\n```python\ndef greet(name): return f\"Hi {name}\"\n\nsay = greet\nprint(say(\"Alice\"))\n```\n\n## Higher-Order Functions\nAccept or return functions.\n```python\ndef apply(func, x):\n    return func(x)\n\napply(lambda x: x*2, 5)   # 10\n```\n\n## Closures\nA function remembers variables from its enclosing scope.\n\n```python\ndef counter():\n    count = 0\n    def inc():\n        nonlocal count\n        count += 1\n        return count\n    return inc\n\nc = counter()\nprint(c(), c(), c())   # 1 2 3\n```\n\n## Edge Cases\n- Without `nonlocal`, count would be read-only\n- Closures capture by reference, not value\n- Late binding in loops – use default args to fix\n\n## Interview FAQs\n**Q1: What is a closure?**\nInner function that remembers the outer function's variables.\n\n**Q2: Why use closures?**\nFor data hiding and factory functions.\n\n**Q3: What is late binding?**\nVariables are looked up when the inner function is called.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t1-2",
+          "title": "Decorators",
+          "contentMd": "# Decorators\n\n## Basic Decorator\nModifies function behavior without changing code.\n\n```python\ndef log(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}\")\n        return func(*args, **kwargs)\n    return wrapper\n\n@log\ndef add(a, b):\n    return a + b\n\nadd(2, 3)   # Calling add → 5\n```\n\n## With Arguments\n```python\ndef repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet():\n    print(\"Hi\")\ngreet()   # prints Hi 3 times\n```\n\n## functools.wraps\nPreserve original metadata.\n```python\nfrom functools import wraps\n@wraps(func)\ndef wrapper(...): ...\n```\n\n## Built-in Decorators\n`@staticmethod`, `@classmethod`, `@property`\n\n## Edge Cases\n- Without `@wraps`, function name/docstring is lost\n- Decorator returns the wrapper, not the original function\n- Order of stacked decorators matters\n\n## Interview FAQs\n**Q1: What is a decorator?**\nA function that wraps another function to extend behavior.\n\n**Q2: When to use decorators?**\nLogging, authentication, caching, timing.\n\n**Q3: Why use `functools.wraps`?**\nPreserves name, docstring, and metadata.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t1-3",
+          "title": "Generators & Iterators",
+          "contentMd": "# Generators & Iterators\n\n## Iterators\nObject with `__iter__` and `__next__`.\n```python\nit = iter([1, 2, 3])\nprint(next(it))   # 1\n```\n\n## Generators\nUse `yield` to produce values lazily.\n\n```python\ndef count_up(n):\n    i = 1\n    while i <= n:\n        yield i\n        i += 1\n\nfor x in count_up(3):\n    print(x)   # 1 2 3\n```\n\n## Generator Expression\n```python\nsquares = (x**2 for x in range(5))\n```\n\n## Why Generators?\n- Memory efficient (one item at a time)\n- Infinite sequences possible\n\n## yield vs return\n| return | yield |\n|--------|-------|\n| Ends function | Pauses function |\n| One value | Multiple values |\n\n## Edge Cases\n- Generators are one-shot (exhaust after iteration)\n- `StopIteration` signals end\n- Cannot reuse a generator without recreating\n\n## Interview FAQs\n**Q1: Why generators over lists?**\nLazy evaluation saves memory for large data.\n\n**Q2: What is `yield`?**\nPauses function and returns a value.\n\n**Q3: Can you reuse a generator?**\nNo, once exhausted, it's done.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t1-4",
+          "title": "Comprehensions (List, Dict, Set, Generator)",
+          "contentMd": "# Comprehensions\n\n## List\n```python\n[x**2 for x in range(5)]\n[x for x in nums if x > 0]\n[(x, y) for x in a for y in b]\n```\n\n## Dict\n```python\n{x: x**2 for x in range(3)}\n{v: k for k, v in d.items()}   # invert\n```\n\n## Set\n```python\n{x % 3 for x in range(10)}\n```\n\n## Generator\n```python\n(x**2 for x in range(10))\n```\n\n## Nested and Conditional\n```python\n[x if x % 2 == 0 else -x for x in range(5)]\n```\n\n## Edge Cases\n- Overusing comprehensions hurts readability\n- Generator expressions are one-shot\n- Side effects inside comprehension are bad practice\n\n## Interview FAQs\n**Q1: Difference between list and generator comprehension?**\nList creates all items in memory; generator is lazy.\n\n**Q2: When to avoid comprehensions?**\nFor complex logic – use a regular loop.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: `def f(): x = 10; return lambda: x; g = f(); print(g())`. Output?",
+              "options": [
+                "10",
+                "None",
+                "Error",
+                "0"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What does a decorator return?",
+              "options": [
+                "The original function",
+                "A wrapper function",
+                "None",
+                "The decorated class"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which keyword makes a function a generator?",
+              "options": [
+                "return",
+                "yield",
+                "async",
+                "await"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `g = (x*2 for x in range(3)); print(list(g))`. Output?",
+              "options": [
+                "[0, 2, 4]",
+                "[2, 4, 6]",
+                "[0, 1, 2]",
+                "Error"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What happens if you iterate a generator twice?",
+              "options": [
+                "Works fine",
+                "Second time is empty",
+                "Error",
+                "Repeats values"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which preserves function metadata in a decorator?",
+              "options": [
+                "@wraps",
+                "@staticmethod",
+                "functools.cache",
+                "@decorator"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `{x: x*x for x in range(3)}`. Output?",
+              "options": [
+                "{0:0, 1:1, 2:4}",
+                "[0, 1, 4]",
+                "(0, 1, 4)",
+                "{0, 1, 4}"
+              ],
+              "correct": 0
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: `def f(): x = 10; return lambda: x; g = f(); print(g())`. Output?",
+          "options": [
+            "10",
+            "None",
+            "Error",
+            "0"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "What does a decorator return?",
+          "options": [
+            "The original function",
+            "A wrapper function",
+            "None",
+            "The decorated class"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which keyword makes a function a generator?",
+          "options": [
+            "return",
+            "yield",
+            "async",
+            "await"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `g = (x*2 for x in range(3)); print(list(g))`. Output?",
+          "options": [
+            "[0, 2, 4]",
+            "[2, 4, 6]",
+            "[0, 1, 2]",
+            "Error"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "What happens if you iterate a generator twice?",
+          "options": [
+            "Works fine",
+            "Second time is empty",
+            "Error",
+            "Repeats values"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which preserves function metadata in a decorator?",
+          "options": [
+            "@wraps",
+            "@staticmethod",
+            "functools.cache",
+            "@decorator"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `{x: x*x for x in range(3)}`. Output?",
+          "options": [
+            "{0:0, 1:1, 2:4}",
+            "[0, 1, 4]",
+            "(0, 1, 4)",
+            "{0, 1, 4}"
+          ],
+          "correct": 0
+        }
+      ]
+    },
+    {
+      "id": "pa-m2",
+      "title": "Module 2: Advanced OOP",
+      "topics": [
+        {
+          "id": "pa-t2-1",
+          "title": "Abstract Base Classes & Interfaces",
+          "contentMd": "# Abstract Base Classes\n\n## Why?\nDefine a template that child classes must implement.\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): ...\n    @abstractmethod\n    def perimeter(self): ...\n\nclass Circle(Shape):\n    def __init__(self, r): self.r = r\n    def area(self): return 3.14 * self.r ** 2\n    def perimeter(self): return 2 * 3.14 * self.r\n```\n\n## Cannot Instantiate Abstract\n```python\n# s = Shape()   # TypeError\n```\n\n## When to Use\n- Enforcing an interface\n- Plugin systems\n- Framework design\n\n## Edge Cases\n- Child must implement ALL abstract methods\n- Otherwise, it also becomes abstract\n- Abstract classes can have concrete methods\n\n## Interview FAQs\n**Q1: What is ABC?**\nAbstract Base Class – enforces a contract.\n\n**Q2: Can abstract classes have constructors?**\nYes – used to initialize common attributes.\n\n**Q3: Difference from interface?**\nPython doesn't have interfaces; ABC provides similar behavior.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t2-2",
+          "title": "Property, Classmethod, Staticmethod",
+          "contentMd": "# Property, Classmethod, Staticmethod\n\n## @property\n```python\nclass Circle:\n    def __init__(self, r): self._r = r\n    @property\n    def radius(self): return self._r\n    @radius.setter\n    def radius(self, v):\n        if v > 0: self._r = v\n\nc = Circle(5)\nprint(c.radius)     # 5\nc.radius = 10\n```\n\n## @classmethod\nReceives `cls` – used for alternative constructors.\n```python\nclass Date:\n    def __init__(self, y, m, d): ...\n    @classmethod\n    def from_string(cls, s):\n        y, m, d = map(int, s.split(\"-\"))\n        return cls(y, m, d)\n```\n\n## @staticmethod\nNo self/cls – utility.\n```python\nclass Math:\n    @staticmethod\n    def is_even(n): return n % 2 == 0\n```\n\n## Comparison\n| Decorator | First arg | Access instance | Access class |\n|-----------|-----------|-----------------|--------------|\n| property | self | Yes | Yes |\n| classmethod | cls | No | Yes |\n| staticmethod | none | No | Yes (via name) |\n\n## Interview FAQs\n**Q1: When to use classmethod?**\nAlternative constructors (e.g., `from_json`).\n\n**Q2: Staticmethod vs plain function?**\nStaticmethod lives inside the class namespace.\n\n**Q3: Can @property have only getter?**\nYes – makes it read-only.",
+          "quizQuestions": [
+            {
+              "text": "Scenario: Abstract class `Shape` with `area()`. Can you do `Shape()`?",
+              "options": [
+                "Yes",
+                "No – TypeError",
+                "Only with args",
+                "Depends on Python version"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does `@classmethod` receive?",
+              "options": [
+                "self",
+                "cls",
+                "nothing",
+                "obj"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which decorator makes a method callable as an attribute?",
+              "options": [
+                "@staticmethod",
+                "@classmethod",
+                "@property",
+                "@abstractmethod"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: `Circle.radius = -5`. What happens if setter checks v > 0?",
+              "options": [
+                "Sets to -5",
+                "Ignores / raises",
+                "Error",
+                "Sets to 0"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which module provides ABC?",
+              "options": [
+                "abc",
+                "abstract",
+                "typing",
+                "collections"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `Math.is_even(4)` – what decorator makes this valid?",
+              "options": [
+                "@property",
+                "@classmethod",
+                "@staticmethod",
+                "@abstractmethod"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Which enforces child class to implement a method?",
+              "options": [
+                "@staticmethod",
+                "@abstractmethod",
+                "@property",
+                "@classmethod"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: Abstract class `Shape` with `area()`. Can you do `Shape()`?",
+          "options": [
+            "Yes",
+            "No – TypeError",
+            "Only with args",
+            "Depends on Python version"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does `@classmethod` receive?",
+          "options": [
+            "self",
+            "cls",
+            "nothing",
+            "obj"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which decorator makes a method callable as an attribute?",
+          "options": [
+            "@staticmethod",
+            "@classmethod",
+            "@property",
+            "@abstractmethod"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: `Circle.radius = -5`. What happens if setter checks v > 0?",
+          "options": [
+            "Sets to -5",
+            "Ignores / raises",
+            "Error",
+            "Sets to 0"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which module provides ABC?",
+          "options": [
+            "abc",
+            "abstract",
+            "typing",
+            "collections"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `Math.is_even(4)` – what decorator makes this valid?",
+          "options": [
+            "@property",
+            "@classmethod",
+            "@staticmethod",
+            "@abstractmethod"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Which enforces child class to implement a method?",
+          "options": [
+            "@staticmethod",
+            "@abstractmethod",
+            "@property",
+            "@classmethod"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "pa-m3",
+      "title": "Module 3: Sorting & Searching Algorithms",
+      "topics": [
+        {
+          "id": "pa-t3-1",
+          "title": "Elementary Sorting (Bubble, Selection, Insertion)",
+          "contentMd": "# Elementary Sorting Algorithms\n\n## Bubble Sort – O(n²)\n```python\ndef bubble(arr):\n    n = len(arr)\n    for i in range(n):\n        swapped = False\n        for j in range(n - i - 1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n                swapped = True\n        if not swapped: break\n    return arr\n```\n\n## Selection Sort – O(n²)\n```python\ndef selection(arr):\n    for i in range(len(arr)):\n        m = i\n        for j in range(i+1, len(arr)):\n            if arr[j] < arr[m]: m = j\n        arr[i], arr[m] = arr[m], arr[i]\n    return arr\n```\n\n## Insertion Sort – O(n²)\n```python\ndef insertion(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j+1] = arr[j]\n            j -= 1\n        arr[j+1] = key\n    return arr\n```\n\n## When to Use\n- Small arrays\n- Nearly sorted (Insertion is best)\n- Teaching\n\n## Interview FAQs\n**Q1: Which is best for nearly sorted data?**\nInsertion sort – O(n) on nearly sorted.\n\n**Q2: Which sort is stable?**\nBubble, Insertion. Selection is not stable.\n\n**Q3: Time complexity comparison?**\nAll three are O(n²) worst case.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t3-2",
+          "title": "Divide & Conquer Sorting (Merge, Quick)",
+          "contentMd": "# Merge Sort & Quick Sort\n\n## Merge Sort – O(n log n)\nStable, uses extra space.\n```python\ndef merge_sort(arr):\n    if len(arr) <= 1: return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(l, r):\n    result, i, j = [], 0, 0\n    while i < len(l) and j < len(r):\n        if l[i] <= r[j]:\n            result.append(l[i]); i += 1\n        else:\n            result.append(r[j]); j += 1\n    result.extend(l[i:]); result.extend(r[j:])\n    return result\n```\n\n## Quick Sort – O(n log n) avg, O(n²) worst\nIn-place, not stable.\n```python\ndef quick(arr):\n    if len(arr) <= 1: return arr\n    pivot = arr[len(arr)//2]\n    left = [x for x in arr if x < pivot]\n    mid = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick(left) + mid + quick(right)\n```\n\n## Python's sort\nTimsort – hybrid of merge + insertion. Always O(n log n).\n\n## Edge Cases\n- Quick sort worst case on sorted array (use random pivot)\n- Merge sort uses O(n) extra space\n- Python's `sort` is stable\n\n## Interview FAQs\n**Q1: Which sort does Python use?**\nTimsort.\n\n**Q2: Is quicksort stable?**\nNo.\n\n**Q3: Merge sort space?**\nO(n).",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t3-3",
+          "title": "Binary Search",
+          "contentMd": "# Binary Search\n\nRequires **sorted** array. O(log n).\n\n## Iterative\n```python\ndef binary_search(arr, target):\n    l, r = 0, len(arr) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: l = mid + 1\n        else: r = mid - 1\n    return -1\n```\n\n## Recursive\n```python\ndef bs(arr, t, l, r):\n    if l > r: return -1\n    mid = (l + r) // 2\n    if arr[mid] == t: return mid\n    if arr[mid] < t: return bs(arr, t, mid+1, r)\n    return bs(arr, t, l, mid-1)\n```\n\n## Python's bisect module\n```python\nimport bisect\nbisect.bisect_left(arr, 5)\nbisect.bisect_right(arr, 5)\nbisect.insort(arr, 5)\n```\n\n## Edge Cases\n- Unsorted array → wrong results\n- Integer overflow in some languages (not Python)\n- Infinite loop if `mid` never moves\n\n## Interview FAQs\n**Q1: Why binary search needs sorted data?**\nIt discards half the array based on comparison.\n\n**Q2: Time complexity?**\nO(log n).\n\n**Q3: What is `bisect` used for?**\nFinding insertion points and maintaining sorted lists.",
+          "quizQuestions": [
+            {
+              "text": "Which sort is best for nearly sorted data?",
+              "options": [
+                "Bubble",
+                "Selection",
+                "Insertion",
+                "Quick"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Which sort does Python use internally?",
+              "options": [
+                "Quicksort",
+                "Merge",
+                "Timsort",
+                "Bubble"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: binary search on unsorted list. Result?",
+              "options": [
+                "Correct",
+                "Incorrect",
+                "Error",
+                "Depends"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Merge sort space complexity?",
+              "options": [
+                "O(1)",
+                "O(log n)",
+                "O(n)",
+                "O(n²)"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: `arr = [1, 3, 5]; bisect.bisect_left(arr, 3)`. Output?",
+              "options": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is NOT stable?",
+              "options": [
+                "Bubble",
+                "Insertion",
+                "Merge",
+                "Selection"
+              ],
+              "correct": 3
+            },
+            {
+              "text": "Time complexity of binary search?",
+              "options": [
+                "O(n)",
+                "O(log n)",
+                "O(n log n)",
+                "O(1)"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which sort is best for nearly sorted data?",
+          "options": [
+            "Bubble",
+            "Selection",
+            "Insertion",
+            "Quick"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Which sort does Python use internally?",
+          "options": [
+            "Quicksort",
+            "Merge",
+            "Timsort",
+            "Bubble"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: binary search on unsorted list. Result?",
+          "options": [
+            "Correct",
+            "Incorrect",
+            "Error",
+            "Depends"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Merge sort space complexity?",
+          "options": [
+            "O(1)",
+            "O(log n)",
+            "O(n)",
+            "O(n²)"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: `arr = [1, 3, 5]; bisect.bisect_left(arr, 3)`. Output?",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is NOT stable?",
+          "options": [
+            "Bubble",
+            "Insertion",
+            "Merge",
+            "Selection"
+          ],
+          "correct": 3
+        },
+        {
+          "text": "Time complexity of binary search?",
+          "options": [
+            "O(n)",
+            "O(log n)",
+            "O(n log n)",
+            "O(1)"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "pa-m4",
+      "title": "Module 4: Statistics with Python",
+      "topics": [
+        {
+          "id": "pa-t4-1",
+          "title": "Descriptive Statistics",
+          "contentMd": "# Descriptive Statistics\n\n## Central Tendency\n- **Mean** – average\n- **Median** – middle value\n- **Mode** – most frequent\n\n```python\nimport statistics\nnums = [1, 2, 2, 3, 4, 4, 4, 5]\nprint(statistics.mean(nums))     # 3.125\nprint(statistics.median(nums))   # 3.5\nprint(statistics.mode(nums))     # 4\n```\n\n## Spread\n- **Variance** – avg squared deviation\n- **Standard Deviation** – sqrt of variance\n- **Range** – max - min\n\n```python\nprint(statistics.variance(nums))\nprint(statistics.stdev(nums))\n```\n\n## Percentiles & Quartiles\n```python\nimport numpy as np\nnp.percentile(nums, 50)   # median\nnp.percentile(nums, 25)   # Q1\n```\n\n## Outliers (IQR method)\n```python\nq1, q3 = np.percentile(nums, [25, 75])\niqr = q3 - q1\nlower, upper = q1 - 1.5*iqr, q3 + 1.5*iqr\noutliers = [x for x in nums if x < lower or x > upper]\n```\n\n## Edge Cases\n- Mean is affected by outliers\n- Median is robust\n- Mode can be multiple or none\n\n## Interview FAQs\n**Q1: Mean vs median?**\nMean is sensitive to outliers; median is not.\n\n**Q2: What does std dev measure?**\nSpread of data around the mean.\n\n**Q3: When to use which?**\nUse median for skewed data.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t4-2",
+          "title": "Probability & Distributions",
+          "contentMd": "# Probability & Distributions\n\n## Basic Probability\nP(A) = favorable / total\n\n## Common Distributions\n- **Uniform** – all outcomes equally likely\n- **Binomial** – successes in n trials\n- **Normal (Gaussian)** – bell curve\n- **Poisson** – rare events over time\n\n## Python (numpy.random)\n```python\nimport numpy as np\n\n# Uniform\nnp.random.uniform(0, 1, 5)\n\n# Normal\nnp.random.normal(0, 1, 5)\n\n# Binomial\nnp.random.binomial(10, 0.5, 5)\n```\n\n## Normal Distribution Properties\n- Mean = median = mode\n- 68% within ±1σ, 95% within ±2σ, 99.7% within ±3σ\n\n## Correlation vs Causation\n- Correlation: statistical relationship\n- Causation: one causes the other\n\n## Edge Cases\n- Small samples are noisy\n- Correlation ≠ causation\n- Distribution assumptions matter\n\n## Interview FAQs\n**Q1: What is a normal distribution?**\nSymmetrical bell-shaped; many natural phenomena follow it.\n\n**Q2: What is p-value?**\nProbability of observing the result if null hypothesis is true.\n\n**Q3: Difference between population and sample?**\nPopulation = everyone; sample = subset.",
+          "quizQuestions": [
+            {
+              "text": "Which is most affected by outliers?",
+              "options": [
+                "Mean",
+                "Median",
+                "Mode",
+                "Range"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `statistics.mode([1,2,2,3])`. Output?",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "2.5"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What does standard deviation measure?",
+              "options": [
+                "Center",
+                "Spread",
+                "Shape",
+                "Size"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "In a normal distribution, what % lies within 1 std dev?",
+              "options": [
+                "50%",
+                "68%",
+                "95%",
+                "99%"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which library is used for `np.random.normal`?",
+              "options": [
+                "statistics",
+                "math",
+                "numpy",
+                "random"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: IQR = 10, Q1 = 20. Upper fence?",
+              "options": [
+                "30",
+                "35",
+                "40",
+                "45"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Correlation implies what?",
+              "options": [
+                "Causation",
+                "Relationship",
+                "No relation",
+                "Error"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Which is most affected by outliers?",
+          "options": [
+            "Mean",
+            "Median",
+            "Mode",
+            "Range"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `statistics.mode([1,2,2,3])`. Output?",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "2.5"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What does standard deviation measure?",
+          "options": [
+            "Center",
+            "Spread",
+            "Shape",
+            "Size"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "In a normal distribution, what % lies within 1 std dev?",
+          "options": [
+            "50%",
+            "68%",
+            "95%",
+            "99%"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which library is used for `np.random.normal`?",
+          "options": [
+            "statistics",
+            "math",
+            "numpy",
+            "random"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: IQR = 10, Q1 = 20. Upper fence?",
+          "options": [
+            "30",
+            "35",
+            "40",
+            "45"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Correlation implies what?",
+          "options": [
+            "Causation",
+            "Relationship",
+            "No relation",
+            "Error"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "pa-m5",
+      "title": "Module 5: NumPy",
+      "topics": [
+        {
+          "id": "pa-t5-1",
+          "title": "NumPy Arrays & Operations",
+          "contentMd": "# NumPy Arrays\n\n## Why NumPy?\n- Fast numeric operations\n- Vectorized computations\n- Foundation for Pandas, ML\n\n## Creating Arrays\n```python\nimport numpy as np\na = np.array([1, 2, 3])\nzeros = np.zeros((2, 3))\nones = np.ones(5)\nrange_arr = np.arange(0, 10, 2)\nlin = np.linspace(0, 1, 5)\n```\n\n## Attributes\n```python\na.shape      # (3,)\na.dtype      # int64\na.ndim       # 1\na.size       # 3\n```\n\n## Vectorized Operations\n```python\na + 10          # element-wise\na * 2\nnp.sqrt(a)\n```\n\n## Indexing & Slicing\n```python\na[0]\na[1:3]\nmatrix[0, 1]         # row 0 col 1\nmatrix[:, 0]         # first column\nmatrix[matrix > 2]   # boolean mask\n```\n\n## Reshaping\n```python\na.reshape(3, 1)\na.flatten()\n```\n\n## Aggregations\n```python\na.sum(), a.mean(), a.std()\na.min(), a.max()\na.argmax(), a.argmin()\n```\n\n## Edge Cases\n- NumPy arrays are fixed size – use `np.append` to create new\n- Broadcasting rules must match\n- Integer overflow can occur for int32\n\n## Interview FAQs\n**Q1: Why is NumPy faster than lists?**\nContiguous memory, vectorized C operations.\n\n**Q2: What is broadcasting?**\nAutomatic shape alignment for operations.\n\n**Q3: Difference between `np.array` and Python list?**\nType homogeneity + vectorized operations.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t5-2",
+          "title": "NumPy Broadcasting & Advanced",
+          "contentMd": "# NumPy Broadcasting & Advanced\n\n## Broadcasting\nAutomatic expansion of smaller array to match larger.\n```python\na = np.array([[1], [2], [3]])   # shape (3,1)\nb = np.array([10, 20])          # shape (2,)\na + b   # (3, 2)\n```\n\n## Rules\n1. Match shapes from right\n2. Dimensions of size 1 stretch\n3. Otherwise, error\n\n## Universal Functions (ufunc)\n```python\nnp.add(a, b)\nnp.multiply(a, b)\nnp.exp(a)\nnp.log(a)\n```\n\n## Aggregation Along Axes\n```python\nm = np.array([[1, 2], [3, 4]])\nm.sum(axis=0)   # column sums\nm.sum(axis=1)   # row sums\n```\n\n## Random Module\n```python\nnp.random.seed(42)\nnp.random.rand(3)         # uniform 0-1\nnp.random.randn(3)        # standard normal\nnp.random.randint(0, 10, 5)\nnp.random.choice([1, 2, 3], size=5)\n```\n\n## Linear Algebra\n```python\nnp.dot(a, b)\na @ b\nnp.linalg.inv(matrix)\nnp.linalg.det(matrix)\n```\n\n## Edge Cases\n- Broadcasting errors on mismatched shapes\n- `axis` confusion (0 = down, 1 = across)\n- In-place ops (`+=`) modify originals\n\n## Interview FAQs\n**Q1: What is broadcasting?**\nAuto-aligning shapes for arithmetic.\n\n**Q2: What is a ufunc?**\nUniversal function – element-wise NumPy op.\n\n**Q3: What does `axis=0` do in sum?**\nCollapses rows (column-wise sum).",
+          "quizQuestions": [
+            {
+              "text": "Scenario: `np.array([1,2,3]) + 10`. Output?",
+              "options": [
+                "[11, 12, 13]",
+                "Error",
+                "[1, 2, 3, 10]",
+                "10"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What is shape of `np.zeros((3, 4))`?",
+              "options": [
+                "(4, 3)",
+                "(3, 4)",
+                "(12,)",
+                "(1, 12)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `np.arange(0, 10, 3)`. Output?",
+              "options": [
+                "[0, 3, 6, 9]",
+                "[0, 3, 6]",
+                "[0, 1, 2, ..., 9]",
+                "[3, 6, 9]"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "What does `matrix[:, 0]` select?",
+              "options": [
+                "First row",
+                "First column",
+                "Diagonal",
+                "Last column"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which is NOT a NumPy aggregation?",
+              "options": [
+                "sum",
+                "mean",
+                "count",
+                "std"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: `m = np.array([[1,2],[3,4]]); m.sum(axis=0)`. Output?",
+              "options": [
+                "[3, 7]",
+                "[4, 6]",
+                "10",
+                "[1, 2]"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Why is NumPy faster than lists?",
+              "options": [
+                "Multithreading",
+                "Vectorized C ops",
+                "Caching",
+                "GPU"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: `np.array([1,2,3]) + 10`. Output?",
+          "options": [
+            "[11, 12, 13]",
+            "Error",
+            "[1, 2, 3, 10]",
+            "10"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "What is shape of `np.zeros((3, 4))`?",
+          "options": [
+            "(4, 3)",
+            "(3, 4)",
+            "(12,)",
+            "(1, 12)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `np.arange(0, 10, 3)`. Output?",
+          "options": [
+            "[0, 3, 6, 9]",
+            "[0, 3, 6]",
+            "[0, 1, 2, ..., 9]",
+            "[3, 6, 9]"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "What does `matrix[:, 0]` select?",
+          "options": [
+            "First row",
+            "First column",
+            "Diagonal",
+            "Last column"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which is NOT a NumPy aggregation?",
+          "options": [
+            "sum",
+            "mean",
+            "count",
+            "std"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: `m = np.array([[1,2],[3,4]]); m.sum(axis=0)`. Output?",
+          "options": [
+            "[3, 7]",
+            "[4, 6]",
+            "10",
+            "[1, 2]"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Why is NumPy faster than lists?",
+          "options": [
+            "Multithreading",
+            "Vectorized C ops",
+            "Caching",
+            "GPU"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "pa-m6",
+      "title": "Module 6: Pandas",
+      "topics": [
+        {
+          "id": "pa-t6-1",
+          "title": "Series & DataFrame Basics",
+          "contentMd": "# Pandas: Series & DataFrame\n\n## Series (1D labeled array)\n```python\nimport pandas as pd\ns = pd.Series([10, 20, 30], index=['a', 'b', 'c'])\ns['b']    # 20\n```\n\n## DataFrame (2D labeled table)\n```python\ndf = pd.DataFrame({\n    \"name\": [\"Alice\", \"Bob\"],\n    \"age\": [25, 30]\n})\n```\n\n## Reading Files\n```python\ndf = pd.read_csv(\"data.csv\")\ndf = pd.read_excel(\"data.xlsx\")\ndf = pd.read_json(\"data.json\")\n```\n\n## Writing Files\n```python\ndf.to_csv(\"out.csv\", index=False)\ndf.to_excel(\"out.xlsx\")\ndf.to_json(\"out.json\")\n```\n\n## Inspecting\n```python\ndf.head()\ndf.tail()\ndf.info()\ndf.describe()\ndf.shape\ndf.columns\ndf.dtypes\n```\n\n## Selecting Data\n```python\ndf[\"name\"]                    # column\ndf[[\"name\", \"age\"]]          # multiple columns\ndf.iloc[0]                    # row by position\ndf.loc[0]                     # row by label\ndf[df[\"age\"] > 25]            # filter\n```\n\n## Edge Cases\n- `.loc` uses labels, `.iloc` uses positions\n- Chained indexing may return views or copies\n- Missing values appear as `NaN`\n\n## Interview FAQs\n**Q1: Series vs DataFrame?**\nSeries is 1D; DataFrame is 2D.\n\n**Q2: `.loc` vs `.iloc`?**\n`.loc` is label-based; `.iloc` is integer-position-based.\n\n**Q3: How to check nulls?**\n`df.isnull().sum()`",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t6-2",
+          "title": "Data Cleaning & Transformation",
+          "contentMd": "# Data Cleaning & Transformation\n\n## Handling Missing Values\n```python\ndf.isnull().sum()\ndf.dropna()\ndf.fillna(0)\ndf[\"age\"].fillna(df[\"age\"].mean())\n```\n\n## Removing Duplicates\n```python\ndf.drop_duplicates()\ndf.drop_duplicates(subset=[\"name\"])\n```\n\n## Renaming Columns\n```python\ndf.rename(columns={\"old\": \"new\"})\n```\n\n## Adding/Modifying Columns\n```python\ndf[\"age_plus_10\"] = df[\"age\"] + 10\ndf[\"name\"] = df[\"name\"].str.upper()\n```\n\n## Type Conversion\n```python\ndf[\"age\"] = df[\"age\"].astype(int)\ndf[\"date\"] = pd.to_datetime(df[\"date\"])\n```\n\n## Apply\n```python\ndf[\"age_group\"] = df[\"age\"].apply(lambda x: \"Adult\" if x >= 18 else \"Minor\")\n```\n\n## Sorting\n```python\ndf.sort_values(\"age\")\ndf.sort_values([\"age\", \"name\"], ascending=[False, True])\n```\n\n## Edge Cases\n- `inplace=True` mutates original\n- `dropna()` may drop too much – use `subset` and `thresh`\n- `astype(int)` fails on NaN\n\n## Interview FAQs\n**Q1: How to handle missing data?**\nDrop, fill with mean/median/mode, or interpolate.\n\n**Q2: When to use `apply`?**\nFor row-wise or column-wise custom functions.\n\n**Q3: What is `inplace=True`?**\nModifies the DataFrame directly instead of returning a new one.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t6-3",
+          "title": "GroupBy & Aggregation",
+          "contentMd": "# GroupBy & Aggregation\n\n## Basic GroupBy\n```python\ndf.groupby(\"category\")[\"sales\"].sum()\ndf.groupby(\"category\")[\"sales\"].mean()\n```\n\n## Multiple Aggregations\n```python\ndf.groupby(\"category\").agg({\n    \"sales\": [\"sum\", \"mean\"],\n    \"quantity\": \"max\"\n})\n```\n\n## Multiple Group Keys\n```python\ndf.groupby([\"region\", \"category\"]).sum()\n```\n\n## Pivot Table\n```python\npd.pivot_table(df,\n    values=\"sales\",\n    index=\"region\",\n    columns=\"category\",\n    aggfunc=\"sum\"\n)\n```\n\n## Value Counts\n```python\ndf[\"category\"].value_counts()\n```\n\n## Merge & Join\n```python\npd.merge(df1, df2, on=\"id\")\npd.merge(df1, df2, on=\"id\", how=\"left\")\n```\n\n## Concat\n```python\npd.concat([df1, df2], axis=0)\n```\n\n## Edge Cases\n- Group keys with NaN are dropped by default\n- `merge` requires matching dtypes\n- `concat` aligns on column names\n\n## Interview FAQs\n**Q1: What does `groupby` do?**\nSplits data, applies a function, combines results.\n\n**Q2: Difference between `merge` and `join`?**\n`merge` is on columns; `join` uses index.\n\n**Q3: How to count occurrences?**\n`value_counts()`",
+          "quizQuestions": [
+            {
+              "text": "Scenario: `df = pd.DataFrame({'a':[1,2]}); print(df.shape)`. Output?",
+              "options": [
+                "(1, 2)",
+                "(2, 1)",
+                "(2, 2)",
+                "(1, 1)"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which reads a CSV into a DataFrame?",
+              "options": [
+                "pd.read_csv()",
+                "pd.load_csv()",
+                "pd.open_csv()",
+                "pd.from_csv()"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Scenario: `df[df['age'] > 25]`. What does this do?",
+              "options": [
+                "Selects rows with age > 25",
+                "Selects the age column",
+                "Adds 25",
+                "Errors"
+              ],
+              "correct": 0
+            },
+            {
+              "text": "Difference between `.loc` and `.iloc`?",
+              "options": [
+                "Same thing",
+                ".loc = labels, .iloc = positions",
+                ".loc = position, .iloc = label",
+                "Only .loc works"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `df.isnull().sum()` returns?",
+              "options": [
+                "True/False",
+                "Count of missing per column",
+                "Total rows",
+                "Error"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which method groups data by a column?",
+              "options": [
+                "df.sort()",
+                "df.groupby()",
+                "df.pivot()",
+                "df.agg()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: `df.dropna()`. What does it do?",
+              "options": [
+                "Removes rows with NaN",
+                "Fills NaN",
+                "Renames columns",
+                "Sorts"
+              ],
+              "correct": 0
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "Scenario: `df = pd.DataFrame({'a':[1,2]}); print(df.shape)`. Output?",
+          "options": [
+            "(1, 2)",
+            "(2, 1)",
+            "(2, 2)",
+            "(1, 1)"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which reads a CSV into a DataFrame?",
+          "options": [
+            "pd.read_csv()",
+            "pd.load_csv()",
+            "pd.open_csv()",
+            "pd.from_csv()"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Scenario: `df[df['age'] > 25]`. What does this do?",
+          "options": [
+            "Selects rows with age > 25",
+            "Selects the age column",
+            "Adds 25",
+            "Errors"
+          ],
+          "correct": 0
+        },
+        {
+          "text": "Difference between `.loc` and `.iloc`?",
+          "options": [
+            "Same thing",
+            ".loc = labels, .iloc = positions",
+            ".loc = position, .iloc = label",
+            "Only .loc works"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `df.isnull().sum()` returns?",
+          "options": [
+            "True/False",
+            "Count of missing per column",
+            "Total rows",
+            "Error"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which method groups data by a column?",
+          "options": [
+            "df.sort()",
+            "df.groupby()",
+            "df.pivot()",
+            "df.agg()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: `df.dropna()`. What does it do?",
+          "options": [
+            "Removes rows with NaN",
+            "Fills NaN",
+            "Renames columns",
+            "Sorts"
+          ],
+          "correct": 0
+        }
+      ]
+    },
+    {
+      "id": "pa-m7",
+      "title": "Module 7: Interview Prep & Capstone",
+      "topics": [
+        {
+          "id": "pa-t7-1",
+          "title": "Top 50 Interview Questions",
+          "contentMd": "# Top Python Interview Questions\n\n## Core Language\n1. What is the difference between `is` and `==`?\n2. Explain mutable vs immutable types.\n3. What is the difference between a list and a tuple?\n4. How is memory managed in Python?\n5. What is GIL?\n6. What is a decorator?\n7. What is a generator?\n8. Explain LEGB scope.\n9. Difference between `deepcopy` and `copy`.\n10. What is `*args` vs `**kwargs`?\n\n## Data Structures\n11. List vs Set vs Dict – when to use?\n12. Time complexity of lookup in list vs dict?\n13. How does a dict work internally?\n14. What is a hashable object?\n15. What is a frozenset?\n\n## OOP\n16. What are the 4 pillars of OOP?\n17. What is MRO?\n18. What is the difference between `@classmethod`, `@staticmethod`, `@property`?\n19. What is `super()`?\n20. What are magic methods?\n\n## Functions\n21. What is a closure?\n22. What is a lambda?\n23. What is the difference between `map` and list comprehension?\n24. How does `reduce` work?\n25. What is memoization?\n\n## Advanced\n26. What is GIL?\n27. How does asyncio work?\n28. What is threading vs multiprocessing?\n29. What is a coroutine?\n30. What is pickling?\n\n## Errors\n31. What is the difference between `raise` and `except`?\n32. What does `finally` do?\n33. What is exception chaining?\n\n## Files\n34. Difference between `read()` and `readlines()`?\n35. Why use `with`?\n36. Difference between `w` and `a`?\n\n## Data\n37. Difference between NumPy array and list?\n38. What is broadcasting?\n39. Series vs DataFrame?\n40. `.loc` vs `.iloc`?\n41. What is groupby?\n42. How to handle missing data?\n\n## Algorithms\n43. Difference between quicksort and mergesort?\n44. Time complexity of binary search?\n45. What is Big-O notation?\n46. Two pointers vs sliding window?\n47. What is DP?\n48. What is recursion? Base case?\n\n## Practices\n49. What is PEP 8?\n50. What is virtualenv?\n\n## Interview FAQs\n**Q1: How to prepare for Python interviews?**\nPractice DSA, understand core language, build projects.\n\n**Q2: What is more important: code or theory?**\nBoth. Explaining your thought process is key.",
+          "quizQuestions": []
+        },
+        {
+          "id": "pa-t7-2",
+          "title": "Capstone Project – Student Management System",
+          "contentMd": "# Capstone Project – Student Management System\n\n## Objective\nBuild a complete CLI-based system combining everything learned.\n\n## Features\n1. Add / update / delete students\n2. Save/load from JSON\n3. Search and filter\n4. Statistics (avg, topper)\n5. Export to CSV\n6. Exception handling\n\n## Structure\n```\nstudent_ms/\n├── main.py\n├── student.py        # Class Student\n├── manager.py        # Class StudentManager\n├── storage.py        # JSON/CSV helpers\n└── data.json\n```\n\n## Sample Student Class\n```python\nclass Student:\n    def __init__(self, name, roll, marks):\n        self.name = name\n        self.roll = roll\n        self.marks = marks\n\n    def to_dict(self):\n        return {\"name\": self.name, \"roll\": self.roll, \"marks\": self.marks}\n\n    @classmethod\n    def from_dict(cls, d):\n        return cls(d[\"name\"], d[\"roll\"], d[\"marks\"])\n```\n\n## Manager Skeleton\n```python\nclass StudentManager:\n    def __init__(self):\n        self.students = []\n    def add(self, s): ...\n    def remove(self, roll): ...\n    def find(self, roll): ...\n    def average_marks(self): ...\n    def topper(self): ...\n    def save(self, path): ...\n    def load(self, path): ...\n```\n\n## Extensions\n- Add NumPy-based stats (mean, std, percentile)\n- Export summary to CSV\n- Add a simple Flask API\n\n## Interview FAQs\n**Q1: Why project-based learning?**\nReal-world context makes concepts stick.\n\n**Q2: What should be in a portfolio project?**\nClean code, README, tests, and a demo.",
+          "quizQuestions": [
+            {
+              "text": "What does a closure capture?",
+              "options": [
+                "Class attrs",
+                "Enclosing scope variables",
+                "Global only",
+                "Nothing"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: Interviewer asks `is` vs `==`. Correct answer?",
+              "options": [
+                "Same thing",
+                "`is` = identity, `==` = equality",
+                "`==` = identity",
+                "`is` = equality"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Which method saves a DataFrame to CSV?",
+              "options": [
+                "df.save()",
+                "df.to_csv()",
+                "df.write_csv()",
+                "df.export()"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Scenario: You need alternative constructor `Student.from_dict`. Use?",
+              "options": [
+                "@staticmethod",
+                "@classmethod",
+                "@property",
+                "@abstractmethod"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "Best structure for storing 1M unique IDs for lookup?",
+              "options": [
+                "list",
+                "tuple",
+                "set",
+                "string"
+              ],
+              "correct": 2
+            },
+            {
+              "text": "Scenario: `x = [1, 2, 3]; y = x; y.append(4)`. What is `x`?",
+              "options": [
+                "[1, 2, 3]",
+                "[1, 2, 3, 4]",
+                "Error",
+                "[4]"
+              ],
+              "correct": 1
+            },
+            {
+              "text": "What should every Python project have?",
+              "options": [
+                "Long code",
+                "README + tests + clean structure",
+                "Only one file",
+                "No comments"
+              ],
+              "correct": 1
+            }
+          ]
+        }
+      ],
+      "quizQuestions": [
+        {
+          "text": "What does a closure capture?",
+          "options": [
+            "Class attrs",
+            "Enclosing scope variables",
+            "Global only",
+            "Nothing"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: Interviewer asks `is` vs `==`. Correct answer?",
+          "options": [
+            "Same thing",
+            "`is` = identity, `==` = equality",
+            "`==` = identity",
+            "`is` = equality"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Which method saves a DataFrame to CSV?",
+          "options": [
+            "df.save()",
+            "df.to_csv()",
+            "df.write_csv()",
+            "df.export()"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Scenario: You need alternative constructor `Student.from_dict`. Use?",
+          "options": [
+            "@staticmethod",
+            "@classmethod",
+            "@property",
+            "@abstractmethod"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "Best structure for storing 1M unique IDs for lookup?",
+          "options": [
+            "list",
+            "tuple",
+            "set",
+            "string"
+          ],
+          "correct": 2
+        },
+        {
+          "text": "Scenario: `x = [1, 2, 3]; y = x; y.append(4)`. What is `x`?",
+          "options": [
+            "[1, 2, 3]",
+            "[1, 2, 3, 4]",
+            "Error",
+            "[4]"
+          ],
+          "correct": 1
+        },
+        {
+          "text": "What should every Python project have?",
+          "options": [
+            "Long code",
+            "README + tests + clean structure",
+            "Only one file",
+            "No comments"
+          ],
+          "correct": 1
+        }
+      ]
+    }
+  ]
+}
