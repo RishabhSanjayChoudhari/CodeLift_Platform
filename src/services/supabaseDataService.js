@@ -52,6 +52,38 @@ function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
 // ==============================================================================
 export async function getStaticCohortCourses() {
   try {
+    if (typeof window === 'undefined') {
+      try {
+        const nodeImport = (mod) => new Function('m', 'return import(m)')(mod);
+        const fs = await nodeImport('fs');
+        const path = await nodeImport('path');
+        const cohortDir = path.resolve(process.cwd(), 'public', 'courses', 'cohort');
+        const indexPath = path.join(cohortDir, 'index.json');
+        if (fs.existsSync(indexPath)) {
+          const cohortIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+          if (Array.isArray(cohortIndex?.slugs)) {
+            const loaded = cohortIndex.slugs.map((slug) => {
+              const courseFile = path.join(cohortDir, `${slug}.json`);
+              if (fs.existsSync(courseFile)) {
+                const data = JSON.parse(fs.readFileSync(courseFile, 'utf8'));
+                return {
+                  ...data,
+                  courseType: 'cohort',
+                  course_type: 'cohort',
+                  isCohort: true,
+                  isPublished: true,
+                  isApproved: true
+                };
+              }
+              return null;
+            }).filter(Boolean);
+            if (loaded.length > 0) return loaded;
+          }
+        }
+      } catch {
+        // Fall back to browser fetch below
+      }
+    }
     const basePath = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '/platform/';
     const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
     const res = await fetch(`${cleanBase}courses/cohort/index.json`);
@@ -248,7 +280,9 @@ export async function fetchAllData() {
         slug: c.slug,
         description: c.description || '',
         categoryId: c.category_id,
+        courseType: c.course_type || 'elective',
         course_type: c.course_type || 'elective',
+        isCohort: false,
         price: Number(c.price || 0),
         isFree: Boolean(c.is_free),
         isPublished: Boolean(c.is_published),

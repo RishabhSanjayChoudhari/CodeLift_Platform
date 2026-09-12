@@ -4,7 +4,7 @@ import fs from 'fs';
 export function runBatchCourseAndFeeTests() {
   console.log('\n🔵 RUNNING SUITE: Batch Course Attachment, Student Fees & Mobile UI Fixes');
   let passedCount = 0;
-  const totalCount = 5;
+  const totalCount = 7;
 
   // 1. Verify Sidebar.jsx has unblocked student fees
   const sidebarJsx = fs.readFileSync('src/components/common/Sidebar.jsx', 'utf8');
@@ -53,7 +53,23 @@ export function runBatchCourseAndFeeTests() {
   console.log('  ✓ Home page radar is scaled, non-intrusive, and legible on mobile');
   passedCount++;
 
-  console.log(`✨ All ${passedCount}/${totalCount} Batch, Fee & Mobile UI tests PASSED!`);
+  // 6. Verify cohort index.json defines canonical cohort slugs
+  const cohortIndexJson = JSON.parse(fs.readFileSync('public/courses/cohort/index.json', 'utf8'));
+  assert.deepStrictEqual(
+    cohortIndexJson.slugs,
+    ['frontend', 'data-analytics', 'python-fullstack'],
+    'cohort/index.json must strictly contain the 3 canonical cohort programs'
+  );
+  console.log('  ✓ Cohort index cleanly isolates the 3 canonical cohort bootcamps');
+  passedCount++;
+
+  // 7. Verify supabaseDataService normalizes courseType and isCohort on electives
+  assert(dataServiceJs.includes("courseType: c.course_type || 'elective'"), 'fetchAllData must set courseType');
+  assert(dataServiceJs.includes('isCohort: false'), 'fetchAllData must set isCohort: false on electives');
+  console.log('  ✓ Electives are normalized with courseType and isCohort: false');
+  passedCount++;
+
+  console.log(`✨ All ${passedCount}/${totalCount} Batch, Fee, Mobile UI & Elective tests PASSED!`);
   return { passedCount, totalCount };
 }
 
