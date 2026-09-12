@@ -52,7 +52,7 @@ function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
 // ==============================================================================
 export async function getStaticCohortCourses() {
   try {
-    const basePath = import.meta.env.BASE_URL || '/platform/';
+    const basePath = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '/platform/';
     const cleanBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
     const res = await fetch(`${cleanBase}courses/cohort/index.json`);
     if (!res.ok) return [];
@@ -329,31 +329,6 @@ export async function fetchAllData() {
       };
     });
 
-    // Reassemble Discussions
-    const discussions = rawDiscussions.map((d) => {
-      const answers = rawAnswers
-        .filter((ans) => ans.discussion_id === d.id)
-        .map((ans) => ({
-          id: ans.id,
-          authorId: ans.author_id,
-          authorName: ans.author_name,
-          content: ans.content,
-          upvotes: Number(ans.upvotes || 0),
-          createdAt: ans.created_at
-        }));
-
-      return {
-        id: d.id,
-        courseId: d.course_id,
-        topicId: d.topic_id,
-        studentId: d.student_id,
-        studentName: d.student_name,
-        question: d.question,
-        createdAt: d.created_at,
-        answers
-      };
-    });
-
     // Reassemble Students
     const students = rawStudents.map((s) => ({
       id: s.id,
@@ -444,19 +419,6 @@ export async function fetchAllData() {
       totalQuestions: Number(att.total_questions || 0),
       submittedAt: att.submitted_at,
       createdAt: att.created_at
-    }));
-
-    // Reassemble Reviews
-    const reviews = rawReviews.map((rev) => ({
-      id: rev.id,
-      studentId: rev.student_id,
-      studentName: rev.student_name,
-      courseId: rev.course_id,
-      rating: Number(rev.rating || 5),
-      comment: rev.comment || '',
-      isPublished: Boolean(rev.is_published),
-      adminReply: rev.admin_reply || null,
-      createdAt: rev.created_at
     }));
 
     // Reassemble Payments
