@@ -33,7 +33,6 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Sensitive local data & storage backups
-data/**
+# Sensitive local storage backups & temp metadata
 supabase/storage/**
 supabase/.temp/**

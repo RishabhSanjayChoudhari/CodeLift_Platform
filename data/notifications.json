@@ -1,0 +1,10 @@
+[
+  {
+    "id": "notif-1",
+    "userId": "stu-1",
+    "title": "Welcome to CodeLift Marketplace!",
+    "message": "Explore 50+ problem solving challenges and new courses in our Marketplace.",
+    "isRead": false,
+    "createdAt": "2026-02-15T08:00:00.000Z"
+  }
+]
