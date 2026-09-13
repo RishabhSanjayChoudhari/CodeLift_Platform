@@ -80,6 +80,50 @@ export function runEnrollmentAndMarketplaceTests() {
     assert(code.includes('setSelectedCourseForEnroll(c)'), 'Home.jsx cohort cards must support direct WhatsApp enrollment');
   });
 
+  // 6. WhatsApp messages are formal, meaningful, and 100% free of emojis
+  test('All WhatsApp messages across the platform are formal, professional, and contain zero emojis', () => {
+    const filesToCheck = [
+      path.join(rootDir, 'src', 'components', 'common', 'CourseEnrollModal.jsx'),
+      path.join(rootDir, 'src', 'components', 'common', 'FloatingWhatsApp.jsx'),
+      path.join(rootDir, 'src', 'components', 'home', 'ContactHub.jsx'),
+      path.join(rootDir, 'src', 'components', 'home', 'InterestFormModal.jsx'),
+      path.join(rootDir, 'src', 'components', 'home', 'ContactSection.jsx'),
+    ];
+
+    const forbiddenEmojis = ['👋', '👤', '💰', '📅', '📱', '💬', '🔥', '⚡', '🏛️', '🎁', '💎', '⏳'];
+
+    for (const filePath of filesToCheck) {
+      assert(fs.existsSync(filePath), `${path.basename(filePath)} must exist`);
+      const content = fs.readFileSync(filePath, 'utf8');
+
+      for (const emoji of forbiddenEmojis) {
+        assert(!content.includes(emoji), `${path.basename(filePath)} must NOT contain emoji "${emoji}"`);
+      }
+    }
+  });
+
+  // 7. Course Cards & Badges conform to Professional Institute standard
+  test('Course cards and hero badges across Home, Catalog, and CourseDetail are free of emoji badge clutter', () => {
+    const filesToCheck = [
+      path.join(rootDir, 'src', 'pages', 'Home.jsx'),
+      path.join(rootDir, 'src', 'pages', 'CourseCatalog.jsx'),
+      path.join(rootDir, 'src', 'pages', 'CourseDetail.jsx'),
+      path.join(rootDir, 'src', 'components', 'common', 'CourseEnrollModal.jsx'),
+      path.join(rootDir, 'src', 'components', 'home', 'ContactHub.jsx'),
+    ];
+
+    const forbiddenBadges = ['🏛️', '⚡', '🔥', '🎁', '💎', '💬'];
+
+    for (const filePath of filesToCheck) {
+      assert(fs.existsSync(filePath), `${path.basename(filePath)} must exist`);
+      const content = fs.readFileSync(filePath, 'utf8');
+
+      for (const emoji of forbiddenBadges) {
+        assert(!content.includes(emoji), `${path.basename(filePath)} must NOT contain badge emoji "${emoji}"`);
+      }
+    }
+  });
+
   console.log(`✨ All ${passCount}/${totalCount} Enrollment Journey & Marketplace UI tests PASSED!`);
   return { passedCount: passCount, totalCount };
 }

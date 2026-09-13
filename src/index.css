@@ -2235,6 +2235,85 @@ input:-webkit-autofill:focus {
   margin: 0 auto;
 }
 
+/* ---- Enhanced Home Course Cards & Mobile Ergonomics ---- */
+.cl-home-course-card {
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+  background: var(--card-bg, #ffffff) !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+.cl-home-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+}
+
+.cl-card-cohort-pill {
+  background: rgba(15, 23, 42, 0.88);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cl-card-price-pill {
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.cl-course-category-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--bs-primary, #15803d);
+}
+
+.cl-home-electives-banner {
+  background: var(--card-bg, #ffffff);
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cl-home-electives-banner:hover {
+  border-color: var(--bs-primary, #15803d);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--bs-primary, #15803d) 10%, transparent);
+}
+
+@media (max-width: 767px) {
+  #courses {
+    padding-top: 1.75rem !important;
+    padding-bottom: 2.25rem !important;
+  }
+  .cl-home-course-card .card-body {
+    padding: 1.15rem !important;
+  }
+  .cl-home-electives-banner {
+    padding: 18px 16px !important;
+    text-align: center !important;
+  }
+  .cl-home-electives-banner .btn {
+    width: 100% !important;
+    margin-top: 6px;
+  }
+}
+
 /* ---- Pillar Cards (About) ---- */
 .cl-pillar-card {
   background: var(--cl-white);

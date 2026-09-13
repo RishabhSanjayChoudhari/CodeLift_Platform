@@ -656,19 +656,20 @@ export default function LandingPage() {
 
     // WhatsApp Message
     const WHATSAPP_PHONE = '917796895137';
-    let msg = ` *New CodeLift Cohort Enrollment Application*\n`;
-    msg += `Ref ID: #${enrollmentId}\n`;
-    msg += ` Student: ${custName}\n`;
-    msg += ` Mobile: ${custMobile}\n`;
-    msg += ` Email: ${custEmail}\n`;
-    msg += `️ Cohort: ${custBatch}\n\n`;
-    msg += ` *Selected Curriculum Tracks:*\n`;
+    let msg = `Hello CodeLift Admissions,\n\n`;
+    msg += `I am submitting an enrollment application for CodeLift cohorts:\n\n`;
+    msg += `Reference ID: #${enrollmentId}\n`;
+    msg += `Applicant Name: ${custName}\n`;
+    msg += `Contact Phone: ${custMobile}\n`;
+    msg += `Email Address: ${custEmail}\n`;
+    msg += `Preferred Cohort: ${custBatch}\n\n`;
+    msg += `Selected Curriculum Tracks:\n`;
     Object.keys(cart).forEach((id) => {
       const item = CURRICULUM_DATA.find((c) => c.id === parseInt(id));
-      if (item) msg += ` • ${item.name} (x${cart[id]}) - ₹${item.price}\n`;
+      if (item) msg += `- ${item.name} (x${cart[id]}) - Rs. ${item.price}\n`;
     });
-    msg += `\n *Total: ₹${grandTotalFee.toLocaleString()}*\n`;
-    msg += `Please guide me with the enrollment procedure!`;
+    msg += `\nTotal Tuition: Rs. ${grandTotalFee.toLocaleString()}\n\n`;
+    msg += `Please provide the onboarding schedule and verification steps.\n\nThank you.`;
 
     window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
 

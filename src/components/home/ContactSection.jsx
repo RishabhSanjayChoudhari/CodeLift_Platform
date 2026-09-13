@@ -27,12 +27,18 @@ export default function ContactSection() {
       return;
     }
 
-    const waMessage = `*New Interest from CodeLift Website*
+    const waMessage = `Hello CodeLift Admissions,
 
-*Name:* ${name}
-*Email:* ${email}
-*Phone:* ${phone}
-*Interested In:* ${interest}${message ? `\n*Message:* ${message}` : ''}`;
+I would like to inquire about academic courses at CodeLift.
+
+Applicant Name: ${name}
+Email Address: ${email}
+Phone Number: ${phone}
+Program of Interest: ${interest}
+${message ? `Message: ${message}\n` : ''}
+Please share upcoming batch schedules and admission details.
+
+Thank you.`;
 
     const waUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(waMessage)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');

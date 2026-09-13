@@ -101,7 +101,7 @@ export default function CourseDetail() {
         className="px-3 py-3 rounded-3 text-center"
         style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#d97706', fontSize: '0.875rem', fontWeight: 700 }}
       >
-        ⏳ Payment Pending Admin Approval
+        Payment Verification in Progress
       </div>
     ) : (
       <button
@@ -110,7 +110,7 @@ export default function CourseDetail() {
         onClick={handleEnrollClick}
       >
         <FaWhatsapp size={19} />
-        <span>{course.isFree || course.price === 0 ? 'Enroll Free on WhatsApp' : `Enroll Now via WhatsApp ➜`}</span>
+        <span>{course.isFree || course.price === 0 ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
       </button>
     )
   );
@@ -136,14 +136,14 @@ export default function CourseDetail() {
                   className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
                   style={{ background: 'rgba(34,197,94,0.18)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
                 >
-                  {course.isFree || course.price === 0 ? '🎁 Free Course' : `💎 ₹${course.price}`}
+                  {course.isFree || course.price === 0 ? 'Free Program' : `Tuition: ₹${course.price}`}
                 </span>
                 {course.courseType && (
                   <span
                     className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
                     style={{ background: 'rgba(99,102,241,0.18)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
                   >
-                    {course.courseType === 'cohort' ? '🎓 Cohort Bootcamp' : '📚 Elective'}
+                    {course.courseType === 'cohort' ? 'Live Cohort Bootcamp' : 'Specialized Elective'}
                   </span>
                 )}
               </div>
@@ -328,7 +328,7 @@ export default function CourseDetail() {
           </div>
           <button className="cd-sticky-enroll-btn" onClick={handleEnrollClick}>
             <FaWhatsapp size={18} />
-            <span>{course.isFree || course.price === 0 ? 'Enroll Free on WhatsApp' : 'Enroll via WhatsApp 💬'}</span>
+            <span>{course.isFree || course.price === 0 ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
           </button>
         </div>
       )}

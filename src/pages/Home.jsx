@@ -95,9 +95,9 @@ export default function Home() {
       </section>
 
       {/* 3. COURSES SECTION (COHORTS ONLY) */}
-      <section id="courses" className="py-5" style={{ background: 'var(--bg-body)' }}>
-        <div className="container py-4">
-          <div className="text-center mb-5">
+      <section id="courses" className="py-4 py-md-5" style={{ background: 'var(--bg-body)' }}>
+        <div className="container py-2 py-md-4">
+          <div className="text-center mb-4 mb-md-5">
             <div
               className="cl-section-label"
               style={{
@@ -111,10 +111,17 @@ export default function Home() {
             >
               Flagship Programs
             </div>
-            <h2 className="fw-bold display-6 mb-3" style={{ color: 'var(--text-primary)' }}>
+            <h2
+              className="fw-bold mb-3"
+              style={{
+                color: 'var(--text-primary)',
+                fontSize: 'clamp(1.7rem, 3.5vw, 2.35rem)',
+                lineHeight: 1.25,
+              }}
+            >
               Live Cohort Bootcamps
             </h2>
-            <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '640px' }}>
+            <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '640px', fontSize: '0.96rem' }}>
               Master high-impact skills with our intensive, mentor-led cohort bootcamps featuring live problem solving, production deployments, and career placement guidance.
             </p>
           </div>
@@ -135,15 +142,8 @@ export default function Home() {
             <div className="row g-4">
               {cohortCourses.map((c) => (
                 <div key={c.id} className="col-md-6 col-lg-4">
-                  <div
-                    className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden"
-                    style={{
-                      background: 'var(--card-bg)',
-                      border: '1px solid var(--border-color)',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    }}
-                  >
-                    {/* Thumbnail & Badges */}
+                  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cl-home-course-card">
+                    {/* Thumbnail & Clean Badges */}
                     <div className="position-relative">
                       <img
                         src={
@@ -155,59 +155,43 @@ export default function Home() {
                         style={{ height: 190, objectFit: 'cover' }}
                       />
                       <div className="position-absolute top-0 start-0 m-3">
-                        <span
-                          className="badge rounded-pill px-2.5 py-1.5 fw-semibold shadow-sm"
-                          style={{
-                            background: 'rgba(15, 23, 42, 0.9)',
-                            color: '#ffffff',
-                            backdropFilter: 'blur(4px)',
-                            fontSize: '0.72rem',
-                          }}
-                        >
-                          🏛️ Live Cohort
+                        <span className="cl-card-cohort-pill">
+                          Live Cohort
                         </span>
                       </div>
                       <span
-                        className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-1.5 font-bold shadow-sm ${
-                          c.isFree || c.price === 0 ? 'bg-success' : 'bg-primary'
+                        className={`position-absolute top-0 end-0 m-3 badge rounded-pill cl-card-price-pill shadow-sm ${
+                          c.isFree || c.price === 0 ? 'bg-success text-white' : 'bg-primary text-white'
                         }`}
-                        style={{ fontSize: '0.75rem' }}
                       >
-                        {c.isFree || c.price === 0 ? 'FREE' : `₹${c.price}`}
+                        {c.isFree || c.price === 0 ? 'Free' : `₹${c.price}`}
                       </span>
                     </div>
 
                     {/* Card Body */}
-                    <div className="card-body p-4 d-flex flex-column justify-content-between">
+                    <div className="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
                       <div>
                         <div className="d-flex align-items-center justify-content-between mb-2">
-                          <span
-                            className="badge rounded-pill px-2.5 py-1 fw-semibold"
-                            style={{
-                              background: 'var(--card-bg-alt, rgba(34, 197, 94, 0.12))',
-                              color: 'var(--bs-primary)',
-                              fontSize: '0.72rem',
-                            }}
-                          >
+                          <span className="cl-course-category-tag">
                             {c.categoryId
-                              ? c.categoryId.replace('cat-', '').toUpperCase()
-                              : 'COHORT'}
+                              ? c.categoryId.replace('cat-', '').replace(/-/g, ' ').toUpperCase()
+                              : 'COHORT PROGRAM'}
                           </span>
                           <div
                             className="d-flex align-items-center gap-1 text-warning fw-bold small"
                             style={{ fontSize: '0.8rem' }}
                           >
-                            <FaStar /> {c.rating || 5.0} ({c.numReviews || 0})
+                            <FaStar size={12} /> {c.rating || 5.0} ({c.numReviews || 0})
                           </div>
                         </div>
 
                         <h5
                           className="card-title fw-bold mb-2"
-                          style={{ fontSize: '1.1rem' }}
+                          style={{ fontSize: '1.08rem', minHeight: '2.6rem' }}
                         >
                           <Link
                             to={`/courses/${c.slug || c.id}`}
-                            className="text-decoration-none"
+                            className="text-decoration-none line-clamp-2"
                             style={{ color: 'var(--text-primary)' }}
                           >
                             {c.title}
@@ -215,7 +199,7 @@ export default function Home() {
                         </h5>
                         <p
                           className="card-text text-secondary small line-clamp-2 mb-3"
-                          style={{ minHeight: '38px' }}
+                          style={{ minHeight: '38px', lineHeight: 1.55 }}
                         >
                           {c.description}
                         </p>
@@ -244,38 +228,40 @@ export default function Home() {
                               className="small fw-semibold"
                               style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}
                             >
-                              CodeLift
+                              CodeLift Faculty
                             </span>
                           </div>
                           <div
                             className="small text-muted d-flex align-items-center gap-1"
                             style={{ fontSize: '0.8rem' }}
                           >
-                            <FaUserGraduate /> {c.studentsEnrolled || 0} enrolled
+                            <FaUserGraduate size={12} /> {c.studentsEnrolled || 0} enrolled
                           </div>
                         </div>
 
+                        {/* Touch-Friendly Action Buttons */}
                         <div className="d-flex gap-2">
                           <Link
                             to={`/courses/${c.slug || c.id}`}
-                            className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold"
-                            style={{ fontSize: '0.82rem' }}
+                            className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold d-inline-flex align-items-center justify-content-center"
+                            style={{ fontSize: '0.84rem', minHeight: '42px' }}
                           >
                             Curriculum
                           </Link>
                           <button
                             type="button"
-                            className="btn btn-success rounded-pill fw-bold px-3 d-flex align-items-center gap-1.5 flex-shrink-0"
+                            className="btn btn-success rounded-pill fw-bold px-3 d-inline-flex align-items-center justify-content-center gap-1.5 flex-shrink-0"
                             style={{
                               background: '#25D366',
                               borderColor: '#25D366',
                               color: '#ffffff',
-                              fontSize: '0.82rem'
+                              fontSize: '0.84rem',
+                              minHeight: '42px'
                             }}
                             onClick={() => setSelectedCourseForEnroll(c)}
                             title="Enroll via WhatsApp"
                           >
-                            <FaWhatsapp size={14} />
+                            <FaWhatsapp size={15} />
                             <span>Enroll</span>
                           </button>
                         </div>
@@ -288,33 +274,31 @@ export default function Home() {
           )}
 
           {/* Modular Electives Link Banner */}
-          <div className="text-center mt-5">
+          <div className="text-center mt-4 mt-md-5">
             <div
-              className="p-4 rounded-4 border d-inline-flex flex-column flex-md-row align-items-center gap-3 text-start shadow-sm"
+              className="cl-home-electives-banner d-inline-flex flex-column flex-md-row align-items-center gap-3 text-start shadow-sm mx-auto"
               style={{
-                background: 'var(--card-bg)',
-                borderColor: 'var(--border-color)',
                 maxWidth: '780px',
                 width: '100%',
               }}
             >
               <div className="flex-grow-1">
-                <div className="d-flex align-items-center gap-2 mb-1">
+                <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
                   <span className="badge rounded-pill bg-success-subtle text-success fw-bold px-2.5 py-1" style={{ fontSize: '0.72rem' }}>
-                    ⚡ Self-Paced Modules
+                    Modular Electives
                   </span>
                   <h6 className="fw-bold mb-0" style={{ color: 'var(--text-primary)', fontSize: '1rem' }}>
                     Looking for Modular Electives?
                   </h6>
                 </div>
-                <p className="text-secondary small mb-0">
+                <p className="text-secondary small mb-0" style={{ lineHeight: 1.55 }}>
                   Explore our complete catalog of specialized, bite-sized skill modules in Python, DSA, Web Dev, and SQL.
                 </p>
               </div>
               <Link
                 to="/courses"
-                className="btn btn-outline-success rounded-pill px-4 py-2 fw-bold text-nowrap d-inline-flex align-items-center gap-2"
-                style={{ fontSize: '0.85rem' }}
+                className="btn btn-outline-success rounded-pill px-4 py-2 fw-bold text-nowrap d-inline-flex align-items-center justify-content-center gap-2 w-100 w-md-auto"
+                style={{ fontSize: '0.85rem', minHeight: '42px' }}
               >
                 Browse All Electives <FaArrowRight size={12} />
               </Link>

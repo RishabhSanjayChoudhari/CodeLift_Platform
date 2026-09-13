@@ -47,7 +47,7 @@ export default function ContactHub() {
                     <FiSend size={16} />
                   </button>
                   <small className="contact-hero-hint">
-                    ⚡ Instant WhatsApp connect • Zero spam
+                    Direct connection to CodeLift admissions team • Verified Campus
                   </small>
                 </div>
 
@@ -58,7 +58,7 @@ export default function ContactHub() {
                       <FiPhoneCall size={14} />
                     </div>
                     <div className="direct-text-group">
-                      <span className="direct-label">Call Directly</span>
+                      <span className="direct-label">Admissions Hotline</span>
                       <span className="direct-val">+91 98346 71940</span>
                     </div>
                   </a>
@@ -94,10 +94,9 @@ export default function ContactHub() {
                     </span>
                   </div>
                   <div className="channel-tile-body">
-                    <div className="channel-tag">Verified Business</div>
                     <h4 className="channel-title">Find Us on Google</h4>
                     <p className="channel-desc">
-                      See our reviews and business profile on Google.
+                      Read verified student reviews, ratings, and explore our institute profile.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
@@ -121,8 +120,7 @@ export default function ContactHub() {
                     </span>
                   </div>
                   <div className="channel-tile-body">
-                    <div className="channel-tag">Nagpur Campus</div>
-                    <h4 className="channel-title">Visit Our Office</h4>
+                    <h4 className="channel-title">Campus Location</h4>
                     <p className="channel-desc">
                       Plot 25, Gayatri Colony, Hazari Pahad, Nagpur
                     </p>
@@ -148,10 +146,9 @@ export default function ContactHub() {
                     </span>
                   </div>
                   <div className="channel-tile-body">
-                    <div className="channel-tag">Social Community</div>
-                    <h4 className="channel-title">Follow Us on Instagram</h4>
+                    <h4 className="channel-title">Student Community</h4>
                     <p className="channel-desc">
-                      Stay updated with the latest news, events, and student success stories.
+                      Follow project demos, hackathons, and technical announcements.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
@@ -165,18 +162,16 @@ export default function ContactHub() {
                     <div className="channel-icon-box icon-whatsapp">
                       <FiMessageCircle size={22} />
                     </div>
-                    <span className="channel-badge-status">Fast Response</span>
                   </div>
                   <div className="channel-tile-body">
-                    <div className="channel-tag">Instant Connect</div>
-                    <h4 className="channel-title">WhatsApp Us Directly</h4>
+                    <h4 className="channel-title">Admissions Desk</h4>
                     <p className="channel-desc">
-                      Chat with us on WhatsApp for syllabus details and batch guidance.
+                      Inquire about upcoming batch commencement dates, curriculum, and enrollment.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
                     <a
-                      href="https://wa.me/919834671940?text=Hi%20CodeLift%2C%20I%27d%20like%20to%20know%20more"
+                      href="https://wa.me/919834671940?text=Hello%20CodeLift%2C%20I%20would%20like%20to%20inquire%20about%20your%20training%20programs%2C%20curriculum%2C%20and%20admissions."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-channel-wa w-100"

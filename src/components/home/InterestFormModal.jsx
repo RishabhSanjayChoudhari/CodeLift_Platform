@@ -93,13 +93,18 @@ export default function InterestFormModal({ show, onHide }) {
 
     // Format WhatsApp message
     const { cleanedPhone } = validatePhone(form.phone);
-    const message = `*New Interest from CodeLift Website*
+    const message = `Hello CodeLift Admissions,
 
-*Name:* ${form.name.trim()}
-*Email:* ${form.email.trim()}
-*Phone:* ${cleanedPhone}
-*Interested In:* ${form.interest}
-${form.message.trim() ? `*Message:* ${form.message.trim()}` : ''}`;
+I would like to inquire about academic programs at CodeLift.
+
+Applicant Name: ${form.name.trim()}
+Email Address: ${form.email.trim()}
+Phone Number: ${cleanedPhone}
+Program of Interest: ${form.interest}
+${form.message.trim() ? `Specific Inquiry: ${form.message.trim()}\n` : ''}
+Please share upcoming batch schedules, syllabus details, and admission criteria.
+
+Thank you.`;
 
     const waUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');

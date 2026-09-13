@@ -29,18 +29,21 @@ export default function CourseEnrollModal({ course, show, onClose, onPortalEnrol
   const handleWhatsAppRedirect = (e) => {
     e.preventDefault();
 
-    const learnerName = name.trim() || currentUser?.name || 'Aspiring Student';
-    const learnerPhone = phone.trim() ? `\n📱 Contact: ${phone.trim()}` : '';
+    const learnerName = name.trim() || currentUser?.name || 'Applicant';
+    const learnerPhone = phone.trim() ? `\nContact Number: ${phone.trim()}` : '';
 
-    const message = `Hello CodeLift! 👋
+    const message = `Hello CodeLift Admissions,
 
-I would like to enroll in *${course.title}* (${isCohort ? 'Live Cohort Bootcamp' : 'Elective Course'}).
+I am writing to inquire about enrollment in the following program:
 
-👤 Learner Name: ${learnerName}${learnerPhone}
-💰 Course Fee: ${priceDisplay}
-📅 Preferred Batch: ${batchPref}
+Program: ${course.title} (${isCohort ? 'Live Cohort Bootcamp' : 'Specialized Elective'})
+Tuition Fee: ${priceDisplay}
+Applicant Name: ${learnerName}${learnerPhone}
+Preferred Schedule: ${batchPref}
 
-Could you please share the upcoming batch schedule, fee payment details, and onboarding instructions? Thank you!`;
+Please provide the upcoming batch commencement dates, curriculum details, and the enrollment procedure.
+
+Thank you.`;
 
     const encoded = encodeURIComponent(message);
     const waUrl = `https://wa.me/919834671940?text=${encoded}`;
@@ -62,7 +65,7 @@ Could you please share the upcoming batch schedule, fee payment details, and onb
         <div className="cl-enroll-modal-header">
           <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
             <span className="badge rounded-pill cl-enroll-type-badge">
-              {isCohort ? '🏛️ Live Cohort Bootcamp' : '⚡ Skill Elective'}
+              {isCohort ? 'Live Cohort Bootcamp' : 'Specialized Elective'}
             </span>
             <span className="badge rounded-pill cl-enroll-live-badge">
               <span className="live-dot" /> Admissions Open
@@ -191,7 +194,7 @@ Could you please share the upcoming batch schedule, fee payment details, and onb
 
               <div className="text-center">
                 <small className="text-secondary" style={{ fontSize: '0.76rem' }}>
-                  ⚡ Instant direct connect with CodeLift lead instructor • Zero spam
+                  Direct connection with CodeLift Academic Admissions • Official Onboarding
                 </small>
               </div>
 

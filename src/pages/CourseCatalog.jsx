@@ -122,12 +122,12 @@ export default function CourseCatalog() {
             <div className="cl-marketplace-quick-chips">
               <span className="cl-quick-chip-label">Popular:</span>
               {[
-                { label: '🔥 Flagship Cohorts', action: () => { setSelectedCourseType('cohort'); setSearchQuery(''); } },
-                { label: '⚡ Modular Electives', action: () => { setSelectedCourseType('elective'); setSearchQuery(''); } },
-                { label: '🐍 Python', action: () => setSearchQuery('Python') },
-                { label: '⚛️ React', action: () => setSearchQuery('React') },
-                { label: '📊 Data Analytics', action: () => setSearchQuery('Data') },
-                { label: '💎 Free Modules', action: () => setSelectedType('free') },
+                { label: 'Cohort Programs', action: () => { setSelectedCourseType('cohort'); setSearchQuery(''); } },
+                { label: 'Modular Electives', action: () => { setSelectedCourseType('elective'); setSearchQuery(''); } },
+                { label: 'Python', action: () => setSearchQuery('Python') },
+                { label: 'React', action: () => setSearchQuery('React') },
+                { label: 'Data Analytics', action: () => setSearchQuery('Data') },
+                { label: 'Free Modules', action: () => setSelectedType('free') },
               ].map((chip, idx) => (
                 <button
                   key={idx}
@@ -162,14 +162,14 @@ export default function CourseCatalog() {
                   className={`cl-segment-pill ${selectedCourseType === 'cohort' ? 'active' : ''}`}
                   onClick={() => setSelectedCourseType('cohort')}
                 >
-                  🏛️ Cohorts ({cohortCount})
+                  Cohorts ({cohortCount})
                 </button>
                 <button
                   type="button"
                   className={`cl-segment-pill ${selectedCourseType === 'elective' ? 'active' : ''}`}
                   onClick={() => setSelectedCourseType('elective')}
                 >
-                  ⚡ Electives ({electiveCount})
+                  Electives ({electiveCount})
                 </button>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function CourseCatalog() {
                           fontSize: '0.72rem'
                         }}
                       >
-                        {c.courseType === 'cohort' ? '🏛️ Cohort' : '⚡ Elective'}
+                        {c.courseType === 'cohort' ? 'Cohort Program' : 'Elective Module'}
                       </span>
                     </div>
                     <span
@@ -349,18 +349,19 @@ export default function CourseCatalog() {
                       <div className="d-flex gap-2">
                         <Link
                           to={`/courses/${c.slug || c.id}`}
-                          className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold btn-sm py-2"
-                          style={{ fontSize: '0.82rem' }}
+                          className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold btn-sm py-2 d-inline-flex align-items-center justify-content-center"
+                          style={{ fontSize: '0.82rem', minHeight: '40px' }}
                         >
                           View Details
                         </Link>
                         <button
                           type="button"
-                          className="btn btn-success rounded-pill fw-bold btn-sm px-3 py-2 d-flex align-items-center gap-1.5 flex-shrink-0"
+                          className="btn btn-success rounded-pill fw-bold btn-sm px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-shrink-0"
                           style={{
                             background: '#25D366',
                             borderColor: '#25D366',
-                            color: '#ffffff'
+                            color: '#ffffff',
+                            minHeight: '40px'
                           }}
                           onClick={() => setSelectedCourseForEnroll(c)}
                           title="Enroll via WhatsApp"
