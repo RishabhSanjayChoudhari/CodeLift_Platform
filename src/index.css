@@ -1888,21 +1888,28 @@ input:-webkit-autofill:focus {
 
 /* ---- Navbar ---- */
 .cl-navbar {
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--cl-border);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  background-color: color-mix(in srgb, var(--card-bg, #ffffff) 88%, transparent) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
 }
 
 .cl-navbar.scrolled {
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-bs-theme="dark"] .cl-navbar,
+[data-theme-mode="dark"] .cl-navbar,
+[data-theme*="dark"] .cl-navbar {
+  background-color: color-mix(in srgb, var(--card-bg, #0f172a) 88%, transparent) !important;
+  border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.1)) !important;
 }
 
 .cl-navbar .navbar-brand {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--cl-green) !important;
+  color: var(--text-primary, var(--cl-text)) !important;
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
@@ -1912,7 +1919,7 @@ input:-webkit-autofill:focus {
 
 .cl-navbar .nav-link {
   font-weight: 500;
-  color: var(--cl-text-muted) !important;
+  color: var(--text-secondary, var(--cl-text-muted)) !important;
   padding: 8px 14px !important;
   border-radius: 8px;
   transition: color 0.2s ease, background 0.2s ease;
@@ -1921,8 +1928,19 @@ input:-webkit-autofill:focus {
 
 .cl-navbar .nav-link:hover,
 .cl-navbar .nav-link.active {
-  color: var(--cl-green) !important;
-  background-color: var(--cl-green-light);
+  color: var(--bs-primary, var(--cl-green)) !important;
+  background-color: color-mix(in srgb, var(--bs-primary, #15803d) 12%, transparent) !important;
+}
+
+@media (max-width: 991px) {
+  .cl-navbar .navbar-collapse {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  }
 }
 
 .cl-navbar .btn-admin {

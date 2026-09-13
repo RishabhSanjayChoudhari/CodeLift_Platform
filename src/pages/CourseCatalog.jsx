@@ -3,19 +3,31 @@ import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import Navbar from '../components/common/Navbar';
 import SEO from '../components/common/SEO';
-import { FaSearch, FaStar, FaUserGraduate, FaFilter, FaBookOpen, FaTag, FaGraduationCap } from 'react-icons/fa';
+import CourseEnrollModal from '../components/common/CourseEnrollModal';
+import {
+  FaSearch,
+  FaStar,
+  FaUserGraduate,
+  FaBookOpen,
+  FaGraduationCap,
+  FaWhatsapp,
+  FaTimes,
+  FaArrowRight
+} from 'react-icons/fa';
+import './CourseCatalog.css';
 
 export default function CourseCatalog() {
-  const { courses, categories, users } = useData();
+  const { courses, categories } = useData();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all'); // all, free, paid
   const [selectedCourseType, setSelectedCourseType] = useState('all'); // all, cohort, elective
   const [sortBy, setSortBy] = useState('popular'); // popular, rating, price-low, price-high, newest
+  const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState(null);
 
   // Filter courses
-  const filteredCourses = courses.filter((c) => {
+  const filteredCourses = (courses || []).filter((c) => {
     if (!c.isPublished || c.isApproved === false) return false;
 
     // Course type filter (Cohort vs Elective)
@@ -34,9 +46,10 @@ export default function CourseCatalog() {
     // Search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchTitle = c.title.toLowerCase().includes(q);
+      const matchTitle = (c.title || '').toLowerCase().includes(q);
       const matchDesc = (c.description || '').toLowerCase().includes(q);
-      if (!matchTitle && !matchDesc) return false;
+      const matchCategory = (c.categoryId || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchDesc && !matchCategory) return false;
     }
 
     return true;
@@ -51,99 +64,175 @@ export default function CourseCatalog() {
     return (b.studentsEnrolled || 0) - (a.studentsEnrolled || 0); // popular default
   });
 
+  const allPublished = (courses || []).filter(c => c.isPublished && c.isApproved !== false);
+  const cohortCount = allPublished.filter(c => c.courseType === 'cohort' || c.isCohort).length;
+  const electiveCount = allPublished.filter(c => c.courseType !== 'cohort' && !c.isCohort).length;
+
   return (
     <div style={{ backgroundColor: 'var(--bg-body, #f8fafc)', minHeight: '100vh' }}>
       <SEO
-        title="Public Course Marketplace"
-        description="Browse high-impact paid & free online courses in Full Stack Web, Data Analytics, AI, Python, and Software Engineering."
+        title="Curricula & Course Marketplace"
+        description="Browse high-impact cohort bootcamps and specialized modular electives in Full Stack Web, Python, Data Analytics, and Software Engineering."
       />
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="py-4 text-white" style={{ background: 'linear-gradient(135deg, #15803D 0%, #166534 100%)' }}>
+      {/* Hero Header with Top-Notch Search Bar */}
+      <section className="cl-marketplace-hero text-center">
         <div className="container max-w-7xl">
-          <div className="row justify-content-center text-center">
-            <div className="col-lg-8">
-              <span className="badge font-bold text-uppercase px-3 py-2 rounded-pill mb-3 border border-white border-opacity-25" style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#fff' }}>
-                Public Learning Marketplace
-              </span>
-              <h1 className="fw-extrabold display-5 mb-3" style={{ letterSpacing: '-1px' }}>
-                Master High-Demand Software Skills
-              </h1>
-              <p className="lead text-light opacity-90 mb-4">
-                Structured curriculum, hands-on projects, industry certifications, and manual fee verification.
-              </p>
+          <span className="cl-marketplace-badge">
+            <span className="live-dot" /> Explore Curriculum Marketplace
+          </span>
 
-              {/* Search Bar */}
-              <div className="input-group input-group-lg shadow-lg rounded-pill overflow-hidden p-1 border" style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
-                <span className="input-group-text bg-transparent border-0 ms-2 text-muted">
-                  <FaSearch />
-                </span>
-                <input
-                  type="text"
-                  className="form-control border-0 shadow-none bg-transparent"
-                  style={{ color: 'var(--text-primary)' }}
-                  placeholder="Search courses by keyword, React, Python, Data, SQL..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button className="btn btn-success rounded-pill px-4 fw-bold shadow-sm">Search</button>
+          <h1 className="cl-marketplace-title">
+            Master High-Demand Software Skills
+          </h1>
+          <p className="cl-marketplace-subtitle">
+            Immersive live cohort bootcamps and modular electives. Real-world projects, mentor code reviews, and industry certifications.
+          </p>
+
+          {/* Top-Notch Floating Glassmorphic Search Bar */}
+          <div className="cl-marketplace-search-container mx-auto">
+            <div className="cl-marketplace-search-box">
+              <div className="cl-marketplace-search-icon">
+                <FaSearch size={18} />
               </div>
+              <input
+                type="text"
+                className="cl-marketplace-search-input"
+                placeholder="Search courses, technologies, DSA, Python, React, Data..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="cl-marketplace-search-clear"
+                  onClick={() => setSearchQuery('')}
+                  title="Clear search"
+                >
+                  <FaTimes size={12} />
+                </button>
+              )}
+              <span className="cl-marketplace-search-count d-none d-md-inline-flex">
+                {sortedCourses.length} {sortedCourses.length === 1 ? 'course' : 'courses'}
+              </span>
+            </div>
+
+            {/* Quick Filter Chips */}
+            <div className="cl-marketplace-quick-chips">
+              <span className="cl-quick-chip-label">Popular:</span>
+              {[
+                { label: '🔥 Flagship Cohorts', action: () => { setSelectedCourseType('cohort'); setSearchQuery(''); } },
+                { label: '⚡ Modular Electives', action: () => { setSelectedCourseType('elective'); setSearchQuery(''); } },
+                { label: '🐍 Python', action: () => setSearchQuery('Python') },
+                { label: '⚛️ React', action: () => setSearchQuery('React') },
+                { label: '📊 Data Analytics', action: () => setSearchQuery('Data') },
+                { label: '💎 Free Modules', action: () => setSelectedType('free') },
+              ].map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="cl-quick-chip-btn"
+                  onClick={chip.action}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Filter & Course Grid */}
+      {/* Main Filter Toolbar & Course Grid */}
       <main className="container max-w-7xl py-5">
-        <div className="row g-4 mb-4 align-items-center">
-          {/* Categories Pills */}
-          <div className="col-lg-9">
-            <div className="d-flex gap-2 flex-wrap align-items-center">
-              <button
-                className={`btn btn-sm rounded-pill px-3 fw-bold ${selectedCategory === 'all' ? 'btn-success' : 'btn-outline-secondary'}`}
-                onClick={() => setSelectedCategory('all')}
-              >
-                All Categories
-              </button>
-              {categories.map((cat) => (
+        <div className="cl-marketplace-toolbar mb-4">
+          <div className="row g-3 align-items-center justify-content-between">
+            {/* Segmented Pill Tabs for Cohorts vs Electives */}
+            <div className="col-12 col-lg-auto">
+              <div className="cl-segmented-pills">
                 <button
-                  key={cat.id}
-                  className={`btn btn-sm rounded-pill px-3 fw-bold ${selectedCategory === cat.id ? 'btn-success' : 'btn-outline-secondary'}`}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  type="button"
+                  className={`cl-segment-pill ${selectedCourseType === 'all' ? 'active' : ''}`}
+                  onClick={() => setSelectedCourseType('all')}
                 >
-                  {cat.icon} {cat.name}
+                  All Courses ({allPublished.length})
                 </button>
-              ))}
+                <button
+                  type="button"
+                  className={`cl-segment-pill ${selectedCourseType === 'cohort' ? 'active' : ''}`}
+                  onClick={() => setSelectedCourseType('cohort')}
+                >
+                  🏛️ Cohorts ({cohortCount})
+                </button>
+                <button
+                  type="button"
+                  className={`cl-segment-pill ${selectedCourseType === 'elective' ? 'active' : ''}`}
+                  onClick={() => setSelectedCourseType('elective')}
+                >
+                  ⚡ Electives ({electiveCount})
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Sort & Type Dropdowns */}
-          <div className="col-lg-4 d-flex gap-2 justify-content-lg-end flex-wrap">
-            <select className="form-select form-select-sm rounded-pill border-secondary" style={{ width: 'auto' }} value={selectedCourseType} onChange={(e) => setSelectedCourseType(e.target.value)}>
-              <option value="all">All Course Types</option>
-              <option value="cohort">Cohort Curricula</option>
-              <option value="elective">Elective Courses</option>
-            </select>
-            <select className="form-select form-select-sm rounded-pill border-secondary" style={{ width: 'auto' }} value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
-              <option value="all">All Prices</option>
-              <option value="free">Free Courses</option>
-              <option value="paid">Paid Courses</option>
-            </select>
-            <select className="form-select form-select-sm rounded-pill border-secondary" style={{ width: 'auto' }} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-              <option value="popular">Most Popular</option>
-              <option value="rating">Highest Rated</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="newest">Newest</option>
-            </select>
+            {/* Dropdown Filters */}
+            <div className="col-12 col-lg-auto d-flex gap-2 flex-wrap align-items-center justify-content-lg-end">
+              <select
+                className="form-select form-select-sm cl-filter-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="all">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+
+              <select
+                className="form-select form-select-sm cl-filter-select"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                <option value="all">All Pricing</option>
+                <option value="free">Free Courses</option>
+                <option value="paid">Paid Programs</option>
+              </select>
+
+              <select
+                className="form-select form-select-sm cl-filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="popular">Sort: Most Popular</option>
+                <option value="rating">Sort: Highest Rated</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Sort: Newest</option>
+              </select>
+
+              {(searchQuery || selectedCategory !== 'all' || selectedType !== 'all' || selectedCourseType !== 'all') && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                    setSelectedType('all');
+                    setSelectedCourseType('all');
+                  }}
+                  title="Reset all filters"
+                >
+                  <FaTimes size={11} /> Reset
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Results Counter */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div className="text-secondary fw-semibold">
-            Showing <strong style={{ color: 'var(--text-primary)' }}>{sortedCourses.length}</strong> courses available
+        {/* Results Counter & Search Indicator */}
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div className="text-secondary small fw-semibold">
+            Showing <strong style={{ color: 'var(--text-primary)' }}>{sortedCourses.length}</strong> {sortedCourses.length === 1 ? 'course' : 'courses'} available
+            {searchQuery && <span> for query "<strong style={{ color: 'var(--bs-primary)' }}>{searchQuery}</strong>"</span>}
           </div>
         </div>
 
@@ -151,15 +240,27 @@ export default function CourseCatalog() {
         {sortedCourses.length === 0 ? (
           <div className="text-center py-5 rounded-4 shadow-sm border" style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
             <FaBookOpen className="text-muted fs-1 mb-3 opacity-50" />
-            <h5 className="fw-bold" style={{ color: 'var(--text-primary)' }}>No courses found</h5>
-            <p className="text-muted">Try adjusting your search query or filters.</p>
+            <h5 className="fw-bold" style={{ color: 'var(--text-primary)' }}>No matching courses found</h5>
+            <p className="text-muted small mb-3">Try adjusting your keyword, resetting filters, or browsing our full list of courses.</p>
+            <button
+              type="button"
+              className="btn btn-sm btn-success rounded-pill px-4 fw-bold"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+                setSelectedType('all');
+                setSelectedCourseType('all');
+              }}
+            >
+              Show All Courses
+            </button>
           </div>
         ) : (
           <div className="row g-4">
             {sortedCourses.map((c) => (
               <div key={c.id} className="col-md-6 col-lg-4">
-                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-all hover-shadow">
-                  {/* Thumbnail & Badge */}
+                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cl-course-card">
+                  {/* Thumbnail & Badges */}
                   <div className="position-relative">
                     <img
                       src={c.thumbnail || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600'}
@@ -171,7 +272,7 @@ export default function CourseCatalog() {
                       <span
                         className="badge rounded-pill px-2.5 py-1.5 fw-semibold shadow-sm"
                         style={{
-                          background: c.courseType === 'cohort' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(21, 128, 61, 0.85)',
+                          background: c.courseType === 'cohort' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(21, 128, 61, 0.9)',
                           color: '#ffffff',
                           backdropFilter: 'blur(4px)',
                           fontSize: '0.72rem'
@@ -181,9 +282,10 @@ export default function CourseCatalog() {
                       </span>
                     </div>
                     <span
-                      className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 font-bold shadow-sm ${
+                      className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-1.5 font-bold shadow-sm ${
                         c.isFree || c.price === 0 ? 'bg-success' : 'bg-primary'
                       }`}
+                      style={{ fontSize: '0.75rem' }}
                     >
                       {c.isFree || c.price === 0 ? 'FREE' : `₹${c.price}`}
                     </span>
@@ -193,42 +295,80 @@ export default function CourseCatalog() {
                   <div className="card-body p-4 d-flex flex-column justify-content-between">
                     <div>
                       <div className="d-flex align-items-center justify-content-between mb-2">
-                        <span className="badge rounded-pill px-3 py-1 font-semibold" style={{ background: 'var(--card-bg-alt, rgba(34, 197, 94, 0.12))', color: 'var(--accent-color, #10b981)', border: '1px solid var(--border-color)' }}>
-                          {c.categoryId?.replace('cat-', '').toUpperCase()}
+                        <span
+                          className="badge rounded-pill px-2.5 py-1 fw-semibold"
+                          style={{
+                            background: 'var(--card-bg-alt, rgba(34, 197, 94, 0.12))',
+                            color: 'var(--bs-primary)',
+                            fontSize: '0.72rem'
+                          }}
+                        >
+                          {c.categoryId?.replace('cat-', '').toUpperCase() || 'COURSE'}
                         </span>
-                        <div className="d-flex align-items-center gap-1 text-warning fw-bold small">
+                        <div className="d-flex align-items-center gap-1 text-warning fw-bold small" style={{ fontSize: '0.8rem' }}>
                           <FaStar /> {c.rating || 5.0} ({c.numReviews || 0})
                         </div>
                       </div>
 
-                      <h5 className="card-title fw-bold mb-2">
+                      <h5 className="card-title fw-bold mb-2" style={{ fontSize: '1.1rem' }}>
                         <Link to={`/courses/${c.slug || c.id}`} className="text-decoration-none" style={{ color: 'var(--text-primary)' }}>
                           {c.title}
                         </Link>
                       </h5>
-                      <p className="card-text text-secondary small line-clamp-2 mb-3">{c.description}</p>
+                      <p className="card-text text-secondary small line-clamp-2 mb-3" style={{ minHeight: '38px' }}>
+                        {c.description}
+                      </p>
                     </div>
 
                     <div>
-                      <hr className="my-3 opacity-25" />
-                      <div className="d-flex align-items-center justify-content-between">
+                      <hr className="my-3 opacity-25" style={{ borderColor: 'var(--border-color)' }} />
+                      <div className="d-flex align-items-center justify-content-between mb-3">
                         <div className="d-flex align-items-center gap-2">
                           <div
-                            className="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold"
-                            style={{ width: 32, height: 32, fontSize: '0.85rem' }}
+                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                            style={{
+                              width: 28,
+                              height: 28,
+                              fontSize: '0.8rem',
+                              background: 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.15)',
+                              color: 'var(--bs-primary)'
+                            }}
                           >
-                            <FaGraduationCap size={14} />
+                            <FaGraduationCap size={13} />
                           </div>
-                          <span className="small font-semibold text-secondary">CodeLift Faculty</span>
+                          <span className="small fw-semibold" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                            CodeLift Faculty
+                          </span>
                         </div>
-                        <div className="small text-muted d-flex align-items-center gap-1">
+                        <div className="small text-muted d-flex align-items-center gap-1" style={{ fontSize: '0.8rem' }}>
                           <FaUserGraduate /> {c.studentsEnrolled || 0}
                         </div>
                       </div>
 
-                      <Link to={`/courses/${c.slug || c.id}`} className="btn btn-outline-success w-100 rounded-pill fw-bold mt-3">
-                        View Course & Modules
-                      </Link>
+                      {/* Action Buttons: View Details & Direct WhatsApp Enrollment */}
+                      <div className="d-flex gap-2">
+                        <Link
+                          to={`/courses/${c.slug || c.id}`}
+                          className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold btn-sm py-2"
+                          style={{ fontSize: '0.82rem' }}
+                        >
+                          View Details
+                        </Link>
+                        <button
+                          type="button"
+                          className="btn btn-success rounded-pill fw-bold btn-sm px-3 py-2 d-flex align-items-center gap-1.5 flex-shrink-0"
+                          style={{
+                            background: '#25D366',
+                            borderColor: '#25D366',
+                            color: '#ffffff'
+                          }}
+                          onClick={() => setSelectedCourseForEnroll(c)}
+                          title="Enroll via WhatsApp"
+                        >
+                          <FaWhatsapp size={14} />
+                          <span>Enroll</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -237,6 +377,15 @@ export default function CourseCatalog() {
           </div>
         )}
       </main>
+
+      {/* Course Enrollment WhatsApp Modal */}
+      {selectedCourseForEnroll && (
+        <CourseEnrollModal
+          course={selectedCourseForEnroll}
+          show={Boolean(selectedCourseForEnroll)}
+          onClose={() => setSelectedCourseForEnroll(null)}
+        />
+      )}
     </div>
   );
 }

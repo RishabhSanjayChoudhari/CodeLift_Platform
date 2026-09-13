@@ -6,11 +6,13 @@ import Navbar from '../components/common/Navbar';
 import SEO from '../components/common/SEO';
 import CheckoutModal from '../components/common/CheckoutModal';
 import InvoiceModal from '../components/common/InvoiceModal';
+import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import toast from 'react-hot-toast';
 import {
   FaStar, FaUserGraduate, FaCheckCircle, FaBookOpen, FaLock,
   FaCertificate, FaAward, FaFileInvoice, FaGraduationCap,
-  FaChevronDown, FaChevronUp, FaPlay, FaShieldAlt, FaClock, FaLayerGroup
+  FaChevronDown, FaChevronUp, FaPlay, FaShieldAlt, FaClock, FaLayerGroup,
+  FaWhatsapp
 } from 'react-icons/fa';
 import '../styles/CourseView.css';
 
@@ -21,6 +23,7 @@ export default function CourseDetail() {
   const { courses, enrollments, payments } = useData();
 
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(false);
   const heroRef = useRef(null);
@@ -65,12 +68,7 @@ export default function CourseDetail() {
     : `${totalDuration}m`;
 
   const handleEnrollClick = () => {
-    if (!currentUser) {
-      toast.error('Please log in or register to enroll.');
-      navigate('/login');
-      return;
-    }
-    setShowCheckout(true);
+    setShowEnrollModal(true);
   };
 
   const EnrollCTA = () => (
@@ -111,7 +109,8 @@ export default function CourseDetail() {
         style={{ fontSize: '1rem', background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)', border: 'none', boxShadow: '0 6px 24px rgba(21,128,61,0.35)' }}
         onClick={handleEnrollClick}
       >
-        {course.isFree || course.price === 0 ? 'Enroll Now for Free' : `Enroll Now & Unlock ➜`}
+        <FaWhatsapp size={19} />
+        <span>{course.isFree || course.price === 0 ? 'Enroll Free on WhatsApp' : `Enroll Now via WhatsApp ➜`}</span>
       </button>
     )
   );
@@ -123,9 +122,10 @@ export default function CourseDetail() {
 
       {/* ── Hero Header ──────────────────────────────────────── */}
       <section style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
-        color: '#fff',
-        padding: '48px 0 40px'
+        background: 'linear-gradient(135deg, var(--card-bg, #0f172a) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 14%, var(--card-bg, #0f172a)) 50%, var(--card-bg, #0f172a) 100%)',
+        color: 'var(--text-primary, #ffffff)',
+        padding: '48px 0 40px',
+        borderBottom: '1px solid var(--border-color, rgba(255,255,255,0.1))'
       }}>
         <div className="container" style={{ maxWidth: 1200 }}>
           <div className="row g-4 align-items-center">
@@ -327,12 +327,25 @@ export default function CourseDetail() {
             {course.isFree || course.price === 0 ? 'Free' : `₹${course.price}`}
           </div>
           <button className="cd-sticky-enroll-btn" onClick={handleEnrollClick}>
-            {course.isFree || course.price === 0 ? '🎁 Enroll for Free' : '🔓 Enroll Now & Unlock'}
+            <FaWhatsapp size={18} />
+            <span>{course.isFree || course.price === 0 ? 'Enroll Free on WhatsApp' : 'Enroll via WhatsApp 💬'}</span>
           </button>
         </div>
       )}
 
       {/* Modals */}
+      <CourseEnrollModal
+        course={course}
+        show={showEnrollModal}
+        onClose={() => setShowEnrollModal(false)}
+        onPortalEnroll={() => {
+          if (!currentUser) {
+            navigate('/login');
+          } else {
+            setShowCheckout(true);
+          }
+        }}
+      />
       {showCheckout && (
         <CheckoutModal course={course} onClose={() => setShowCheckout(false)} onSuccess={() => setShowCheckout(false)} />
       )}

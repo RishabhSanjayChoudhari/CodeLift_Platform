@@ -1,0 +1,280 @@
+/* ==========================================================================
+   CourseCatalog.css – Top-Notch Learning Marketplace Styling
+   Theme-adaptive, rich glassmorphic search bar, responsive layout
+   ========================================================================== */
+
+.cl-marketplace-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 60px 0 50px;
+  background: radial-gradient(
+    circle at 50% 10%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 16%, var(--bg-body, #0f172a)) 0%,
+    var(--bg-body, #0f172a) 70%
+  );
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+.cl-marketplace-hero::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--bs-primary, #15803d) 22%, transparent) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.cl-marketplace-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 14%, var(--card-bg, #ffffff));
+  color: var(--bs-primary, #15803d);
+  border: 1px solid color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent);
+  margin-bottom: 14px;
+}
+
+.cl-marketplace-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 12px;
+  line-height: 1.18;
+}
+
+.cl-marketplace-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary, #64748b);
+  max-width: 640px;
+  margin: 0 auto 30px;
+  line-height: 1.6;
+}
+
+/* ─── Top-Notch Search Bar ─────────────────────────────────────────── */
+.cl-marketplace-search-container {
+  max-width: 720px;
+  width: 100%;
+}
+
+.cl-marketplace-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--card-bg, #ffffff);
+  border: 2px solid var(--border-color, #e2e8f0);
+  border-radius: 999px;
+  padding: 6px 14px 6px 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.cl-marketplace-search-box:focus-within {
+  border-color: var(--bs-primary, #15803d);
+  box-shadow: 0 14px 44px color-mix(in srgb, var(--bs-primary, #15803d) 20%, rgba(0, 0, 0, 0.12));
+}
+
+.cl-marketplace-search-icon {
+  color: var(--bs-primary, #15803d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.cl-marketplace-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary, #0f172a);
+  padding: 8px 0;
+  min-width: 0;
+}
+
+.cl-marketplace-search-input::placeholder {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.92rem;
+}
+
+.cl-marketplace-search-clear {
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 90%, #000 10%);
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-secondary, #64748b);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 8px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.cl-marketplace-search-clear:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.cl-marketplace-search-count {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 12%, var(--card-bg, #ffffff));
+  color: var(--bs-primary, #15803d);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+}
+
+/* Quick Filter Chips */
+.cl-marketplace-quick-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.cl-quick-chip-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.cl-quick-chip-btn {
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 90%, transparent);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  color: var(--text-secondary, #475569);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.cl-quick-chip-btn:hover {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 15%, transparent);
+  border-color: var(--bs-primary, #15803d);
+  color: var(--bs-primary, #15803d);
+  transform: translateY(-1px);
+}
+
+/* ─── Toolbar & Filters ────────────────────────────────────────────── */
+.cl-marketplace-toolbar {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.cl-segmented-pills {
+  display: inline-flex;
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 92%, #000 8%);
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  gap: 4px;
+}
+
+.cl-segment-pill {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cl-segment-pill:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.cl-segment-pill.active {
+  background: var(--bs-primary, #15803d);
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(var(--bs-primary-rgb, 21, 128, 61), 0.35);
+}
+
+.cl-filter-select {
+  border-radius: 999px !important;
+  border: 1.5px solid var(--border-color, #cbd5e1) !important;
+  background-color: var(--card-bg, #ffffff) !important;
+  color: var(--text-primary, #0f172a) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  padding: 6px 28px 6px 14px !important;
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.cl-filter-select:focus {
+  border-color: var(--bs-primary, #15803d) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bs-primary, #15803d) 18%, transparent) !important;
+}
+
+/* ─── Course Cards Enhanced ────────────────────────────────────────── */
+.cl-course-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
+  background: var(--card-bg, #ffffff) !important;
+}
+
+.cl-course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 767px) {
+  .cl-marketplace-hero {
+    padding: 40px 0 30px;
+  }
+  .cl-marketplace-search-box {
+    padding: 4px 12px 4px 16px;
+  }
+  .cl-marketplace-search-input {
+    font-size: 0.9rem;
+  }
+  .cl-marketplace-toolbar {
+    padding: 14px 14px;
+  }
+  .cl-segmented-pills {
+    width: 100%;
+    display: flex;
+  }
+  .cl-segment-pill {
+    flex: 1;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+  .cl-filter-select {
+    flex: 1;
+    min-width: 100px;
+  }
+}

@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaStar, FaUserGraduate, FaGraduationCap, FaBookOpen } from 'react-icons/fa';
+import { FaArrowRight, FaStar, FaUserGraduate, FaGraduationCap, FaBookOpen, FaWhatsapp } from 'react-icons/fa';
 import InstituteNavbar from '../components/common/InstituteNavbar';
 import HomeRadar from '../components/common/HomeRadar';
 import RadarRings from '../components/common/RadarRings';
 import ContactHub from '../components/home/ContactHub';
 import FloatingWhatsApp from '../components/common/FloatingWhatsApp';
+import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import { useData } from '../contexts/DataContext';
 
 export default function Home() {
   const { courses } = useData();
+  const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState(null);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
@@ -253,13 +255,30 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <Link
-                          to={`/courses/${c.slug || c.id}`}
-                          className="btn btn-outline-success w-100 rounded-pill fw-bold"
-                          style={{ fontSize: '0.85rem' }}
-                        >
-                          View Curriculum &amp; Modules
-                        </Link>
+                        <div className="d-flex gap-2">
+                          <Link
+                            to={`/courses/${c.slug || c.id}`}
+                            className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold"
+                            style={{ fontSize: '0.82rem' }}
+                          >
+                            Curriculum
+                          </Link>
+                          <button
+                            type="button"
+                            className="btn btn-success rounded-pill fw-bold px-3 d-flex align-items-center gap-1.5 flex-shrink-0"
+                            style={{
+                              background: '#25D366',
+                              borderColor: '#25D366',
+                              color: '#ffffff',
+                              fontSize: '0.82rem'
+                            }}
+                            onClick={() => setSelectedCourseForEnroll(c)}
+                            title="Enroll via WhatsApp"
+                          >
+                            <FaWhatsapp size={14} />
+                            <span>Enroll</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -324,6 +343,15 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Course Enrollment WhatsApp Modal */}
+      {selectedCourseForEnroll && (
+        <CourseEnrollModal
+          course={selectedCourseForEnroll}
+          show={Boolean(selectedCourseForEnroll)}
+          onClose={() => setSelectedCourseForEnroll(null)}
+        />
+      )}
 
       {/* FLOATING WHATSAPP BUTTON */}
       <FloatingWhatsApp />
