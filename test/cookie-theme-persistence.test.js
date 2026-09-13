@@ -170,13 +170,13 @@ export async function runCookieThemePersistenceTests() {
       assert.equal(resolved, 'indigo');
     });
 
-    // Test 9: Theme Resolution Final Fallback - default forest-green when both missing
-    test('resolveInitialTheme defaults to forest-green when cookie & localStorage are empty', () => {
+    // Test 9: Theme Resolution Final Fallback - default dark-nebula when both missing
+    test('resolveInitialTheme defaults to dark-nebula when cookie & localStorage are empty', () => {
       mockCookies = {};
       mockLS = {};
 
       const resolved = resolveInitialTheme();
-      assert.equal(resolved, 'forest-green');
+      assert.equal(resolved, 'dark-nebula');
     });
 
     // Test 10: Theme Resolution Invalid Fallback - invalid values safely fall back

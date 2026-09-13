@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaStar, FaUserGraduate, FaGraduationCap, FaBookOpen } from 'react-icons/fa';
 import InstituteNavbar from '../components/common/InstituteNavbar';
 import HomeRadar from '../components/common/HomeRadar';
+import RadarRings from '../components/common/RadarRings';
 import ContactHub from '../components/home/ContactHub';
 import FloatingWhatsApp from '../components/common/FloatingWhatsApp';
 import { useData } from '../contexts/DataContext';
 
 export default function Home() {
   const { courses } = useData();
-  const [courseFilter, setCourseFilter] = useState('all'); // all, cohort, elective
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
@@ -22,16 +22,13 @@ export default function Home() {
     }
   };
 
-  // Filter published courses
-  const allCourses = (courses || []).filter(
-    (c) => c.isPublished !== false && c.isApproved !== false
+  // Highlight strictly published cohort bootcamps on the homepage
+  const cohortCourses = (courses || []).filter(
+    (c) =>
+      c.isPublished !== false &&
+      c.isApproved !== false &&
+      (c.courseType === 'cohort' || c.isCohort === true)
   );
-
-  const filteredCourses = allCourses.filter((c) => {
-    if (courseFilter === 'all') return true;
-    const type = c.courseType || (c.isCohort ? 'cohort' : 'elective');
-    return type === courseFilter;
-  });
 
   return (
     <>
@@ -42,9 +39,13 @@ export default function Home() {
       <section id="hero" className="cl-hero hero-section">
         <HomeRadar />
         <div className="container hero-content">
-          <div className="row align-items-center g-5">
+          <div className="row align-items-center g-4 g-lg-5">
             <div className="col-lg-7 col-xl-6">
-              <h1 className="mb-4">
+              <div className="cl-hero-trust-badge mb-3">
+                <span className="live-dot" />
+                <span>Admissions Open • 2026 Live Cohorts</span>
+              </div>
+              <h1 className="mb-3 mb-md-4">
                 Where Ambition Meets{' '}
                 <span className="highlight">
                   Expertise
@@ -53,26 +54,45 @@ export default function Home() {
               </h1>
 
               <p className="lead-text mb-4" style={{ color: 'var(--text-secondary)' }}>
-                Join a community of passionate learners. Get hands-on training, real-world
-                projects, and mentorship from industry experts who've been in the trenches.
+                Join an elite community of ambitious learners. Hands-on coding, production-grade
+                projects, and personalized 1-on-1 mentorship from industry engineers.
               </p>
 
-              <div className="d-flex flex-wrap gap-3">
+              <div className="d-flex flex-wrap gap-3 cl-hero-cta-group">
                 <button className="btn-explore" onClick={() => scrollTo('courses')}>
-                  Explore Courses <FaArrowRight style={{ fontSize: '0.8rem' }} />
+                  Explore Cohorts <FaArrowRight style={{ fontSize: '0.8rem' }} />
                 </button>
                 <button className="btn-visit" onClick={() => scrollTo('contact')}>
                   Talk to a Counselor
                 </button>
               </div>
             </div>
-            {/* Right side empty — radar stage occupies visually */}
+
+            {/* Right side empty on desktop — radar stage occupies visually */}
             <div className="col-lg-5 col-xl-6 d-none d-lg-block" />
+
+            {/* Mobile Radar Showcase: Visible ONLY on mobile/tablet (< 992px) */}
+            <div className="col-12 d-lg-none mt-3">
+              <div className="cl-mobile-radar-card">
+                <div className="cl-mobile-radar-header">
+                  <span className="cl-mobile-radar-badge">
+                    <span className="live-dot" /> Live Tech Stack
+                  </span>
+                  <span className="cl-mobile-radar-hint">Interactive Skills Radar</span>
+                </div>
+                <div className="cl-mobile-radar-viewport">
+                  <RadarRings showLabels={true} nucleusSize="sm" />
+                </div>
+                <div className="cl-mobile-radar-caption">
+                  Orbiting technologies mastered across CodeLift full-stack &amp; data cohorts
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 3. COURSES SECTION (COHORT + ELECTIVE) */}
+      {/* 3. COURSES SECTION (COHORTS ONLY) */}
       <section id="courses" className="py-5" style={{ background: 'var(--bg-body)' }}>
         <div className="container py-4">
           <div className="text-center mb-5">
@@ -87,60 +107,31 @@ export default function Home() {
                 marginBottom: '8px',
               }}
             >
-              Explore Curriculum
+              Flagship Programs
             </div>
             <h2 className="fw-bold display-6 mb-3" style={{ color: 'var(--text-primary)' }}>
-              Industry-Ready Programs &amp; Electives
+              Live Cohort Bootcamps
             </h2>
-            <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '600px' }}>
-              Master high-impact skills with our intensive cohort bootcamps and specialized
-              elective modules.
+            <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '640px' }}>
+              Master high-impact skills with our intensive, mentor-led cohort bootcamps featuring live problem solving, production deployments, and career placement guidance.
             </p>
-
-            {/* Filter Pills */}
-            <div className="d-flex justify-content-center gap-2 flex-wrap">
-              <button
-                className={`btn btn-sm rounded-pill px-3 fw-bold ${
-                  courseFilter === 'all' ? 'btn-success' : 'btn-outline-secondary'
-                }`}
-                onClick={() => setCourseFilter('all')}
-              >
-                All Courses ({allCourses.length})
-              </button>
-              <button
-                className={`btn btn-sm rounded-pill px-3 fw-bold ${
-                  courseFilter === 'cohort' ? 'btn-success' : 'btn-outline-secondary'
-                }`}
-                onClick={() => setCourseFilter('cohort')}
-              >
-                🏛️ Cohorts ({allCourses.filter((c) => c.courseType === 'cohort').length})
-              </button>
-              <button
-                className={`btn btn-sm rounded-pill px-3 fw-bold ${
-                  courseFilter === 'elective' ? 'btn-success' : 'btn-outline-secondary'
-                }`}
-                onClick={() => setCourseFilter('elective')}
-              >
-                ⚡ Electives ({allCourses.filter((c) => c.courseType !== 'cohort').length})
-              </button>
-            </div>
           </div>
 
           {/* Courses Grid */}
-          {filteredCourses.length === 0 ? (
+          {cohortCourses.length === 0 ? (
             <div
               className="text-center py-5 rounded-4 border"
               style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
             >
               <FaBookOpen className="text-muted fs-1 mb-3 opacity-50" />
               <h5 className="fw-bold" style={{ color: 'var(--text-primary)' }}>
-                No courses available
+                No active cohorts available
               </h5>
-              <p className="text-secondary">Check back soon for upcoming cohorts and electives.</p>
+              <p className="text-secondary">Check back soon for upcoming cohort batch registrations.</p>
             </div>
           ) : (
             <div className="row g-4">
-              {filteredCourses.map((c) => (
+              {cohortCourses.map((c) => (
                 <div key={c.id} className="col-md-6 col-lg-4">
                   <div
                     className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden"
@@ -165,16 +156,13 @@ export default function Home() {
                         <span
                           className="badge rounded-pill px-2.5 py-1.5 fw-semibold shadow-sm"
                           style={{
-                            background:
-                              c.courseType === 'cohort'
-                                ? 'rgba(15, 23, 42, 0.9)'
-                                : 'rgba(21, 128, 61, 0.9)',
+                            background: 'rgba(15, 23, 42, 0.9)',
                             color: '#ffffff',
                             backdropFilter: 'blur(4px)',
                             fontSize: '0.72rem',
                           }}
                         >
-                          {c.courseType === 'cohort' ? '🏛️ Cohort' : '⚡ Elective'}
+                          🏛️ Live Cohort
                         </span>
                       </div>
                       <span
@@ -201,7 +189,7 @@ export default function Home() {
                           >
                             {c.categoryId
                               ? c.categoryId.replace('cat-', '').toUpperCase()
-                              : 'PROGRAM'}
+                              : 'COHORT'}
                           </span>
                           <div
                             className="d-flex align-items-center gap-1 text-warning fw-bold small"
@@ -279,6 +267,40 @@ export default function Home() {
               ))}
             </div>
           )}
+
+          {/* Modular Electives Link Banner */}
+          <div className="text-center mt-5">
+            <div
+              className="p-4 rounded-4 border d-inline-flex flex-column flex-md-row align-items-center gap-3 text-start shadow-sm"
+              style={{
+                background: 'var(--card-bg)',
+                borderColor: 'var(--border-color)',
+                maxWidth: '780px',
+                width: '100%',
+              }}
+            >
+              <div className="flex-grow-1">
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <span className="badge rounded-pill bg-success-subtle text-success fw-bold px-2.5 py-1" style={{ fontSize: '0.72rem' }}>
+                    ⚡ Self-Paced Modules
+                  </span>
+                  <h6 className="fw-bold mb-0" style={{ color: 'var(--text-primary)', fontSize: '1rem' }}>
+                    Looking for Modular Electives?
+                  </h6>
+                </div>
+                <p className="text-secondary small mb-0">
+                  Explore our complete catalog of specialized, bite-sized skill modules in Python, DSA, Web Dev, and SQL.
+                </p>
+              </div>
+              <Link
+                to="/courses"
+                className="btn btn-outline-success rounded-pill px-4 py-2 fw-bold text-nowrap d-inline-flex align-items-center gap-2"
+                style={{ fontSize: '0.85rem' }}
+              >
+                Browse All Electives <FaArrowRight size={12} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -171,23 +171,17 @@ export default function ContactHub() {
                     <div className="channel-tag">Instant Connect</div>
                     <h4 className="channel-title">WhatsApp Us Directly</h4>
                     <p className="channel-desc">
-                      Chat with us or call directly for quick assistance.
+                      Chat with us on WhatsApp for syllabus details and batch guidance.
                     </p>
                   </div>
-                  <div className="channel-tile-footer d-flex gap-2 flex-wrap">
+                  <div className="channel-tile-footer">
                     <a
                       href="https://wa.me/919834671940?text=Hi%20CodeLift%2C%20I%27d%20like%20to%20know%20more"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn btn-channel-wa flex-grow-1"
+                      className="btn btn-channel-wa w-100"
                     >
                       Chat on WhatsApp
-                    </a>
-                    <a
-                      href="tel:+919834671940"
-                      className="btn btn-channel-tel"
-                    >
-                      Call 98346 71940
                     </a>
                   </div>
                 </div>

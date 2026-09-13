@@ -2112,6 +2112,49 @@ input:-webkit-autofill:focus {
   transform: translateY(-2px);
 }
 
+.cl-hero-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 12%, var(--card-bg, #ffffff));
+  border: 1px solid color-mix(in srgb, var(--bs-primary, #15803d) 28%, transparent);
+  color: var(--bs-primary, #15803d);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+@media (max-width: 767px) {
+  .cl-hero h1 {
+    font-size: 1.85rem !important;
+    line-height: 1.22 !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  .cl-hero p.lead-text {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .cl-hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px !important;
+  }
+
+  .cl-hero .btn-explore,
+  .cl-hero .btn-visit {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+}
+
 .cl-hero-image {
   border-radius: 24px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);

@@ -45,12 +45,12 @@ export function runBatchCourseAndFeeTests() {
   console.log('  ✓ Login page alignment is centered on mobile in Login.css');
   passedCount++;
 
-  // 5. Verify HomeRadar.css mobile optimization
+  // 5. Verify HomeRadar.css mobile showcase and clean background
   const radarCss = fs.readFileSync('src/components/common/HomeRadar.css', 'utf8');
-  assert(radarCss.includes('scale(0.55)'), 'HomeRadar.css must scale radar on tablet/mobile');
-  assert(radarCss.includes('.rr-sweep-wrap {\n    display: none !important;'), 'HomeRadar.css must hide sweep line on mobile');
-  assert(radarCss.includes('.rr-planet-wrapper {\n    display: none !important;'), 'HomeRadar.css must hide floating icon dots on mobile');
-  console.log('  ✓ Home page radar is scaled, non-intrusive, and legible on mobile');
+  assert(radarCss.includes('.cl-mobile-radar-card'), 'HomeRadar.css must define mobile radar card');
+  assert(radarCss.includes('.cl-mobile-radar-viewport'), 'HomeRadar.css must define mobile radar viewport');
+  assert(radarCss.includes('.home-radar-stage {\n    display: none !important;'), 'HomeRadar.css must hide off-screen background radar on mobile');
+  console.log('  ✓ Home page radar features a dedicated mobile showcase card with clean background');
   passedCount++;
 
   // 6. Verify cohort index.json defines canonical cohort slugs

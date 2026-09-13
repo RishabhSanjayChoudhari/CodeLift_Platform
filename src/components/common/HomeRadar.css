@@ -109,86 +109,133 @@
   }
 }
 
-/* <= 991px (Tablet): Elegant right-anchored orbital watermark, hide sweep and floating icons */
-@media (max-width: 991px) {
-  .home-radar-stage {
-    left: auto;
-    right: -220px;
-    top: 15%;
-    transform: translateY(-50%) scale(0.55);
-    transform-origin: center right;
-    width: 1200px;
-    height: 1200px;
-    opacity: 0.22;
-    pointer-events: none !important;
-  }
-
-  .home-radar-stage .rr-sweep-wrap {
-    display: none !important; /* Eliminate distracting sweeping line across text */
-  }
-
-  .home-radar-stage .rr-planet-wrapper {
-    display: none !important; /* Eliminate orphan icons hovering over words */
-  }
-
-  /* De-clutter the nucleus on mobile so text never clashes with background core */
-  .home-radar-stage .rr-nucleus-logo {
-    display: none !important; /* Hide duplicate "CodeLift" text from colliding with headline */
-  }
-
-  .home-radar-stage .rr-nucleus-pulse {
-    opacity: 0.10 !important; /* Gentle ambient glow rather than an intense blinding halo */
-    box-shadow: 0 0 24px color-mix(in srgb, var(--bs-primary, #10b981) 30%, transparent) !important;
-  }
-
-  .home-radar-stage .rr-nucleus-core {
-    opacity: 0.18 !important;
-    box-shadow: 0 0 20px color-mix(in srgb, var(--bs-primary, #10b981) 25%, transparent) !important;
-  }
-
-  .home-radar-stage .rr-ring-nucleus {
-    opacity: 0.35 !important;
-  }
-
-  .home-art-particles-container {
-    pointer-events: none !important; /* Never block touch interactions on mobile */
-  }
-
-  .home-radar-vignette {
-    background: linear-gradient(
-      135deg,
-      var(--bg-body, #ffffff) 0%,
-      color-mix(in srgb, var(--bg-body, #ffffff) 85%, transparent) 45%,
-      color-mix(in srgb, var(--bg-body, #ffffff) 25%, transparent) 80%,
-      transparent 100%
-    );
-  }
-
-  .home-art-flow-container {
-    display: none !important;
-  }
+/* ─── MOBILE DEDICATED RADAR SHOWCASE (< 992px) ─────────────────────── */
+.cl-mobile-radar-card {
+  position: relative;
+  background: var(--card-bg, #ffffff);
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 24px;
+  padding: 16px 14px 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+  max-width: 440px;
+  margin: 0 auto;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* <= 767px (Mobile): Off-canvas top-right orbital arc framing */
-@media (max-width: 767px) {
+.cl-mobile-radar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 6px;
+}
+
+.cl-mobile-radar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--bs-primary, #15803d);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.cl-mobile-radar-hint {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #64748b);
+  font-weight: 600;
+}
+
+.cl-mobile-radar-viewport {
+  position: relative;
+  width: 100%;
+  height: 310px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 16%, transparent) 0%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 4%, transparent) 50%,
+    transparent 70%
+  );
+  border: 1px solid color-mix(in srgb, var(--bs-primary, #15803d) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cl-mobile-radar-viewport .radar-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.275);
+  transform-origin: center center;
+  pointer-events: auto;
+}
+
+/* Ensure planets and sweep are crisp, vibrant and fully visible in the mobile card */
+.cl-mobile-radar-viewport .rr-sweep-wrap {
+  display: block !important;
+}
+
+.cl-mobile-radar-viewport .rr-planet-wrapper {
+  display: block !important;
+}
+
+.cl-mobile-radar-viewport .rr-nucleus-core {
+  opacity: 1.0 !important;
+}
+
+.cl-mobile-radar-viewport .rr-nucleus-logo {
+  display: block !important;
+  font-size: 26px !important;
+}
+
+.cl-mobile-radar-viewport .rr-planet-label {
+  font-size: 14px !important;
+  padding: 3px 10px !important;
+}
+
+.cl-mobile-radar-caption {
+  font-size: 0.74rem;
+  color: var(--text-secondary, #64748b);
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Dark theme styling for mobile radar card */
+[data-theme*="dark"] .cl-mobile-radar-card,
+[data-bs-theme="dark"] .cl-mobile-radar-card {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* On mobile/tablet, hide the off-screen background radar stage to eliminate clutter */
+@media (max-width: 991px) {
   .home-radar-stage {
-    right: -320px;
-    top: 10%;
-    transform: translateY(-50%) scale(0.50);
-    opacity: 0.20;
+    display: none !important;
   }
 
+  .home-art-flow-container,
   .home-art-neural-container {
     display: none !important;
   }
-}
 
-/* <= 575px (Small Mobile): Delicate cosmic orbital arcs sweeping from top-right */
-@media (max-width: 575px) {
-  .home-radar-stage {
-    right: -320px;
-    top: 10%;
-    transform: translateY(-50%) scale(0.44);
-    opacity: 0.18;
+  .home-art-particles-container {
+    pointer-events: none !important;
+  }
+
+  .home-radar-vignette {
+    background: radial-gradient(
+      ellipse at 50% 30%,
+      color-mix(in srgb, var(--bg-body, #ffffff) 60%, transparent) 0%,
+      var(--bg-body, #ffffff) 85%
+    );
   }
 }
