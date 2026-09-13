@@ -20,6 +20,8 @@ import certificatesSeed from '../../data/certificates.json';
 import certificateTemplatesSeed from '../../data/certificateTemplates.json';
 import completedBatchesSeed from '../../data/completedBatches.json';
 import problemAttemptsSeed from '../../data/problemAttempts.json';
+import codingProblemsSeed from '../../data/codingProblems.json';
+import codingAttemptsSeed from '../../data/codingAttempts.json';
 
 const DataContext = createContext(null);
 
@@ -57,7 +59,39 @@ export function DataProvider({ children }) {
   const [certificateTemplates, setCertificateTemplates] = useState(certificateTemplatesSeed);
   const [completedBatches, setCompletedBatches] = useState(completedBatchesSeed);
   const [problemAttempts, setProblemAttempts] = useState(problemAttemptsSeed);
+  const [codingProblems, setCodingProblems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('codelift_coding_problems');
+      return saved ? JSON.parse(saved) : codingProblemsSeed;
+    } catch {
+      return codingProblemsSeed;
+    }
+  });
+  const [codingAttempts, setCodingAttempts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('codelift_coding_attempts');
+      return saved ? JSON.parse(saved) : codingAttemptsSeed;
+    } catch {
+      return codingAttemptsSeed;
+    }
+  });
   const [platformSettings, setPlatformSettings] = useState(DEFAULT_PLATFORM_SETTINGS);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('codelift_coding_problems', JSON.stringify(codingProblems));
+    } catch (e) {
+      console.warn('Could not save codingProblems to localStorage:', e);
+    }
+  }, [codingProblems]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('codelift_coding_attempts', JSON.stringify(codingAttempts));
+    } catch (e) {
+      console.warn('Could not save codingAttempts to localStorage:', e);
+    }
+  }, [codingAttempts]);
 
   // Hydrate all collections from Supabase on mount and window focus (no polling)
   useEffect(() => {
@@ -87,6 +121,8 @@ export function DataProvider({ children }) {
         if (data.certificateTemplates?.length) setCertificateTemplates(data.certificateTemplates);
         if (data.completedBatches?.length) setCompletedBatches(data.completedBatches);
         if (data.problemAttempts?.length) setProblemAttempts(data.problemAttempts);
+        if (data.codingProblems?.length) setCodingProblems(data.codingProblems);
+        if (data.codingAttempts?.length) setCodingAttempts(data.codingAttempts);
       } catch (err) {
         console.warn('[DataContext] Background fetch from Supabase deferred:', err.message);
       }
@@ -923,6 +959,69 @@ export function DataProvider({ children }) {
     return newAttempt;
   };
 
+  // ── CODING ARENA MODULE ──────────────────────────────────────────────────
+  const addCodingProblem = (problemData) => {
+    const newProblem = {
+      id: problemData.id || genId('arena-q'),
+      title: problemData.title || 'Untitled Problem',
+      description: problemData.description || '',
+      difficulty: problemData.difficulty || 'Easy',
+      category: problemData.category || 'Lists',
+      orderIndex: problemData.orderIndex !== undefined ? Number(problemData.orderIndex) : codingProblems.length + 1,
+      xp: Number(problemData.xp) || 50,
+      hints: Array.isArray(problemData.hints) ? problemData.hints : [],
+      starterCode: problemData.starterCode || '',
+      testCases: Array.isArray(problemData.testCases) ? problemData.testCases : [],
+      hiddenTestCases: Array.isArray(problemData.hiddenTestCases) ? problemData.hiddenTestCases : []
+    };
+    setCodingProblems((prev) => [...prev, newProblem]);
+    supabaseDataService.saveCodingProblem(newProblem).catch(() => {});
+    toast.success('Problem created successfully!');
+    return newProblem;
+  };
+
+  const updateCodingProblem = (problemId, updates) => {
+    setCodingProblems((prev) => {
+      const updated = prev.map((p) => (p.id === problemId ? { ...p, ...updates } : p));
+      const target = updated.find((p) => p.id === problemId);
+      if (target) supabaseDataService.saveCodingProblem(target).catch(() => {});
+      return updated;
+    });
+    toast.success('Problem updated successfully!');
+  };
+
+  const deleteCodingProblem = (problemId) => {
+    setCodingProblems((prev) => prev.filter((p) => p.id !== problemId));
+    supabaseDataService.deleteCodingProblemSupabase(problemId).catch(() => {});
+    toast.success('Problem deleted!');
+  };
+
+  const resetCodingProblemsToSeed = () => {
+    setCodingProblems(codingProblemsSeed);
+    localStorage.setItem('codelift_coding_problems', JSON.stringify(codingProblemsSeed));
+    toast.success('Reset all coding problems to seed questions!');
+  };
+
+  const submitCodingAttempt = ({ studentId, problemId, code, visibleResults, hiddenResults, passed, xpEarned }) => {
+    const newAttempt = {
+      id: genId('ca'),
+      studentId,
+      problemId,
+      code,
+      passed: Boolean(passed),
+      xpEarned: Number(xpEarned) || 0,
+      visibleResults: visibleResults || [],
+      hiddenResultsSummary: {
+        total: hiddenResults?.length || 0,
+        passed: hiddenResults?.filter(r => r.passed)?.length || 0
+      },
+      attemptedAt: new Date().toISOString()
+    };
+    setCodingAttempts((prev) => [newAttempt, ...prev]);
+    supabaseDataService.addCodingAttempt(newAttempt).catch(() => {});
+    return newAttempt;
+  };
+
   // ── TESTS & ATTEMPTS ────────────────────────────────────────────────────────
   const addTest = (testData) => {
     const newTest = {
@@ -1055,6 +1154,8 @@ export function DataProvider({ children }) {
         certificateTemplates,
         completedBatches,
         problemAttempts,
+        codingProblems,
+        codingAttempts,
         notifications: [],
         platformSettings,
 
@@ -1097,6 +1198,11 @@ export function DataProvider({ children }) {
         addAnswer: () => {},
         upvoteAnswer: () => {},
         recordProblemAttempt,
+        addCodingProblem,
+        updateCodingProblem,
+        deleteCodingProblem,
+        resetCodingProblemsToSeed,
+        submitCodingAttempt,
         addTest,
         updateTest,
         deleteTest,

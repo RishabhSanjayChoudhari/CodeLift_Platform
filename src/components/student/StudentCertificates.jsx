@@ -172,18 +172,32 @@ function CertificatePrintView({ cert, onClose }) {
 
 export default function StudentCertificates() {
   const { auth } = useAuth();
-  const { students = [], certificates = [], courses = [], certificateTemplates = [] } = useData();
+  const { students = [], certificates = [], courses = [], certificateTemplates = [], batches = [] } = useData();
 
   const student = students.find(s => s.id === auth?.studentId);
   const myCerts = certificates.filter(c => c.studentId === student?.id && !c.isRevoked);
   const [viewCert, setViewCert] = useState(null);
 
-  // Check student course completion progress
-  const myCourse = courses.find(c => c.batchId === student?.batchId) || courses[0];
-  const allTopics = Array.isArray(myCourse?.modules) ? myCourse.modules.flatMap(m => Array.isArray(m.topics) ? m.topics : []) : [];
-  const completedTopics = allTopics.filter(t => student?.progress?.[t.id] === 'completed');
+  // Fix: use the same batch-aware lookup as StudentDashboard
+  const batch = batches?.find(b => b.id === student?.batchId);
+  const myCourses = courses.filter(c => {
+    if (!student?.batchId) return false;
+    if (Array.isArray(batch?.courseIds)) return batch.courseIds.includes(c.id);
+    return c.batchId === student.batchId || c.batchIds?.includes(student.batchId);
+  });
+  // Use first enrolled course as primary for backwards compatibility
+  const myCourse = myCourses[0] || null;
+
+  const allTopics = myCourses.flatMap(c =>
+    Array.isArray(c.modules) ? c.modules.flatMap(m => Array.isArray(m.topics) ? m.topics : []) : []
+  );
+  const completedTopics = allTopics.filter(t =>
+    student?.progress?.[t.id] === 'completed' || student?.progress?.[t.id] === true
+  );
   const progress = allTopics.length ? Math.round((completedTopics.length / allTopics.length) * 100) : 0;
-  const alreadyCertified = myCerts.some(c => c.courseName === myCourse?.title);
+  const alreadyCertified = myCerts.some(c =>
+    myCourses.some(mc => mc.title === c.courseName || mc.title === c.courseTitle)
+  );
   const isPendingAdminIssuance = progress === 100 && !alreadyCertified;
 
   return (

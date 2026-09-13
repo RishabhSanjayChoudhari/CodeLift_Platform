@@ -16,31 +16,8 @@ export default function ContactHub() {
   const [showContactForm, setShowContactForm] = useState(false);
 
   return (
-    <section id="contact" className="contact-hub-section py-5">
-      <div className="container py-3">
-        {/* Section Header */}
-        <div className="text-center mb-5 cl-fade-up">
-          <div
-            className="cl-section-label"
-            style={{
-              color: 'var(--bs-primary)',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              marginBottom: '8px',
-            }}
-          >
-            Connect With Us
-          </div>
-          <h2 className="fw-bold display-6 mb-2" style={{ color: 'var(--text-primary)' }}>
-            Get in Touch
-          </h2>
-          <p className="text-secondary mx-auto mb-0" style={{ maxWidth: '600px' }}>
-            Reach out to us on any platform — we're here to help.
-          </p>
-        </div>
-
+    <section id="contact" className="contact-hub-section py-3">
+      <div className="container">
         {/* Unified Combined Contact & Social Hub */}
         <div className="contact-hub-wrapper">
           <div className="row g-4 align-items-stretch">

@@ -561,6 +561,46 @@ export async function fetchAllData() {
       snapshot: cb.snapshot || null
     }));
 
+    // Optional Coding Arena Tables in Supabase
+    let codingProblems = [];
+    let codingAttempts = [];
+    try {
+      const [cpRes, caRes] = await Promise.all([
+        supabase.from('coding_problems').select('*').order('order_index', { ascending: true }),
+        supabase.from('coding_attempts').select('*').order('attempted_at', { ascending: false })
+      ]);
+      if (cpRes?.data?.length) {
+        codingProblems = cpRes.data.map(cp => ({
+          id: cp.id,
+          title: cp.title,
+          description: cp.description || '',
+          difficulty: cp.difficulty || 'Easy',
+          category: cp.category || 'Lists',
+          orderIndex: Number(cp.order_index || 1),
+          xp: Number(cp.xp || 50),
+          hints: cp.hints || [],
+          starterCode: cp.starter_code || '',
+          testCases: cp.test_cases || [],
+          hiddenTestCases: cp.hidden_test_cases || []
+        }));
+      }
+      if (caRes?.data?.length) {
+        codingAttempts = caRes.data.map(ca => ({
+          id: ca.id,
+          studentId: ca.student_id,
+          problemId: ca.problem_id,
+          code: ca.code || '',
+          passed: Boolean(ca.passed),
+          xpEarned: Number(ca.xp_earned || 0),
+          visibleResults: ca.visible_results || [],
+          hiddenResultsSummary: ca.hidden_results_summary || {},
+          attemptedAt: ca.attempted_at
+        }));
+      }
+    } catch {
+      // Ignored if tables do not exist yet in Supabase
+    }
+
     return {
       users,
       students,
@@ -578,7 +618,9 @@ export async function fetchAllData() {
       certificates,
       certificateTemplates,
       completedBatches,
-      problemAttempts
+      problemAttempts,
+      codingProblems,
+      codingAttempts
     };
   } catch (err) {
     console.error('[SupabaseDataService] fetchAllData failed:', err);
@@ -1164,3 +1206,81 @@ export async function gradeSubmission(submissionId, grade, feedback) {
   if (error) handleSupabaseError(error, 'Failed to grade submission');
   return data;
 }
+
+// ==============================================================================
+// CODING ARENA & ATTEMPTS
+// ==============================================================================
+export async function addCodingAttempt(attemptData) {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('coding_attempts')
+      .insert({
+        id: attemptData.id,
+        student_id: attemptData.studentId,
+        problem_id: attemptData.problemId,
+        code: attemptData.code || '',
+        passed: Boolean(attemptData.passed),
+        xp_earned: Number(attemptData.xpEarned || 0),
+        visible_results: attemptData.visibleResults || [],
+        hidden_results_summary: attemptData.hiddenResultsSummary || {},
+        attempted_at: attemptData.attemptedAt || new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn('[SupabaseDataService] coding_attempts table sync deferred:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('[SupabaseDataService] Could not sync coding attempt to Supabase:', err.message);
+    return null;
+  }
+}
+
+export async function saveCodingProblem(problemData) {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('coding_problems')
+      .upsert({
+        id: problemData.id,
+        title: problemData.title,
+        description: problemData.description || '',
+        difficulty: problemData.difficulty || 'Easy',
+        category: problemData.category || 'Lists',
+        order_index: Number(problemData.orderIndex || 1),
+        xp: Number(problemData.xp || 50),
+        hints: problemData.hints || [],
+        starter_code: problemData.starterCode || '',
+        test_cases: problemData.testCases || [],
+        hidden_test_cases: problemData.hiddenTestCases || []
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn('[SupabaseDataService] coding_problems table sync deferred:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('[SupabaseDataService] Could not sync coding problem to Supabase:', err.message);
+    return null;
+  }
+}
+
+export async function deleteCodingProblemSupabase(problemId) {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const { error } = await supabase.from('coding_problems').delete().eq('id', problemId);
+    if (error) console.warn('[SupabaseDataService] Delete coding problem from Supabase deferred:', error.message);
+    return true;
+  } catch (err) {
+    console.warn('[SupabaseDataService] Could not delete coding problem from Supabase:', err.message);
+    return null;
+  }
+}
+

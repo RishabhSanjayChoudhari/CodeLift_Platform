@@ -16,8 +16,8 @@ export const THEMES = [
   { id: 'rose', name: 'Rose', color: '#BE123C', accent: '#BE123C', dark: false },
   { id: 'purple', name: 'Purple', color: '#6D28D9', accent: '#6D28D9', dark: false },
   { id: 'neutral', name: 'Neutral Gray', color: '#1F2937', accent: '#1F2937', dark: false },
-  { id: 'dark-emerald', name: 'Dark Emerald (Default)', color: '#10B981', accent: '#10B981', dark: true },
-  { id: 'dark-nebula', name: 'Dark Nebula', color: '#8B5CF6', accent: '#8B5CF6', dark: true },
+  { id: 'dark-emerald', name: 'Dark Emerald', color: '#10B981', accent: '#10B981', dark: true },
+  { id: 'dark-nebula', name: 'Nebula (Default)', color: '#8B5CF6', accent: '#8B5CF6', dark: true },
   { id: 'dark-carbon', name: 'Dark Carbon', color: '#6EE7B7', accent: '#6EE7B7', dark: true },
 ];
 
@@ -31,11 +31,12 @@ export const THEME_ALIASES = {
   'crimson-red': 'dark-green',
   'graphite-grey': 'neutral',
   'midnight-emerald': 'dark-emerald',
+  'nebula': 'dark-nebula',
   'nebula-night': 'dark-nebula',
   'carbon-black': 'dark-carbon',
 };
 
-export const DEFAULT_THEME = 'forest-green';
+export const DEFAULT_THEME = 'dark-nebula';
 export const COOKIE_NAME = 'codelift_theme';
 export const LS_KEY = 'codelift_theme';
 

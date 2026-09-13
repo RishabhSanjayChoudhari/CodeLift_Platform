@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,7 +7,12 @@ import SEO from '../components/common/SEO';
 import CheckoutModal from '../components/common/CheckoutModal';
 import InvoiceModal from '../components/common/InvoiceModal';
 import toast from 'react-hot-toast';
-import { FaStar, FaUserGraduate, FaCheckCircle, FaBookOpen, FaLock, FaCertificate, FaAward, FaFileInvoice, FaGraduationCap } from 'react-icons/fa';
+import {
+  FaStar, FaUserGraduate, FaCheckCircle, FaBookOpen, FaLock,
+  FaCertificate, FaAward, FaFileInvoice, FaGraduationCap,
+  FaChevronDown, FaChevronUp, FaPlay, FaShieldAlt, FaClock, FaLayerGroup
+} from 'react-icons/fa';
+import '../styles/CourseView.css';
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -17,10 +22,20 @@ export default function CourseDetail() {
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
-  const [activeTopic, setActiveTopic] = useState(null);
+  const [stickyVisible, setStickyVisible] = useState(false);
+  const heroRef = useRef(null);
 
-  // Find course by slug or id
-  const course = courses.find((c) => c.slug === slug || c.id === slug);
+  const course = courses.find(c => c.slug === slug || c.id === slug);
+
+  // Show sticky bar when hero action card scrolls out of view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setStickyVisible(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    if (heroRef.current) observer.observe(heroRef.current);
+    return () => observer.disconnect();
+  }, [course]);
 
   if (!course) {
     return (
@@ -29,20 +44,25 @@ export default function CourseDetail() {
         <div className="container text-center py-5">
           <h3>Course Not Found</h3>
           <p className="text-muted">The requested course does not exist or has been removed.</p>
-          <Link to="/courses" className="btn btn-success rounded-pill px-4 fw-bold">
-            Back to Marketplace
-          </Link>
+          <Link to="/courses" className="btn btn-success rounded-pill px-4 fw-bold">Back to Marketplace</Link>
         </div>
       </div>
     );
   }
 
-  // Enrollment status for current user
   const userEnrollment = currentUser
-    ? enrollments.find((e) => e.studentId === currentUser.id && e.courseId === course.id)
+    ? enrollments.find(e => e.studentId === currentUser.id && e.courseId === course.id)
     : null;
-  const userPayment = userEnrollment ? payments.find((p) => p.enrollmentId === userEnrollment.id) : null;
+  const userPayment = userEnrollment ? payments.find(p => p.enrollmentId === userEnrollment.id) : null;
   const isEnrolled = Boolean(userEnrollment && (userEnrollment.status === 'FREE' || userEnrollment.status === 'PAID'));
+  const isPending = userEnrollment?.status === 'PENDING';
+
+  const totalTopics = (course.modules || []).reduce((acc, m) => acc + (m.topics?.length || 0), 0);
+  const totalDuration = (course.modules || []).reduce((acc, m) =>
+    acc + (m.topics || []).reduce((ta, t) => ta + (t.durationMinutes || 7), 0), 0);
+  const durationStr = totalDuration > 60
+    ? `${Math.floor(totalDuration / 60)}h ${totalDuration % 60}m`
+    : `${totalDuration}m`;
 
   const handleEnrollClick = () => {
     if (!currentUser) {
@@ -53,83 +73,161 @@ export default function CourseDetail() {
     setShowCheckout(true);
   };
 
+  const EnrollCTA = () => (
+    isEnrolled ? (
+      <div>
+        <div
+          className="d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-3"
+          style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#16a34a', fontSize: '0.875rem', fontWeight: 700 }}
+        >
+          <FaCheckCircle size={14} /> You are enrolled in this course!
+        </div>
+        <button
+          className="btn btn-success w-100 py-3 fw-bold rounded-3 d-flex align-items-center justify-content-center gap-2 mb-2"
+          style={{ fontSize: '1rem' }}
+          onClick={() => navigate('/student/courses')}
+        >
+          <FaPlay size={13} /> Go to My Courses
+        </button>
+        {userPayment && (
+          <button
+            className="btn btn-outline-secondary w-100 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
+            onClick={() => setShowInvoice(true)}
+          >
+            <FaFileInvoice size={13} /> View Tax Receipt
+          </button>
+        )}
+      </div>
+    ) : isPending ? (
+      <div
+        className="px-3 py-3 rounded-3 text-center"
+        style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#d97706', fontSize: '0.875rem', fontWeight: 700 }}
+      >
+        ⏳ Payment Pending Admin Approval
+      </div>
+    ) : (
+      <button
+        className="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow d-flex align-items-center justify-content-center gap-2"
+        style={{ fontSize: '1rem', background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)', border: 'none', boxShadow: '0 6px 24px rgba(21,128,61,0.35)' }}
+        onClick={handleEnrollClick}
+      >
+        {course.isFree || course.price === 0 ? 'Enroll Now for Free' : `Enroll Now & Unlock ➜`}
+      </button>
+    )
+  );
+
   return (
     <div style={{ backgroundColor: 'var(--bg-body, #f8fafc)', minHeight: '100vh' }}>
       <SEO title={course.title} description={course.description} />
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="bg-dark text-white py-5">
-        <div className="container max-w-7xl">
+      {/* ── Hero Header ──────────────────────────────────────── */}
+      <section style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        color: '#fff',
+        padding: '48px 0 40px'
+      }}>
+        <div className="container" style={{ maxWidth: 1200 }}>
           <div className="row g-4 align-items-center">
-            <div className="col-lg-8">
-              <span className="badge bg-success font-bold text-uppercase px-3 py-2 rounded-pill mb-3">
-                {course.isFree || course.price === 0 ? 'FREE COURSE' : `PAID COURSE • ₹${course.price}`}
-              </span>
-              <h1 className="fw-extrabold display-5 mb-3">{course.title}</h1>
-              <p className="lead text-light opacity-90 mb-4">{course.description}</p>
+            {/* Left: Course Info */}
+            <div className="col-lg-7">
+              <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                <span
+                  className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
+                  style={{ background: 'rgba(34,197,94,0.18)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
+                >
+                  {course.isFree || course.price === 0 ? '🎁 Free Course' : `💎 ₹${course.price}`}
+                </span>
+                {course.courseType && (
+                  <span
+                    className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
+                    style={{ background: 'rgba(99,102,241,0.18)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
+                  >
+                    {course.courseType === 'cohort' ? '🎓 Cohort Bootcamp' : '📚 Elective'}
+                  </span>
+                )}
+              </div>
 
-              <div className="d-flex flex-wrap align-items-center gap-4 text-light small">
-                <div className="d-flex align-items-center gap-1 text-warning fw-bold">
-                  <FaStar /> {course.rating || 5.0} rating
+              <h1 className="fw-extrabold mb-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', lineHeight: 1.25 }}>
+                {course.title}
+              </h1>
+              <p className="mb-4" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, maxWidth: 600 }}>
+                {course.description}
+              </p>
+
+              {/* Stats Row */}
+              <div className="d-flex flex-wrap align-items-center gap-3" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+                <div className="d-flex align-items-center gap-1">
+                  <FaStar style={{ color: '#fbbf24' }} />
+                  <strong style={{ color: '#fbbf24' }}>{course.rating || 5.0}</strong>
+                  <span> rating</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
-                  <FaUserGraduate /> {course.studentsEnrolled || 0} Students Enrolled
+                  <FaUserGraduate style={{ color: '#60a5fa' }} />
+                  <span><strong style={{ color: '#fff' }}>{course.studentsEnrolled || 0}</strong> students</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
-                  <FaCertificate className="text-success" /> Verified Certificate Included
+                  <FaLayerGroup style={{ color: '#a78bfa' }} />
+                  <span><strong style={{ color: '#fff' }}>{course.modules?.length || 0}</strong> sections</span>
+                </div>
+                <div className="d-flex align-items-center gap-1">
+                  <FaBookOpen style={{ color: '#34d399' }} />
+                  <span><strong style={{ color: '#fff' }}>{totalTopics}</strong> lectures</span>
+                </div>
+                <div className="d-flex align-items-center gap-1">
+                  <FaClock style={{ color: '#f472b6' }} />
+                  <span><strong style={{ color: '#fff' }}>{durationStr}</strong> total</span>
+                </div>
+                <div className="d-flex align-items-center gap-1">
+                  <FaCertificate style={{ color: '#4ade80' }} />
+                  <span>Certificate Included</span>
                 </div>
               </div>
             </div>
 
-            {/* Action Card */}
-            <div className="col-lg-4">
-              <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+            {/* Right: Enrollment Card */}
+            <div className="col-lg-5" ref={heroRef}>
+              <div
+                className="rounded-4 overflow-hidden shadow-lg"
+                style={{ background: 'var(--card-bg, #fff)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {/* Thumbnail */}
                 <img
-                  src={course.thumbnail || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600'}
+                  src={course.thumbnail || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format'}
                   alt={course.title}
-                  style={{ height: 200, objectFit: 'cover' }}
+                  style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
+                  loading="eager"
                 />
-                <div className="card-body p-4 text-center">
-                  <div className="mb-3">
-                    <span className="fs-2 fw-extrabold text-success">
+
+                <div className="p-4">
+                  <div className="mb-4 text-center">
+                    <span style={{ fontSize: '2rem', fontWeight: 900, color: '#15803d' }}>
                       {course.isFree || course.price === 0 ? 'FREE' : `₹${course.price}`}
                     </span>
+                    {!course.isFree && course.originalPrice && course.originalPrice > course.price && (
+                      <span className="ms-2 text-muted text-decoration-line-through small">₹{course.originalPrice}</span>
+                    )}
                   </div>
 
-                  {isEnrolled ? (
-                    <div>
-                      <div className="alert alert-success py-2 px-3 mb-3 small font-semibold">
-                        <FaCheckCircle className="me-1" /> You are enrolled in this course!
-                      </div>
-                      {userPayment && (
-                        <button
-                          className="btn btn-outline-secondary w-100 rounded-pill fw-bold mb-2 d-flex align-items-center justify-content-center gap-2"
-                          onClick={() => setShowInvoice(true)}
-                        >
-                          <FaFileInvoice /> View Tax Receipt
-                        </button>
-                      )}
-                    </div>
-                  ) : userEnrollment?.status === 'PENDING' ? (
-                    <div className="alert alert-warning py-2 px-3 mb-3 small font-semibold">
-                      ⏳ Payment Verification Pending Admin Approval.
-                    </div>
-                  ) : (
-                    <button
-                      className="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm mb-3"
-                      onClick={handleEnrollClick}
-                    >
-                      {course.isFree || course.price === 0 ? 'Enroll Now for Free' : 'Enroll Now & Unlock'}
-                    </button>
-                  )}
+                  <EnrollCTA />
 
-                  <ul className="list-unstyled text-start small text-muted mb-0">
-                    <li className="mb-2">✓ Full Lifetime Access to Curricula</li>
-                    <li className="mb-2">✓ Comprehensive Code Examples</li>
-                    <li className="mb-2">✓ Practical Assignments & Tests</li>
-                    <li>✓ Verified Certificate on Completion</li>
-                  </ul>
+                  {/* Perks List */}
+                  {!isEnrolled && !isPending && (
+                    <ul className="list-unstyled mt-4 mb-0" style={{ fontSize: '0.83rem' }}>
+                      {[
+                        'Full Lifetime Access to Curricula',
+                        'Comprehensive Code Examples & Labs',
+                        'Practical Assignments & Module Tests',
+                        'Verified Certificate on Completion',
+                        'Expert Faculty Mentorship'
+                      ].map((perk, i) => (
+                        <li key={i} className="d-flex align-items-start gap-2 mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          <FaCheckCircle style={{ color: '#16a34a', marginTop: 2, flexShrink: 0 }} size={12} />
+                          <span>{perk}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
@@ -137,75 +235,31 @@ export default function CourseDetail() {
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="container max-w-7xl py-5">
+      {/* ── Main Content ──────────────────────────────────────── */}
+      <main className="container py-4 py-md-5" style={{ maxWidth: 1200, paddingBottom: isEnrolled ? undefined : '96px' }}>
         <div className="row g-4">
+          {/* Curriculum Column */}
           <div className="col-lg-8">
-            {/* Curriculum Accordion */}
-            <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
-              <h4 className="fw-bold mb-3">Course Curriculum & Modules</h4>
+            <div
+              className="rounded-4 p-4 mb-4"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+            >
+              <h4 className="fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                Course Curriculum
+              </h4>
               <p className="text-muted small mb-4">
-                {course.modules?.length || 0} Modules •{' '}
-                {course.modules?.reduce((acc, m) => acc + (m.topics?.length || 0), 0) || 0} Topics
+                {course.modules?.length || 0} sections &nbsp;·&nbsp; {totalTopics} lectures &nbsp;·&nbsp; {durationStr} total length
               </p>
 
-              <div className="accordion rounded-3 overflow-hidden border" id="curriculumAccordion">
+              <div style={{ border: '1px solid var(--border-color)', borderRadius: 10, overflow: 'hidden' }}>
                 {(course.modules || []).map((mod, idx) => (
-                  <div className="accordion-item border-0 border-bottom" key={mod.id || idx}>
-                    <h2 className="accordion-header">
-                      <button
-                        className={`accordion-button fw-bold ${idx !== 0 ? 'collapsed' : ''}`}
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target={`#mod-${mod.id}`}
-                      >
-                        Module {idx + 1}: {mod.title}
-                      </button>
-                    </h2>
-                    <div id={`mod-${mod.id}`} className={`accordion-collapse collapse ${idx === 0 ? 'show' : ''}`}>
-                      <div className="accordion-body p-0">
-                        <ul className="list-group list-group-flush">
-                          {(mod.topics || []).map((topic) => (
-                            <li
-                              key={topic.id}
-                              className="list-group-item d-flex justify-content-between align-items-center py-3 px-4 hover-bg-light"
-                            >
-                              <div className="d-flex align-items-center gap-3">
-                                {isEnrolled ? (
-                                  <FaBookOpen
-                                    className="text-success cursor-pointer fs-5"
-                                    onClick={() => navigate('/student/courses')}
-                                  />
-                                ) : (
-                                  <FaLock className="text-muted" />
-                                )}
-                                <div>
-                                  <div
-                                    className={`fw-semibold ${isEnrolled ? 'cursor-pointer' : 'text-secondary'}`}
-                                    style={isEnrolled ? { color: 'var(--text-primary)' } : undefined}
-                                    onClick={() => isEnrolled && navigate('/student/courses')}
-                                  >
-                                    {topic.title}
-                                  </div>
-                                  {topic.contentMd && (
-                                    <div className="small text-muted line-clamp-1">{topic.contentMd.slice(0, 80)}...</div>
-                                  )}
-                                </div>
-                              </div>
-                              {isEnrolled && (
-                                <button
-                                  className="btn btn-sm btn-outline-success rounded-pill px-3"
-                                  onClick={() => navigate('/student/courses')}
-                                >
-                                  Open Lesson
-                                </button>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                  <ModuleAccordion
+                    key={mod.id || idx}
+                    mod={mod}
+                    idx={idx}
+                    isEnrolled={isEnrolled}
+                    navigate={navigate}
+                  />
                 ))}
               </div>
             </div>
@@ -213,55 +267,155 @@ export default function CourseDetail() {
 
           {/* Sidebar */}
           <div className="col-lg-4">
-            {/* Institute Mentorship & Certification Card */}
-            <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
-              <h5 className="fw-bold mb-3 d-flex align-items-center gap-2">
-                <FaAward className="text-success" /> Academy Mentorship
+            {/* Mentorship Card */}
+            <div
+              className="rounded-4 p-4 mb-4"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+            >
+              <h5 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <FaAward style={{ color: 'var(--bs-primary, #15803d)' }} /> Academy Mentorship
               </h5>
               <div className="d-flex align-items-center gap-3 mb-3">
                 <div
-                  className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                  style={{ width: 54, height: 54, background: 'var(--bs-primary, #15803D)', fontSize: '1.4rem' }}
+                  className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                  style={{ width: 52, height: 52, background: 'linear-gradient(135deg, var(--bs-primary, #15803d), #166534)', fontSize: '1.2rem' }}
                 >
-                  <FaGraduationCap size={24} />
+                  <FaGraduationCap size={22} />
                 </div>
                 <div>
-                  <h6 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>CodeLift Institute Faculty</h6>
-                  <span className="text-muted small">support@codelift.dev</span>
+                  <div className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>CodeLift Institute Faculty</div>
+                  <div className="text-muted small">support@codelift.dev</div>
                 </div>
               </div>
-              <p className="text-secondary small mb-3">
-                Industry-proven senior engineering mentorship with rigorous project reviews, hands-on debugging, and career interview prep.
+              <p className="text-secondary small mb-3" style={{ lineHeight: 1.65 }}>
+                Industry-proven senior engineering mentorship with rigorous project reviews, hands-on debugging sessions, and career interview preparation.
               </p>
               <div className="d-flex gap-2 flex-wrap">
                 {['Live Mentorship', 'Code Reviews', 'Verified Certificate', 'Job Assistance'].map((sk, i) => (
-                  <span key={i} className="badge border" style={{ background: 'var(--card-bg-alt, rgba(34, 197, 94, 0.12))', color: 'var(--accent-color, #10b981)', borderColor: 'var(--border-color)' }}>
+                  <span
+                    key={i}
+                    className="badge border px-2 py-1 rounded-pill"
+                    style={{ background: 'rgba(var(--bs-primary-rgb, 21,128,61), 0.08)', color: 'var(--bs-primary, #15803d)', borderColor: 'rgba(var(--bs-primary-rgb, 21,128,61), 0.2)', fontSize: '0.73rem' }}
+                  >
                     {sk}
                   </span>
                 ))}
+              </div>
+            </div>
+
+            {/* Security Badge */}
+            <div
+              className="rounded-4 p-3 d-flex align-items-center gap-3"
+              style={{ background: 'rgba(var(--bs-primary-rgb, 21,128,61), 0.06)', border: '1px solid rgba(var(--bs-primary-rgb, 21,128,61), 0.2)' }}
+            >
+              <FaShieldAlt style={{ color: 'var(--bs-primary, #15803d)', fontSize: '1.4rem', flexShrink: 0 }} />
+              <div>
+                <div className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>Secure Enrollment</div>
+                <div className="text-muted" style={{ fontSize: '0.78rem', lineHeight: 1.5 }}>
+                  All payments are manually verified by our admin team. Zero risk.
+                </div>
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Checkout Modal */}
-      {showCheckout && (
-        <CheckoutModal
-          course={course}
-          onClose={() => setShowCheckout(false)}
-          onSuccess={() => setShowCheckout(false)}
-        />
+      {/* ── Mobile Sticky Enroll Bar ─────────────────────────── */}
+      {!isEnrolled && !isPending && (
+        <div className={`cd-sticky-enroll d-lg-none ${stickyVisible ? 'visible' : ''}`}>
+          <div className="cd-sticky-price">
+            {course.isFree || course.price === 0 ? 'Free' : `₹${course.price}`}
+          </div>
+          <button className="cd-sticky-enroll-btn" onClick={handleEnrollClick}>
+            {course.isFree || course.price === 0 ? '🎁 Enroll for Free' : '🔓 Enroll Now & Unlock'}
+          </button>
+        </div>
       )}
 
-      {/* Tax Invoice Modal */}
+      {/* Modals */}
+      {showCheckout && (
+        <CheckoutModal course={course} onClose={() => setShowCheckout(false)} onSuccess={() => setShowCheckout(false)} />
+      )}
       {showInvoice && (
-        <InvoiceModal
-          payment={userPayment}
-          enrollment={userEnrollment}
-          course={course}
-          onClose={() => setShowInvoice(false)}
-        />
+        <InvoiceModal payment={userPayment} enrollment={userEnrollment} course={course} onClose={() => setShowInvoice(false)} />
+      )}
+    </div>
+  );
+}
+
+// ── Module Accordion ──────────────────────────────────────────────
+function ModuleAccordion({ mod, idx, isEnrolled, navigate }) {
+  const [open, setOpen] = useState(idx === 0);
+
+  return (
+    <div style={{ borderBottom: idx < 99 ? '1px solid var(--border-color)' : 'none' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-100 text-start d-flex align-items-start gap-3 px-4 py-3 border-0"
+        style={{
+          background: open ? 'rgba(var(--bs-primary-rgb, 21,128,61), 0.04)' : 'var(--card-bg)',
+          cursor: 'pointer',
+          transition: 'background 0.18s'
+        }}
+      >
+        <span style={{ marginTop: 3, color: 'var(--text-secondary)', flexShrink: 0, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <FaChevronDown size={12} />
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.9rem', marginBottom: 2 }}>
+            Module {idx + 1}: {mod.title}
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+            {mod.topics?.length || 0} lectures
+          </div>
+        </div>
+      </button>
+
+      {open && (
+        <div style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.01))' }}>
+          {(mod.topics || []).map(topic => (
+            <div
+              key={topic.id}
+              className="d-flex align-items-center gap-3 px-4 py-3"
+              style={{ borderTop: '1px solid var(--border-color)', minHeight: 52 }}
+            >
+              <span style={{ flexShrink: 0, color: isEnrolled ? 'var(--bs-primary, #15803d)' : 'var(--text-secondary)' }}>
+                {isEnrolled ? <FaBookOpen size={13} /> : <FaLock size={11} />}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  className="fw-semibold"
+                  style={{
+                    fontSize: '0.85rem',
+                    color: isEnrolled ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    cursor: isEnrolled ? 'pointer' : 'default',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onClick={() => isEnrolled && navigate('/student/courses')}
+                >
+                  {topic.title}
+                </div>
+                {topic.durationMinutes && (
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                    {topic.durationMinutes} min
+                  </div>
+                )}
+              </div>
+              {isEnrolled && (
+                <button
+                  className="btn btn-sm btn-outline-success rounded-pill px-3 flex-shrink-0"
+                  style={{ fontSize: '0.75rem', padding: '3px 12px' }}
+                  onClick={() => navigate('/student/courses')}
+                >
+                  Open
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

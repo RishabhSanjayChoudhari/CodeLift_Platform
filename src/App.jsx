@@ -26,6 +26,7 @@ import TestManager from './components/admin/TestManager';
 import TestSubmissions from './components/admin/TestSubmissions';
 import GradingPanel from './components/admin/GradingPanel';
 import CertificateDesigner from './components/admin/CertificateDesigner';
+import ProblemManager from './components/admin/ProblemManager';
 import AppearancePage from './pages/admin/AppearancePage';
 import DataManager from './components/admin/DataManager';
 import AdminProfile from './components/admin/AdminProfile';
@@ -35,6 +36,8 @@ import AdminLogin from './pages/AdminLogin';
 import StudentLayout from './components/student/StudentLayout';
 import StudentDashboard from './components/student/StudentDashboard';
 import StudentCourses from './components/student/StudentCourses';
+import CodingArena from './components/student/CodingArena';
+import PythonIDE from './components/student/PythonIDE';
 import StudentAssignments from './components/student/StudentAssignments';
 import StudentTests from './components/student/StudentTests';
 import StudentFees from './components/student/StudentFees';
@@ -125,6 +128,7 @@ export default function App() {
                   <Route path="reports" element={<RevenueReports />} />
                   <Route path="settings" element={<PlatformSettings />} />
                   <Route path="courses" element={<CourseManager />} />
+                  <Route path="problems" element={<ProblemManager />} />
                   <Route path="students" element={<StudentManager />} />
                   <Route path="batches" element={<BatchManager />} />
                   <Route path="completed-batches" element={<CompletedBatches />} />
@@ -156,6 +160,8 @@ export default function App() {
                   <Route index element={<Navigate to="dashboard" replace />} />
                   <Route path="dashboard" element={<StudentDashboard />} />
                   <Route path="courses" element={<StudentCourses />} />
+                  <Route path="arena" element={<CodingArena />} />
+                  <Route path="arena/:problemId" element={<PythonIDE />} />
                   <Route path="assignments" element={<StudentAssignments />} />
                   <Route path="tests" element={<StudentTests />} />
                   <Route path="test-result/:attemptId" element={<ResultPage />} />

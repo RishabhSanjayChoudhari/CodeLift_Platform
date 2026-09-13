@@ -1,16 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { ProgressBar, Badge } from 'react-bootstrap';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { ProgressBar } from 'react-bootstrap';
 import {
-  FaCheckCircle,
-  FaPlay,
-  FaRegCircle,
-  FaChevronDown,
-  FaChevronRight,
-  FaTimes,
-  FaBook,
-  FaFileAlt
+  FaCheckCircle, FaPlay, FaRegCircle, FaChevronRight,
+  FaTimes, FaSearch
 } from 'react-icons/fa';
-import { FiCheck } from 'react-icons/fi';
 
 export default function CurriculumNavigator({
   course,
@@ -27,45 +20,41 @@ export default function CurriculumNavigator({
   onClose
 }) {
   const activeLectureRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Auto-scroll sidebar to the active lecture whenever current selection changes
+  // Auto-scroll sidebar to active lecture on navigation change
   useEffect(() => {
     if (activeLectureRef.current) {
-      activeLectureRef.current.scrollIntoView({
-        block: 'nearest',
-        behavior: 'smooth'
-      });
+      activeLectureRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }, [currentModuleIndex, currentTopicIndex]);
 
-  // Calculate lecture status: 'completed' | 'in-progress' | 'not-started'
+  // Clear search when drawer closes
+  useEffect(() => {
+    if (!isOpen) setSearchQuery('');
+  }, [isOpen]);
+
   const getLectureStatus = (topic, mIdx, tIdx) => {
     const isCompleted =
       studentProgress[topic.id] === 'completed' ||
       studentProgress[topic.id] === true ||
       quizAttempts[topic.id]?.passed;
-
     if (isCompleted) return 'completed';
     if (mIdx === currentModuleIndex && tIdx === currentTopicIndex) return 'in-progress';
     return 'not-started';
   };
 
-  // Compute section statistics
   const getSectionStats = (module) => {
     const topics = module.topics || [];
-    const completedCount = topics.filter(
-      (t) =>
-        studentProgress[t.id] === 'completed' ||
-        studentProgress[t.id] === true ||
-        quizAttempts[t.id]?.passed
+    const completedCount = topics.filter(t =>
+      studentProgress[t.id] === 'completed' ||
+      studentProgress[t.id] === true ||
+      quizAttempts[t.id]?.passed
     ).length;
-
-    // Estimate duration: 5-8 min per lecture if not specified
     const totalMinutes = topics.reduce((acc, t) => acc + (t.durationMinutes || 7), 0);
     const durationStr = totalMinutes > 60
       ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`
-      : `${totalMinutes} min`;
-
+      : `${totalMinutes}m`;
     return {
       total: topics.length,
       completed: completedCount,
@@ -74,152 +63,182 @@ export default function CurriculumNavigator({
     };
   };
 
+  // Flatten and filter modules by search
+  const filteredModules = useMemo(() => {
+    if (!searchQuery.trim()) return modules;
+    const q = searchQuery.toLowerCase();
+    return modules
+      .map(module => ({
+        ...module,
+        topics: (module.topics || []).filter(t => t.title?.toLowerCase().includes(q))
+      }))
+      .filter(m => m.topics.length > 0 || m.title?.toLowerCase().includes(q));
+  }, [modules, searchQuery]);
+
+  // Auto-expand all filtered sections when searching
+  const effectiveExpanded = useMemo(() => {
+    if (!searchQuery.trim()) return expandedSections;
+    return new Set(filteredModules.map((_, i) => i));
+  }, [searchQuery, filteredModules, expandedSections]);
+
+  const totalTopics = modules.reduce((acc, m) => acc + (m.topics?.length || 0), 0);
+  const completedCount = modules.reduce((acc, m) =>
+    acc + (m.topics || []).filter(t =>
+      studentProgress[t.id] === 'completed' ||
+      studentProgress[t.id] === true ||
+      quizAttempts[t.id]?.passed
+    ).length, 0);
+
   const content = (
-    <div className="curriculum-navigator-content d-flex flex-column h-100">
-      {/* 1. Header with Course Progress */}
-      <div
-        className="curriculum-nav-header p-3 border-bottom flex-shrink-0"
-        style={{
-          backgroundColor: 'var(--card-bg, #ffffff)',
-          borderColor: 'var(--border-color, #e2e8f0)'
-        }}
-      >
-        <div className="d-flex align-items-center justify-content-between mb-2">
-          <span className="fw-bold text-truncate" style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-            Course Content
-          </span>
+    <div className="d-flex flex-column h-100">
+
+      {/* ── Header ─────────────────────────────────────── */}
+      <div className="cv-nav-header">
+        <div className="cv-nav-header-row">
+          <span className="cv-nav-header-label">Course Content</span>
           {onClose && (
             <button
               type="button"
-              className="btn btn-sm btn-link text-muted p-0 d-lg-none"
+              className="cv-nav-close-btn d-lg-none"
               onClick={onClose}
-              aria-label="Close navigator"
+              aria-label="Close curriculum"
             >
-              <FaTimes size={16} />
+              <FaTimes size={13} />
             </button>
           )}
         </div>
 
-        {/* Overall Progress */}
-        <div className="d-flex align-items-center justify-content-between small mb-1.5">
-          <span className="text-muted" style={{ fontSize: '0.78rem' }}>Overall Progress</span>
-          <span className="fw-bold" style={{ color: 'var(--bs-primary)', fontSize: '0.82rem' }}>
-            {progressPct}% Complete
-          </span>
+        {/* Progress Summary */}
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              {completedCount} of {totalTopics} lectures completed
+            </span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--bs-primary, #15803d)' }}>
+              {progressPct}%
+            </span>
+          </div>
+          <div style={{ height: 6, background: 'rgba(0,0,0,0.07)', borderRadius: 999, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%',
+              width: `${progressPct}%`,
+              background: 'linear-gradient(90deg, var(--bs-primary, #15803d) 0%, #22d3a5 100%)',
+              borderRadius: 999,
+              transition: 'width 0.6s ease'
+            }} />
+          </div>
         </div>
-        <ProgressBar
-          now={progressPct}
-          style={{ height: '6px', backgroundColor: 'rgba(0,0,0,0.06)' }}
-        />
+
+        {/* Search */}
+        <div className="cv-nav-search">
+          <FaSearch className="cv-nav-search-icon" size={11} />
+          <input
+            type="search"
+            inputMode="search"
+            className="cv-nav-search-input"
+            placeholder="Search lectures…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            aria-label="Filter lectures"
+          />
+        </div>
       </div>
 
-      {/* 2. Scrollable Sections and Lectures List */}
-      <div
-        className="curriculum-nav-sections flex-grow-1 overflow-y-auto"
-        style={{ backgroundColor: 'var(--card-bg, #ffffff)' }}
-      >
-        {modules.length === 0 ? (
-          <div className="p-4 text-center text-muted small">
-            No sections available in this course.
+      {/* ── Scrollable List ─────────────────────────────── */}
+      <div className="cv-nav-list">
+        {filteredModules.length === 0 ? (
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.83rem' }}>
+            No lectures match your search.
           </div>
         ) : (
-          modules.map((module, mIdx) => {
-            const isExpanded = expandedSections.has(mIdx);
+          filteredModules.map((module, mIdx) => {
+            // Map back to original index for progress/status checks
+            const originalMIdx = searchQuery.trim()
+              ? modules.findIndex(m => m.id === module.id || m.title === module.title)
+              : mIdx;
+
+            const isExpanded = effectiveExpanded.has(mIdx);
+            const isCurrentModule = originalMIdx === currentModuleIndex;
             const stats = getSectionStats(module);
-            const isCurrentModule = mIdx === currentModuleIndex;
 
             return (
               <div
                 key={module.id || `section-${mIdx}`}
-                className="curriculum-section-group border-bottom"
-                style={{ borderColor: 'var(--border-color, #e2e8f0)' }}
+                style={{ borderBottom: '1px solid var(--border-color, #e2e8f0)' }}
               >
-                {/* Collapsible Section Header */}
+                {/* Section Header */}
                 <button
                   type="button"
-                  className="w-100 text-start p-3 border-0 d-flex align-items-start gap-2.5 transition-all"
+                  className={`cv-section-btn ${isCurrentModule ? 'active' : ''}`}
                   style={{
-                    backgroundColor: isCurrentModule ? 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.04)' : 'transparent',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer'
+                    backgroundColor: isCurrentModule
+                      ? 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.05)'
+                      : 'var(--card-bg, #fff)',
+                    color: 'var(--text-primary)'
                   }}
                   onClick={() => onToggleSection && onToggleSection(mIdx)}
                   aria-expanded={isExpanded}
                 >
-                  <div className="mt-1 text-muted" style={{ transition: 'transform 0.2s ease' }}>
-                    {isExpanded ? <FaChevronDown size={11} /> : <FaChevronRight size={11} />}
-                  </div>
+                  <span className={`cv-section-chevron ${isExpanded ? 'open' : ''}`}>
+                    <FaChevronRight size={10} />
+                  </span>
 
-                  <div className="flex-grow-1 min-w-0">
-                    <div className="d-flex align-items-center justify-content-between gap-2 mb-0.5">
-                      <span className="fw-bold small text-truncate" style={{ color: 'var(--text-primary)' }}>
-                        Section {mIdx + 1}: {module.title}
+                  <div className="cv-section-body">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                      <span className="cv-section-title">
+                        §{originalMIdx + 1} {module.title}
                       </span>
                       {stats.isAllCompleted && (
-                        <span className="text-success flex-shrink-0" title="Section Completed">
-                          <FaCheckCircle size={13} />
+                        <span className="cv-section-done-badge" title="Section completed">
+                          <FaCheckCircle size={10} />
                         </span>
                       )}
                     </div>
-                    <div className="text-muted" style={{ fontSize: '0.74rem' }}>
-                      {stats.completed}/{stats.total} | {stats.durationStr}
-                    </div>
+                    <span className="cv-section-meta">
+                      {stats.completed}/{stats.total} &nbsp;·&nbsp; {stats.durationStr}
+                    </span>
                   </div>
                 </button>
 
-                {/* Section Lectures List */}
+                {/* Lecture Rows */}
                 {isExpanded && (
-                  <div
-                    className="curriculum-lectures-list"
-                    style={{ backgroundColor: 'var(--card-bg-alt, rgba(0,0,0,0.02))' }}
-                  >
+                  <div style={{ backgroundColor: 'var(--card-bg-alt, rgba(0,0,0,0.02))' }}>
                     {(module.topics || []).map((topic, tIdx) => {
-                      const isCurrent = mIdx === currentModuleIndex && tIdx === currentTopicIndex;
-                      const status = getLectureStatus(topic, mIdx, tIdx);
+                      const originalTIdx = searchQuery.trim()
+                        ? (modules[originalMIdx]?.topics || []).findIndex(t => t.id === topic.id)
+                        : tIdx;
+
+                      const isCurrent = originalMIdx === currentModuleIndex && originalTIdx === currentTopicIndex;
+                      const status = getLectureStatus(topic, originalMIdx, originalTIdx);
 
                       return (
                         <button
                           key={topic.id || `lec-${mIdx}-${tIdx}`}
                           ref={isCurrent ? activeLectureRef : null}
                           type="button"
-                          className="w-100 text-start px-3 py-2.5 border-0 d-flex align-items-center gap-2.5 transition-all curriculum-lecture-row"
-                          style={{
-                            backgroundColor: isCurrent
-                              ? 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)'
-                              : 'transparent',
-                            borderLeft: isCurrent
-                              ? '3px solid var(--bs-primary, #15803d)'
-                              : '3px solid transparent',
-                            color: isCurrent ? 'var(--bs-primary, #15803d)' : 'var(--text-primary)',
-                            fontWeight: isCurrent ? 700 : 500,
-                            cursor: 'pointer',
-                            fontSize: '0.82rem'
-                          }}
-                          onClick={() => onSelectLecture && onSelectLecture(mIdx, tIdx)}
+                          className={`cv-lecture-row ${isCurrent ? 'active' : ''}`}
+                          onClick={() => onSelectLecture && onSelectLecture(originalMIdx, originalTIdx)}
+                          aria-current={isCurrent ? 'true' : undefined}
                         >
-                          {/* Lecture Icon State */}
-                          <div className="flex-shrink-0 d-flex align-items-center justify-content-center" style={{ width: 18 }}>
+                          {/* Status Icon */}
+                          <span className="cv-lec-icon">
                             {status === 'completed' ? (
-                              <FaCheckCircle className="text-success" size={13} />
+                              <FaCheckCircle size={12} style={{ color: '#16a34a' }} />
                             ) : status === 'in-progress' ? (
-                              <FaPlay size={10} style={{ color: 'var(--bs-primary)' }} />
+                              <FaPlay size={9} style={{ color: 'var(--bs-primary, #15803d)' }} />
                             ) : (
-                              <FaRegCircle className="text-muted" size={12} />
+                              <FaRegCircle size={11} style={{ color: 'var(--text-secondary)' }} />
                             )}
-                          </div>
+                          </span>
 
-                          {/* Lecture Title & Type */}
-                          <div className="flex-grow-1 text-truncate">
-                            <span>
-                              {tIdx + 1}. {topic.title}
-                            </span>
-                          </div>
+                          {/* Title */}
+                          <span className="cv-lec-title">
+                            {originalTIdx + 1}. {topic.title}
+                          </span>
 
                           {/* Duration */}
                           {topic.durationMinutes && (
-                            <span className="text-muted ms-auto flex-shrink-0" style={{ fontSize: '0.72rem' }}>
-                              {topic.durationMinutes}m
-                            </span>
+                            <span className="cv-lec-duration">{topic.durationMinutes}m</span>
                           )}
                         </button>
                       );
@@ -234,57 +253,18 @@ export default function CurriculumNavigator({
     </div>
   );
 
+  // Desktop sidebar – rendered by parent directly inside .cv-sidebar
   return (
     <>
-      {/* ── DESKTOP SIDEBAR (Sticky, 340px width) ── */}
-      <aside
-        className="curriculum-navigator-desktop d-none d-lg-flex flex-column border rounded-3 shadow-sm"
-        style={{
-          width: '340px',
-          minWidth: '340px',
-          maxWidth: '340px',
-          backgroundColor: 'var(--card-bg, #ffffff)',
-          borderColor: 'var(--border-color, #e2e8f0)',
-          position: 'sticky',
-          top: '72px',
-          height: 'calc(100vh - 90px)',
-          overflow: 'hidden'
-        }}
-        aria-label="Course Curriculum Navigator"
-      >
+      {/* Desktop: render inline content (parent wraps with .cv-sidebar) */}
+      <div className="d-none d-lg-flex flex-column h-100" style={{ flex: 1 }}>
         {content}
-      </aside>
+      </div>
 
-      {/* ── MOBILE OFF-CANVAS DRAWER (< 992px) ── */}
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="position-fixed top-0 start-0 w-100 h-100 d-lg-none"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 1060,
-              backdropFilter: 'blur(3px)'
-            }}
-            onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Drawer Panel */}
-          <div
-            className="curriculum-navigator-mobile position-fixed top-0 end-0 h-100 d-lg-none shadow-lg d-flex flex-column"
-            style={{
-              width: '85vw',
-              maxWidth: '360px',
-              zIndex: 1070,
-              backgroundColor: 'var(--card-bg, #ffffff)',
-              borderLeft: '1px solid var(--border-color, #e2e8f0)'
-            }}
-          >
-            {content}
-          </div>
-        </>
-      )}
+      {/* Mobile: rendered by parent into .cv-drawer — nothing else here */}
+      <div className="d-flex d-lg-none flex-column h-100" style={{ flex: 1 }}>
+        {content}
+      </div>
     </>
   );
 }

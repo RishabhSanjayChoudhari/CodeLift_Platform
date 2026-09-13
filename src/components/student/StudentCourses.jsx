@@ -1,26 +1,61 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ProgressBar, Badge } from 'react-bootstrap';
+import { ProgressBar } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import {
-  FaBook,
-  FaGraduationCap,
-  FaCheckCircle,
-  FaAward,
-  FaArrowLeft,
-  FaArrowRight,
-  FaPlay,
-  FaListUl,
-  FaCalendarAlt,
-  FaCheck,
-  FaRegFileAlt,
-  FaClipboardList,
-  FaBars
+  FaBook, FaGraduationCap, FaCheckCircle, FaAward, FaArrowLeft,
+  FaArrowRight, FaPlay, FaListUl, FaCalendarAlt, FaCheck,
+  FaRegFileAlt, FaClipboardList, FaBars, FaSearch, FaRegCircle,
+  FaChevronRight, FaTimes, FaBookOpen, FaClipboard
 } from 'react-icons/fa';
 import CurriculumNavigator from './CurriculumNavigator';
+import '../../styles/CourseView.css';
 
-// ── Simple Markdown Renderer for Lecture Content ──
+// ══════════════════════════════════════════════════════════
+// Enhanced Markdown Renderer with Copy-Code & Tables
+// ══════════════════════════════════════════════════════════
+function CodeBlock({ code, lang }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const el = document.createElement('textarea');
+      el.value = code;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [code]);
+
+  return (
+    <div className="cv-code-block">
+      <div className="cv-code-header">
+        <span className="cv-code-lang">{lang || 'code'}</span>
+        <button
+          type="button"
+          className={`cv-code-copy ${copied ? 'copied' : ''}`}
+          onClick={handleCopy}
+          aria-label="Copy code"
+        >
+          {copied ? <FaCheck size={10} /> : <FaClipboard size={10} />}
+          <span>{copied ? 'Copied!' : 'Copy'}</span>
+        </button>
+      </div>
+      <pre className="cv-code-pre">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
 function LectureMarkdown({ content }) {
   if (!content) return null;
 
@@ -31,8 +66,9 @@ function LectureMarkdown({ content }) {
   while (i < lines.length) {
     const line = lines[i];
 
-    // Code blocks
+    // ── Code Blocks ──────────────────────────────────────
     if (line.startsWith('```')) {
+      const lang = line.replace(/^```/, '').trim();
       const codeLines = [];
       i++;
       while (i < lines.length && !lines[i].startsWith('```')) {
@@ -40,28 +76,13 @@ function LectureMarkdown({ content }) {
         i++;
       }
       elements.push(
-        <pre
-          key={`code-${i}`}
-          style={{
-            backgroundColor: '#0f172a',
-            color: '#e2e8f0',
-            borderRadius: 8,
-            padding: '14px 16px',
-            overflowX: 'auto',
-            fontSize: '0.85rem',
-            lineHeight: 1.6,
-            margin: '14px 0',
-            border: '1px solid var(--border-color, #334155)'
-          }}
-        >
-          <code>{codeLines.join('\n')}</code>
-        </pre>
+        <CodeBlock key={`code-${i}`} code={codeLines.join('\n')} lang={lang} />
       );
       i++;
       continue;
     }
 
-    // Markdown Table
+    // ── Markdown Tables ──────────────────────────────────
     if (line.includes('|') && lines[i + 1] && lines[i + 1].includes('|') && lines[i + 1].includes('-')) {
       const tableRows = [];
       while (i < lines.length && lines[i].includes('|')) {
@@ -72,26 +93,14 @@ function LectureMarkdown({ content }) {
       const dataRows = tableRows.slice(2).map(r => r.split('|').filter(c => c.trim().length > 0));
 
       elements.push(
-        <div key={`table-${i}`} className="table-responsive my-3">
-          <table className="table table-bordered table-sm align-middle" style={{ borderColor: 'var(--border-color)' }}>
-            <thead style={{ backgroundColor: 'var(--card-bg-alt, rgba(0,0,0,0.02))' }}>
-              <tr>
-                {headerCols.map((col, cIdx) => (
-                  <th key={cIdx} className="small fw-bold px-3 py-2" style={{ color: 'var(--text-primary)' }}>
-                    {col.trim()}
-                  </th>
-                ))}
-              </tr>
+        <div key={`table-${i}`} className="cv-md-table-wrap">
+          <table className="cv-md-table">
+            <thead>
+              <tr>{headerCols.map((col, ci) => <th key={ci}>{col.trim()}</th>)}</tr>
             </thead>
             <tbody>
-              {dataRows.map((row, rIdx) => (
-                <tr key={rIdx}>
-                  {row.map((cell, cIdx) => (
-                    <td key={cIdx} className="small px-3 py-2" style={{ color: 'var(--text-primary)' }}>
-                      {cell.trim()}
-                    </td>
-                  ))}
-                </tr>
+              {dataRows.map((row, ri) => (
+                <tr key={ri}>{row.map((cell, ci) => <td key={ci}>{cell.trim()}</td>)}</tr>
               ))}
             </tbody>
           </table>
@@ -100,61 +109,63 @@ function LectureMarkdown({ content }) {
       continue;
     }
 
-    // Headings
+    // ── Headings ─────────────────────────────────────────
     if (line.startsWith('# ')) {
-      elements.push(
-        <h2 key={i} className="fw-bold mt-4 mb-3" style={{ color: 'var(--text-primary)', fontSize: '1.5rem' }}>
-          {line.replace('# ', '')}
-        </h2>
-      );
-      i++;
-      continue;
+      elements.push(<h1 className="cv-md-body" key={i} style={{ fontSize: '1.45rem', fontWeight: 800, marginTop: 28, marginBottom: 12 }}>{line.slice(2)}</h1>);
+      i++; continue;
     }
     if (line.startsWith('## ')) {
-      elements.push(
-        <h4 key={i} className="fw-bold mt-3 mb-2" style={{ color: 'var(--text-primary)', fontSize: '1.2rem' }}>
-          {line.replace('## ', '')}
-        </h4>
-      );
-      i++;
-      continue;
+      elements.push(<h2 className="cv-md-body" key={i} style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: 24, marginBottom: 10 }}>{line.slice(3)}</h2>);
+      i++; continue;
     }
     if (line.startsWith('### ')) {
-      elements.push(
-        <h5 key={i} className="fw-semibold mt-3 mb-2" style={{ color: 'var(--text-primary)', fontSize: '1.05rem' }}>
-          {line.replace('### ', '')}
-        </h5>
-      );
-      i++;
-      continue;
+      elements.push(<h3 className="cv-md-body" key={i} style={{ fontSize: '1.05rem', fontWeight: 700, marginTop: 20, marginBottom: 8 }}>{line.slice(4)}</h3>);
+      i++; continue;
     }
 
-    // Unordered lists
+    // ── Lists ─────────────────────────────────────────────
     if (line.startsWith('- ') || line.startsWith('* ')) {
+      const items = [];
+      while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* '))) {
+        items.push(lines[i].replace(/^[-*]\s+/, ''));
+        i++;
+      }
       elements.push(
-        <li key={i} className="ms-3 mb-1" style={{ color: 'var(--text-primary)', fontSize: '0.92rem', lineHeight: 1.6 }}>
-          {line.replace(/^[-*]\s+/, '')}
-        </li>
+        <ul key={`ul-${i}`} style={{ paddingLeft: 20, marginBottom: 14 }}>
+          {items.map((item, idx) => (
+            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65 }}>{item}</li>
+          ))}
+        </ul>
       );
-      i++;
       continue;
     }
 
-    // Ordered lists
     if (/^\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\d+\.\s+/, ''));
+        i++;
+      }
       elements.push(
-        <li key={i} className="ms-3 mb-1" style={{ color: 'var(--text-primary)', fontSize: '0.92rem', lineHeight: 1.6 }}>
-          {line.replace(/^\d+\.\s+/, '')}
-        </li>
+        <ol key={`ol-${i}`} style={{ paddingLeft: 20, marginBottom: 14 }}>
+          {items.map((item, idx) => (
+            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65 }}>{item}</li>
+          ))}
+        </ol>
       );
-      i++;
       continue;
     }
 
-    // Paragraphs
+    // ── Horizontal Rule ───────────────────────────────────
+    if (line.match(/^[-*]{3,}$/)) {
+      elements.push(<hr key={i} style={{ borderColor: 'var(--border-color)', margin: '20px 0' }} />);
+      i++; continue;
+    }
+
+    // ── Paragraph ─────────────────────────────────────────
     if (line.trim().length > 0) {
       elements.push(
-        <p key={i} className="mb-2.5" style={{ color: 'var(--text-primary)', fontSize: '0.92rem', lineHeight: 1.65 }}>
+        <p key={i} className="cv-md-body" style={{ marginBottom: 14, lineHeight: 1.72 }}>
           {line}
         </p>
       );
@@ -163,57 +174,41 @@ function LectureMarkdown({ content }) {
     i++;
   }
 
-  return <div className="lecture-content-body">{elements}</div>;
+  return <div className="cv-md-body">{elements}</div>;
 }
 
+// ══════════════════════════════════════════════════════════
+// Main StudentCourses Component
+// ══════════════════════════════════════════════════════════
 export default function StudentCourses() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth();
-  const { students = [], courses = [], batches = [], markTopicComplete, saveQuizAttempt } = useData();
+  const { students = [], courses = [], batches = [], markTopicComplete } = useData();
 
-  const student = students.find((s) => s.id === auth?.studentId);
-  const batch = batches.find((b) => b.id === student?.batchId);
+  const student = students.find(s => s.id === auth?.studentId);
+  const batch = batches.find(b => b.id === student?.batchId);
 
-  // All courses assigned to student's current batch
   const allAvailableCourses = useMemo(() => {
     if (!student?.batchId) return [];
-    return courses.filter((c) => {
-      if (Array.isArray(batch?.courseIds)) {
-        return batch.courseIds.includes(c.id);
-      }
-      return (
-        c.batchId === student.batchId ||
-        (Array.isArray(c.batchIds) && c.batchIds.includes(student.batchId))
-      );
+    return courses.filter(c => {
+      if (Array.isArray(batch?.courseIds)) return batch.courseIds.includes(c.id);
+      return c.batchId === student.batchId || (Array.isArray(c.batchIds) && c.batchIds.includes(student.batchId));
     });
   }, [courses, student?.batchId, batch?.courseIds]);
 
-  // Read selected course from URL parameter ?id=...
   const selectedCourseId = searchParams.get('id');
-  const activeCourse = allAvailableCourses.find((c) => c.id === selectedCourseId);
+  const activeCourse = allAvailableCourses.find(c => c.id === selectedCourseId);
 
-  // ── Udemy-Style Navigator State ──
+  // ── Navigator State ──────────────────────────────────────
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState(() => new Set([0]));
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('notes');
-  const [isSidebarHidden, setIsSidebarHidden] = useState(
-    () => (typeof window !== 'undefined' && window.innerWidth < 768) || false
-  );
+  const [isSidebarHidden, setIsSidebarHidden] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarHidden((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('codelift_course_sidebar_hidden', String(next));
-      } catch {}
-      return next;
-    });
-  };
+  const toggleSidebar = () => setIsSidebarHidden(prev => !prev);
 
-  // Reset to first module/topic when course changes
   useEffect(() => {
     setCurrentModuleIndex(0);
     setCurrentTopicIndex(0);
@@ -221,38 +216,38 @@ export default function StudentCourses() {
     setMobileDrawerOpen(false);
   }, [selectedCourseId]);
 
-  // Scroll to top on topic or module navigation
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentModuleIndex, currentTopicIndex]);
 
-  // Current course modules and active lecture
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileDrawerOpen]);
+
   const modules = activeCourse?.modules || [];
   const currentModule = modules[currentModuleIndex] || modules[0];
   const topics = currentModule?.topics || [];
   const currentTopic = topics[currentTopicIndex] || topics[0];
 
-  // Helper to compute course completion stats
-  const getCourseStats = (course) => {
-    const allTopics = (course.modules || []).flatMap((m) => m.topics || []);
+  const getCourseStats = useCallback((course) => {
+    const allTopics = (course.modules || []).flatMap(m => m.topics || []);
     const totalTopics = allTopics.length;
-    const completedTopics = allTopics.filter(
-      (t) =>
-        student?.progress?.[t.id] === 'completed' ||
-        student?.progress?.[t.id] === true ||
-        student?.quizAttempts?.[t.id]?.passed
+    const completedTopics = allTopics.filter(t =>
+      student?.progress?.[t.id] === 'completed' ||
+      student?.progress?.[t.id] === true ||
+      student?.quizAttempts?.[t.id]?.passed
     ).length;
     const progressPct = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+    return { totalModules: course.modules?.length || 0, totalTopics, completedTopics, progressPct };
+  }, [student]);
 
-    return {
-      totalModules: course.modules?.length || 0,
-      totalTopics,
-      completedTopics,
-      progressPct
-    };
-  };
-
-  const activeStats = activeCourse ? getCourseStats(activeCourse) : { totalTopics: 0, completedTopics: 0, progressPct: 0 };
+  const activeStats = activeCourse ? getCourseStats(activeCourse) : { totalTopics: 0, completedTopics: 0, progressPct: 0, totalModules: 0 };
 
   const isCurrentTopicCompleted = currentTopic
     ? student?.progress?.[currentTopic.id] === 'completed' ||
@@ -260,24 +255,17 @@ export default function StudentCourses() {
       student?.quizAttempts?.[currentTopic.id]?.passed
     : false;
 
-  // Handlers for active course interactions
   const handleSelectCourse = (courseId) => {
     setSearchParams({ id: courseId });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBackToCourses = () => {
-    setSearchParams({});
-  };
+  const handleBackToCourses = () => setSearchParams({});
 
   const handleToggleSection = (mIdx) => {
-    setExpandedSections((prev) => {
+    setExpandedSections(prev => {
       const next = new Set(prev);
-      if (next.has(mIdx)) {
-        next.delete(mIdx);
-      } else {
-        next.add(mIdx);
-      }
+      if (next.has(mIdx)) next.delete(mIdx); else next.add(mIdx);
       return next;
     });
   };
@@ -285,7 +273,7 @@ export default function StudentCourses() {
   const handleSelectLecture = (mIdx, tIdx) => {
     setCurrentModuleIndex(mIdx);
     setCurrentTopicIndex(tIdx);
-    setExpandedSections((prev) => new Set([...prev, mIdx]));
+    setExpandedSections(prev => new Set([...prev, mIdx]));
     setMobileDrawerOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -296,7 +284,6 @@ export default function StudentCourses() {
     }
   };
 
-  // Sequential Next and Previous Navigation
   const isFirstLecture = currentModuleIndex === 0 && currentTopicIndex === 0;
   const isLastModule = currentModuleIndex === modules.length - 1;
   const isLastTopicInModule = currentTopicIndex === topics.length - 1;
@@ -304,219 +291,176 @@ export default function StudentCourses() {
 
   const handleNextLecture = () => {
     if (isLastLecture) return;
-
-    // Auto-complete: navigating past the last lecture of a section marks it complete
-    if (student && activeCourse && currentTopic) {
-      markTopicComplete(student.id, currentTopic.id, activeCourse.id);
-    }
-
+    if (student && activeCourse && currentTopic) markTopicComplete(student.id, currentTopic.id, activeCourse.id);
     if (currentTopicIndex < topics.length - 1) {
-      setCurrentTopicIndex((prev) => prev + 1);
-    } else if (currentModuleIndex < modules.length - 1) {
+      setCurrentTopicIndex(prev => prev + 1);
+    } else {
       const nextMod = currentModuleIndex + 1;
       setCurrentModuleIndex(nextMod);
       setCurrentTopicIndex(0);
-      setExpandedSections((prev) => new Set([...prev, nextMod]));
+      setExpandedSections(prev => new Set([...prev, nextMod]));
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevLecture = () => {
     if (isFirstLecture) return;
-
     if (currentTopicIndex > 0) {
-      setCurrentTopicIndex((prev) => prev - 1);
-    } else if (currentModuleIndex > 0) {
+      setCurrentTopicIndex(prev => prev - 1);
+    } else {
       const prevMod = currentModuleIndex - 1;
       const prevTopics = modules[prevMod]?.topics || [];
       setCurrentModuleIndex(prevMod);
       setCurrentTopicIndex(Math.max(0, prevTopics.length - 1));
-      setExpandedSections((prev) => new Set([...prev, prevMod]));
+      setExpandedSections(prev => new Set([...prev, prevMod]));
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // ═════════════════════════════════════════════════════════════════════════════
-  // VIEW 2: UDEMY-STYLE COURSE LEARNING VIEW WITH CURRICULUM NAVIGATOR
-  // ═════════════════════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════
+  // VIEW 2 – LECTURE LEARNING VIEW
+  // ══════════════════════════════════════════════════════════
   if (selectedCourseId) {
     if (!activeCourse) {
       return (
-        <div className="card border rounded-4 p-5 text-center shadow-sm my-4" style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
-          <FaBook size={48} className="text-muted mb-3 opacity-50 mx-auto" />
-          <h4 className="fw-bold mb-2" style={{ color: 'var(--text-primary)' }}>Course Not Found</h4>
-          <p className="text-muted mb-4">The selected course is either unpublished or not accessible in your current curriculum.</p>
-          <button
-            onClick={handleBackToCourses}
-            className="btn btn-primary d-inline-flex align-items-center gap-2 mx-auto px-4 py-2 rounded-pill shadow-sm"
-          >
-            <FaArrowLeft size={14} />
-            <span>Return to Courses</span>
+        <div className="cv-empty">
+          <FaBook size={48} className="cv-empty-icon" />
+          <div className="cv-empty-title">Course Not Available</div>
+          <p className="cv-empty-text">This course is either unpublished or not assigned to your current batch.</p>
+          <button onClick={handleBackToCourses} className="btn btn-primary d-inline-flex align-items-center gap-2 px-4 py-2 rounded-3">
+            <FaArrowLeft size={13} /> Return to Courses
           </button>
         </div>
       );
     }
 
+    const totalTopicsAll = modules.reduce((acc, m) => acc + (m.topics?.length || 0), 0);
+    const currentTopicGlobal = modules
+      .slice(0, currentModuleIndex)
+      .reduce((acc, m) => acc + (m.topics?.length || 0), 0) + currentTopicIndex + 1;
+
     return (
-      <div className="udemy-course-viewer pb-5">
-        {/* ── 1. Top Bar ── */}
-        <div
-          className="udemy-topbar card border-0 shadow-sm rounded-3 px-3 py-2.5 mb-3"
-          style={{
-            backgroundColor: 'var(--card-bg, #ffffff)',
-            border: '1px solid var(--border-color, #e2e8f0)'
-          }}
-        >
-          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
-            {/* Left: Back button & Course Title */}
-            <div className="d-flex align-items-center gap-3 min-w-0">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1.5 rounded-pill px-3 py-1"
-                onClick={handleBackToCourses}
-              >
-                <FaArrowLeft size={12} />
-                <span>Back to Courses</span>
-              </button>
-              <h5 className="mb-0 fw-bold text-truncate" style={{ color: 'var(--text-primary)', fontSize: '1.05rem' }}>
-                {activeCourse.title}
-              </h5>
-            </div>
+      <div className="udemy-course-viewer" style={{ position: 'relative', minHeight: '100vh' }}>
+        {/* ── Slim Top Progress Track ── */}
+        <div className="cv-progress-track" aria-hidden="true">
+          <div className="cv-progress-fill" style={{ width: `${activeStats.progressPct}%` }} />
+        </div>
 
-            {/* Right: Progress Badge & Actions */}
-            <div className="d-flex align-items-center gap-2.5">
-              <div
-                className="d-none d-sm-flex align-items-center gap-2 px-2.5 py-1 rounded-pill border"
-                style={{
-                  backgroundColor: 'var(--card-bg-alt, rgba(0,0,0,0.02))',
-                  borderColor: 'var(--border-color)'
-                }}
-              >
-                <div style={{ width: 60 }}>
-                  <ProgressBar now={activeStats.progressPct} style={{ height: 5 }} />
-                </div>
-                <span className="small fw-bold" style={{ color: 'var(--bs-primary)', fontSize: '0.78rem' }}>
-                  Progress {activeStats.progressPct}%
-                </span>
+        {/* ── Top Bar ── */}
+        <div className="cv-topbar">
+          {/* Back */}
+          <button
+            type="button"
+            className="cv-topbar-back"
+            onClick={handleBackToCourses}
+            aria-label="Back to My Courses"
+          >
+            <FaArrowLeft size={11} />
+            <span>Courses</span>
+          </button>
+
+          {/* Course Info */}
+          <div className="cv-topbar-info">
+            <div className="cv-topbar-breadcrumb">
+              Section {currentModuleIndex + 1} · Lecture {currentTopicIndex + 1}
+            </div>
+            <div className="cv-topbar-title">{activeCourse.title}</div>
+          </div>
+
+          {/* Actions */}
+          <div className="cv-topbar-actions">
+            {/* Progress Pill */}
+            <div className="cv-progress-pill">
+              <div className="cv-progress-pill-bar">
+                <div className="cv-progress-pill-fill" style={{ width: `${activeStats.progressPct}%` }} />
               </div>
-
-              {/* Desktop Sidebar Toggle */}
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary d-none d-lg-flex align-items-center gap-1.5 rounded-pill px-3 py-1"
-                onClick={toggleSidebar}
-                title={isSidebarHidden ? "Show Curriculum Sidebar" : "Hide Curriculum Sidebar"}
-              >
-                <FaListUl size={12} />
-                <span>{isSidebarHidden ? 'Show Sidebar' : 'Hide Sidebar'}</span>
-              </button>
-
-              {/* Only show if a test exists for this module */}
-              {(currentModule?.testId || currentModule?.test || currentModule?.hasTest) && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 rounded-pill px-3 py-1"
-                  onClick={() => navigate(currentModule?.testId ? `/student/tests?testId=${currentModule.testId}` : '/student/tests')}
-                >
-                  <FaClipboardList size={12} />
-                  <span>Take Test</span>
-                </button>
-              )}
-
-              {/* Mobile Drawer Trigger (< 992px) */}
-              <button
-                type="button"
-                className="btn btn-sm btn-primary d-flex d-lg-none align-items-center gap-1.5 rounded-pill px-3 py-1"
-                onClick={() => setMobileDrawerOpen(true)}
-                aria-label="Open curriculum navigator"
-              >
-                <FaBars size={12} />
-                <span>Curriculum</span>
-              </button>
+              <span>{activeStats.progressPct}%</span>
             </div>
+
+            {/* Desktop sidebar toggle */}
+            <button
+              type="button"
+              className="cv-curriculum-btn btn btn-sm btn-outline-secondary d-none d-lg-flex"
+              onClick={toggleSidebar}
+              title={isSidebarHidden ? 'Show Curriculum' : 'Hide Curriculum'}
+            >
+              <FaListUl size={12} />
+              <span className="ms-1">{isSidebarHidden ? 'Syllabus' : 'Hide'}</span>
+            </button>
+
+            {/* Module test shortcut */}
+            {(currentModule?.testId || currentModule?.test || currentModule?.hasTest) && (
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary d-none d-sm-flex align-items-center gap-1 rounded-pill px-3"
+                onClick={() => navigate(currentModule?.testId ? `/student/tests?testId=${currentModule.testId}` : '/student/tests')}
+              >
+                <FaClipboardList size={11} />
+                <span>Test</span>
+              </button>
+            )}
+
+            {/* Mobile Drawer Trigger */}
+            <button
+              type="button"
+              className="cv-curriculum-btn btn btn-sm btn-primary d-flex d-lg-none"
+              onClick={() => setMobileDrawerOpen(true)}
+              aria-label="Open curriculum"
+            >
+              <FaBars size={12} />
+              <span className="ms-1">Curriculum</span>
+              <span
+                className="badge rounded-pill ms-1"
+                style={{ background: 'rgba(255,255,255,0.25)', fontSize: '0.65rem', padding: '1px 5px' }}
+              >
+                {currentTopicGlobal}/{totalTopicsAll}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* ── 2. Main Content + Right Navigator Side-by-Side ── */}
-        <div className={`course-view-layout d-flex flex-column flex-lg-row align-items-start gap-3 position-relative ${isSidebarHidden ? 'sidebar-hidden' : ''}`}>
-          {/* Floating Show Sidebar Button when collapsed */}
+        {/* ── Main Layout ── */}
+        <div className={`cv-layout ${isSidebarHidden ? 'sidebar-collapsed' : ''}`}>
+          {/* Floating "Show Curriculum" FAB when desktop sidebar is hidden */}
           {isSidebarHidden && (
-            <button
-              type="button"
-              className="btn btn-primary course-floating-sidebar-btn d-none d-lg-flex"
-              onClick={toggleSidebar}
-            >
-              <FaListUl size={14} />
-              <span>Show Curriculum</span>
+            <button type="button" className="cv-sidebar-show-fab d-none d-lg-flex" onClick={toggleSidebar}>
+              <FaListUl size={13} />
+              <span>Curriculum</span>
             </button>
           )}
 
-          {/* LEFT MAIN PANEL: Content Viewer */}
-          <div className="course-content-area udemy-main-panel flex-grow-1 w-100 min-w-0">
-            <div
-              className="card border rounded-3 shadow-sm overflow-hidden p-3 p-md-4"
-              style={{
-                backgroundColor: 'var(--card-bg, #ffffff)',
-                borderColor: 'var(--border-color, #e2e8f0)'
-              }}
-            >
-              {/* Lecture Title Header */}
-              <div className="mb-3 border-bottom pb-3" style={{ borderColor: 'var(--border-color)' }}>
-                <div className="small fw-bold text-uppercase tracking-wider mb-1" style={{ color: 'var(--bs-primary)' }}>
-                  Section {currentModuleIndex + 1} • Lecture {currentTopicIndex + 1}
+          {/* ── Left: Lecture Content ── */}
+          <div className="cv-content-panel">
+            <div className="cv-lecture-card">
+              {/* Header */}
+              <div className="cv-lecture-header">
+                <div className="cv-lecture-label">
+                  Section {currentModuleIndex + 1} · {currentModule?.title} &nbsp;·&nbsp; Lecture {currentTopicIndex + 1}
                 </div>
-                <h3 className="fw-bold mb-0" style={{ color: 'var(--text-primary)', fontSize: '1.4rem' }}>
-                  {currentTopic?.title || 'Lecture Content'}
-                </h3>
+                <h2 className="cv-lecture-title">{currentTopic?.title || 'Lecture Content'}</h2>
               </div>
 
-              {/* Markdown Content Viewer */}
-              <div className="udemy-content-body mb-4">
+              {/* Body */}
+              <div className="cv-lecture-body">
                 <LectureMarkdown
-                  content={currentTopic?.contentMd || currentTopic?.description || 'No lecture content specified.'}
+                  content={currentTopic?.contentMd || currentTopic?.description || 'No lecture content has been added yet.'}
                 />
-              </div>
 
-              {/* Sequential Prev & Next Navigation Buttons */}
-              <div
-                className="course-nav-buttons d-flex justify-content-between align-items-center py-3 my-3 border-top border-bottom"
-                style={{ borderColor: 'var(--border-color)' }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary d-flex align-items-center gap-2 px-3 py-2 rounded-2"
-                  onClick={handlePrevLecture}
-                  disabled={isFirstLecture}
-                >
-                  <FaArrowLeft size={12} />
-                  <span>Previous</span>
-                </button>
+                {/* ── Desktop Inline Navigation ── */}
+                <div className="cv-inline-nav">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary d-flex align-items-center gap-2 px-4 py-2 rounded-3"
+                    onClick={handlePrevLecture}
+                    disabled={isFirstLecture}
+                  >
+                    <FaArrowLeft size={12} /> Previous
+                  </button>
 
-                <button
-                  type="button"
-                  className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-2"
-                  onClick={handleNextLecture}
-                  disabled={isLastLecture}
-                >
-                  <span>Next</span>
-                  <FaArrowRight size={12} />
-                </button>
-              </div>
-
-              {/* ── Bottom Action Bar ── */}
-              <div className="udemy-bottom-actions mt-3">
-                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom pb-3 mb-3" style={{ borderColor: 'var(--border-color)' }}>
                   <div className="d-flex align-items-center gap-2">
-                    <span className="badge px-3 py-2 fw-semibold text-uppercase" style={{ background: 'rgba(var(--bs-primary-rgb), 0.12)', color: 'var(--bs-primary)' }}>
-                      <FaRegFileAlt className="me-1.5" /> Lecture Notes & Takeaways
-                    </span>
-                  </div>
-
-                  {/* Completion & Test CTAs */}
-                  <div className="d-flex gap-2">
                     <button
                       type="button"
-                      className={`btn btn-sm ${isCurrentTopicCompleted ? 'btn-success' : 'btn-outline-success'} d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2`}
+                      className={`btn d-flex align-items-center gap-2 px-3 py-2 rounded-3 ${isCurrentTopicCompleted ? 'btn-success' : 'btn-outline-success'}`}
                       onClick={handleToggleComplete}
                     >
                       <FaCheckCircle size={13} />
@@ -526,45 +470,39 @@ export default function StudentCourses() {
                     {(currentModule?.testId || currentModule?.test || currentModule?.hasTest) && (
                       <button
                         type="button"
-                        className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2"
+                        className="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3"
                         onClick={() => navigate(currentModule?.testId ? `/student/tests?testId=${currentModule.testId}` : '/student/tests')}
                       >
-                        <FaClipboardList size={13} />
-                        <span>Take Module Test</span>
+                        <FaClipboardList size={13} /> Module Test
                       </button>
                     )}
                   </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-3"
+                    onClick={handleNextLecture}
+                    disabled={isLastLecture}
+                  >
+                    Next <FaArrowRight size={12} />
+                  </button>
                 </div>
 
-                <div className="p-3 rounded-3" style={{ backgroundColor: 'var(--card-bg-alt, rgba(0,0,0,0.02))' }}>
-                  <h6 className="fw-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                    Lecture Overview & Key Concepts
-                  </h6>
-                  <p className="small text-muted mb-0" style={{ lineHeight: 1.6 }}>
-                    Complete this lecture, examine all code snippets, and solve the assigned module problems. Mark this lecture complete above to update your course progress tracking.
+                {/* Notes callout */}
+                <div className="cv-notes-section">
+                  <div className="cv-notes-title">📝 Study Notes & Key Takeaways</div>
+                  <p className="cv-notes-text">
+                    Complete this lecture, examine all code snippets, and solve the assigned module problems.
+                    Mark complete above to log your progress and unlock the next section.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR: Sticky Curriculum Navigator (350px) */}
+          {/* ── Right: Desktop Curriculum Sidebar ── */}
           {!isSidebarHidden && (
-            <div className="course-module-sidebar sticky-sidebar-wrapper">
-              <div className="d-flex justify-content-between align-items-center mb-2 px-1 d-none d-lg-flex">
-                <span className="small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>
-                  Curriculum Navigator
-                </span>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-link text-muted p-0 text-decoration-none"
-                  onClick={toggleSidebar}
-                  title="Collapse sidebar"
-                  style={{ fontSize: '0.75rem' }}
-                >
-                  Collapse ✕
-                </button>
-              </div>
+            <aside className="cv-sidebar d-none d-lg-flex flex-column" aria-label="Course curriculum">
               <CurriculumNavigator
                 course={activeCourse}
                 modules={modules}
@@ -579,139 +517,166 @@ export default function StudentCourses() {
                 isOpen={false}
                 onClose={() => {}}
               />
-            </div>
+            </aside>
           )}
 
-          {/* Mobile Drawer (Always accessible via mobile Curriculum button) */}
-          <div className="d-lg-none">
-            <CurriculumNavigator
-              course={activeCourse}
-              modules={modules}
-              currentModuleIndex={currentModuleIndex}
-              currentTopicIndex={currentTopicIndex}
-              expandedSections={expandedSections}
-              onToggleSection={handleToggleSection}
-              onSelectLecture={handleSelectLecture}
-              studentProgress={student?.progress || {}}
-              quizAttempts={student?.quizAttempts || {}}
-              progressPct={activeStats.progressPct}
-              isOpen={mobileDrawerOpen}
-              onClose={() => setMobileDrawerOpen(false)}
-            />
-          </div>
+          {/* ── Mobile Drawer ── */}
+          {mobileDrawerOpen && (
+            <>
+              <div
+                className="cv-drawer-backdrop d-lg-none"
+                onClick={() => setMobileDrawerOpen(false)}
+                aria-hidden="true"
+              />
+              <div
+                className="cv-drawer d-lg-none"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Course curriculum navigator"
+              >
+                <CurriculumNavigator
+                  course={activeCourse}
+                  modules={modules}
+                  currentModuleIndex={currentModuleIndex}
+                  currentTopicIndex={currentTopicIndex}
+                  expandedSections={expandedSections}
+                  onToggleSection={handleToggleSection}
+                  onSelectLecture={handleSelectLecture}
+                  studentProgress={student?.progress || {}}
+                  quizAttempts={student?.quizAttempts || {}}
+                  progressPct={activeStats.progressPct}
+                  isOpen={mobileDrawerOpen}
+                  onClose={() => setMobileDrawerOpen(false)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* ── Mobile Sticky Bottom Dock ── */}
+        <div className="cv-bottom-dock d-lg-none" role="navigation" aria-label="Lecture navigation">
+          <button
+            type="button"
+            className="cv-dock-nav-btn"
+            onClick={handlePrevLecture}
+            disabled={isFirstLecture}
+            aria-label="Previous lecture"
+          >
+            <FaArrowLeft size={12} />
+            <span>Prev</span>
+          </button>
+
+          <button
+            type="button"
+            className={`cv-dock-complete-btn ${isCurrentTopicCompleted ? 'done' : 'active'}`}
+            onClick={handleToggleComplete}
+            aria-pressed={isCurrentTopicCompleted}
+          >
+            <FaCheckCircle size={14} />
+            <span>{isCurrentTopicCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="cv-dock-nav-btn"
+            onClick={handleNextLecture}
+            disabled={isLastLecture}
+            aria-label="Next lecture"
+          >
+            <span>Next</span>
+            <FaArrowRight size={12} />
+          </button>
         </div>
       </div>
     );
   }
 
-  // ═════════════════════════════════════════════════════════════════════════════
-  // VIEW 1: MY COURSES CATALOG HUB (Clean Cards Layout)
-  // ═════════════════════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════
+  // VIEW 1 – MY COURSES HUB
+  // ══════════════════════════════════════════════════════════
   return (
-    <div className="student-courses-hub pb-5 space-y-4">
-      {/* 1. Crisp Clean Header */}
-      <div className="mb-4">
-        <h4 className="fw-bold mb-0 d-flex align-items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <FaBook style={{ color: 'var(--bs-primary)' }} />
-          <span>My Courses</span>
-        </h4>
+    <div className="student-courses-hub pb-5">
+      {/* Header */}
+      <div className="mb-4 d-flex align-items-center gap-2">
+        <FaBook style={{ color: 'var(--bs-primary)', fontSize: '1.1rem' }} />
+        <h4 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>My Courses</h4>
       </div>
 
-      {/* 2. Course Grid - Clean, Spacious Cards */}
       {allAvailableCourses.length === 0 ? (
-        <div className="empty-state">
-          <FaBook size={48} />
-          <h3>No courses enrolled yet</h3>
-          <p>Your cohort has not been assigned any courses yet. Check back once your batch commences.</p>
+        <div className="cv-empty">
+          <FaBook size={48} className="cv-empty-icon" />
+          <div className="cv-empty-title">No Courses Yet</div>
+          <p className="cv-empty-text">Your cohort hasn't been assigned courses yet. Check back once your batch commences.</p>
         </div>
       ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-          {allAvailableCourses.map((course) => {
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+          {allAvailableCourses.map(course => {
             const stats = getCourseStats(course);
             const isCompleted = stats.progressPct === 100;
+            const hasStarted = stats.completedTopics > 0;
 
             return (
               <div key={course.id} className="col d-flex">
-                <div
-                  className="card border rounded-3 shadow-sm w-100 d-flex flex-column transition-all course-catalog-card"
-                  style={{
-                    background: 'var(--card-bg)',
-                    borderColor: 'var(--border-color)',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    overflow: 'hidden'
-                  }}
-                >
-                  {/* Card Header Top Row */}
-                  <div
-                    className="px-3.5 py-2.5 border-bottom d-flex justify-content-end align-items-center"
-                    style={{
-                      background: 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.03)',
-                      borderColor: 'var(--border-color)',
-                      minHeight: '42px'
-                    }}
-                  >
-                    {isCompleted ? (
-                      <span className="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill">
-                        <FaCheck size={10} />
-                        <span>Completed</span>
-                      </span>
-                    ) : stats.completedTopics > 0 ? (
-                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill">
-                        <FaPlay size={9} />
-                        <span>In Progress</span>
-                      </span>
-                    ) : (
-                      <span className="badge bg-secondary-subtle text-muted border border-secondary-subtle d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-pill">
-                        <span>Not Started</span>
-                      </span>
-                    )}
-                  </div>
+                <div className="cv-course-card w-100">
+                  {/* Thumbnail / Placeholder */}
+                  {course.thumbnail ? (
+                    <img
+                      src={course.thumbnail}
+                      alt={course.title}
+                      className="cv-course-thumb"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="cv-course-thumb-placeholder">
+                      <FaBookOpen />
+                    </div>
+                  )}
 
-                  {/* Card Body */}
-                  <div className="p-4 d-flex flex-column flex-grow-1">
-                    <h5 className="fw-bold mb-2 line-clamp-2" style={{ color: 'var(--text-primary)', minHeight: '3rem' }}>
-                      {course.title}
-                    </h5>
-
-                    <p className="text-muted small mb-4 line-clamp-2" style={{ minHeight: '2.5rem' }}>
-                      {course.description}
-                    </p>
-
-                    {/* Progress Bar & Counter */}
-                    <div className="mt-auto mb-4">
-                      <div className="d-flex justify-content-between align-items-center mb-1.5 small">
-                        <span className="text-muted fw-semibold">Progress</span>
-                        <span className="fw-bold" style={{ color: 'var(--bs-primary)' }}>
-                          {stats.progressPct}%
+                  {/* Body */}
+                  <div className="cv-course-body">
+                    {/* Badge row */}
+                    <div className="cv-course-badge-row">
+                      {isCompleted ? (
+                        <span className="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                          <FaCheck size={9} /> Completed
                         </span>
+                      ) : hasStarted ? (
+                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                          <FaPlay size={8} /> In Progress
+                        </span>
+                      ) : (
+                        <span className="badge bg-secondary-subtle text-muted border border-secondary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                          Not Started
+                        </span>
+                      )}
+                    </div>
+
+                    <h5 className="cv-course-title">{course.title}</h5>
+                    <p className="cv-course-desc">{course.description}</p>
+
+                    {/* Progress */}
+                    <div className="cv-course-progress-row">
+                      <div className="cv-course-progress-top">
+                        <span className="cv-course-progress-label">Progress</span>
+                        <span className="cv-course-progress-pct">{stats.progressPct}%</span>
                       </div>
-                      <div className="progress" style={{ height: '7px', backgroundColor: 'var(--hover-bg, rgba(0,0,0,0.06))' }}>
-                        <div
-                          className="progress-bar"
-                          role="progressbar"
-                          style={{
-                            width: `${stats.progressPct}%`,
-                            backgroundColor: 'var(--bs-primary)'
-                          }}
-                          aria-valuenow={stats.progressPct}
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                        />
+                      <div className="cv-course-progress-bar">
+                        <div className="cv-course-progress-fill" style={{ width: `${stats.progressPct}%` }} />
                       </div>
-                      <div className="d-flex justify-content-between text-muted mt-1.5" style={{ fontSize: '0.75rem' }}>
+                      <div className="cv-course-progress-sub">
                         <span>{stats.completedTopics} of {stats.totalTopics} lectures</span>
                         <span>{stats.totalModules} sections</span>
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* CTA */}
                     <button
                       type="button"
-                      className="btn btn-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-2"
+                      className="cv-course-action-btn"
                       onClick={() => handleSelectCourse(course.id)}
                     >
                       <FaPlay size={11} />
-                      <span>{stats.completedTopics > 0 ? 'Continue Learning' : 'Start Course'}</span>
+                      <span>{hasStarted ? 'Continue Learning' : 'Start Course'}</span>
                     </button>
                   </div>
                 </div>

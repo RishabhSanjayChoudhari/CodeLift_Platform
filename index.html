@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark-emerald" data-bs-theme="dark" data-theme-mode="dark">
+<html lang="en" data-theme="dark-nebula" data-bs-theme="dark" data-theme-mode="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./logo.png" />
@@ -17,7 +17,7 @@
             'dark-emerald', 'dark-nebula', 'dark-carbon',
             'ocean-blue', 'royal-indigo', 'sunset-orange', 'rose-pink',
             'amethyst-purple', 'teal-wave', 'crimson-red', 'graphite-grey',
-            'midnight-emerald', 'nebula-night', 'carbon-black'
+            'midnight-emerald', 'nebula', 'nebula-night', 'carbon-black'
           ];
           var aliases = {
             'ocean-blue': 'navy-blue',
@@ -29,6 +29,7 @@
             'crimson-red': 'dark-green',
             'graphite-grey': 'neutral',
             'midnight-emerald': 'dark-emerald',
+            'nebula': 'dark-nebula',
             'nebula-night': 'dark-nebula',
             'carbon-black': 'dark-carbon'
           };
@@ -36,8 +37,8 @@
           var theme = m ? decodeURIComponent(m[1]) : null;
           if (!theme) theme = localStorage.getItem('codelift_theme');
           if (theme && aliases[theme]) theme = aliases[theme];
-          if (!theme || themes.indexOf(theme) === -1) theme = 'dark-emerald';
-          var isDark = theme.indexOf('dark') !== -1 || theme === 'midnight-emerald' || theme === 'nebula-night' || theme === 'carbon-black';
+          if (!theme || themes.indexOf(theme) === -1) theme = 'dark-nebula';
+          var isDark = theme.indexOf('dark') !== -1 || theme === 'midnight-emerald' || theme === 'nebula-night' || theme === 'carbon-black' || theme === 'nebula';
           var mode = isDark ? 'dark' : 'light';
           document.documentElement.setAttribute('data-theme', theme);
           document.documentElement.setAttribute('data-bs-theme', mode);
@@ -51,7 +52,7 @@
       })();
     </script>
   </head>
-  <body data-theme="dark-emerald" data-bs-theme="dark" data-theme-mode="dark">
+  <body data-theme="dark-nebula" data-bs-theme="dark" data-theme-mode="dark">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

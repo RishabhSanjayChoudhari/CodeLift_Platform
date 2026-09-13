@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { Link } from 'react-router-dom';
-import { FaBook, FaClipboardList, FaFileAlt, FaMoneyBillWave, FaCertificate, FaArrowRight, FaCheckCircle, FaCopy } from 'react-icons/fa';
+import { FaBook, FaClipboardList, FaFileAlt, FaMoneyBillWave, FaCertificate, FaArrowRight, FaCheckCircle, FaCopy, FaCode } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 function progressPercent(student, courses, batch) {
@@ -43,7 +43,19 @@ function StatCard({ icon, label, value, color, to }) {
 
 export default function StudentDashboard() {
   const { auth } = useAuth();
-  const { students, batches, completedBatches = [], assignments, submissions, testAttempts, certificates, courses, getBatchHistory } = useData();
+  const { 
+    students, 
+    batches, 
+    completedBatches = [], 
+    assignments, 
+    submissions, 
+    testAttempts, 
+    certificates, 
+    courses, 
+    codingProblems = [], 
+    codingAttempts = [], 
+    getBatchHistory 
+  } = useData();
 
   const student = Array.isArray(students) ? students.find(s => s.id === auth?.studentId) : null;
   const batch = Array.isArray(batches) ? batches.find(b => b.id === student?.batchId) : null;
@@ -66,6 +78,9 @@ export default function StudentDashboard() {
   const mySubmissions = Array.isArray(submissions) ? submissions.filter(s => s?.studentId === student?.id) : [];
   const myAttempts = Array.isArray(testAttempts) ? testAttempts.filter(a => a?.studentId === student?.id) : [];
   const myCerts = Array.isArray(certificates) ? certificates.filter(c => c?.studentId === student?.id) : [];
+
+  const myCodingAttempts = Array.isArray(codingAttempts) ? codingAttempts.filter(a => a?.studentId === student?.id) : [];
+  const solvedCodingProblems = (codingProblems || []).filter(p => myCodingAttempts.some(a => a.problemId === p.id && a.passed));
 
   const progress = progressPercent(student, courses, batch);
 
@@ -149,16 +164,19 @@ export default function StudentDashboard() {
 
       {/* Quick Stats */}
       <div className="dashboard-kpi-grid row g-3 mb-4">
-        <div className="col-12 col-md-3">
+        <div className="col-12 col-sm-6 col-lg">
           <StatCard icon={<FaClipboardList />} label="Total Assignments" value={myAssignments.length} color="#15803D" to="/student/assignments" />
         </div>
-        <div className="col-12 col-md-3">
+        <div className="col-12 col-sm-6 col-lg">
           <StatCard icon={<FaCheckCircle />} label="Submitted" value={mySubmissions.length} color="#1d4ed8" to="/student/assignments" />
         </div>
-        <div className="col-12 col-md-3">
+        <div className="col-12 col-sm-6 col-lg">
+          <StatCard icon={<FaCode />} label="Code Arena Solved" value={`${solvedCodingProblems.length}/${codingProblems.length}`} color="#059669" to="/student/arena" />
+        </div>
+        <div className="col-12 col-sm-6 col-lg">
           <StatCard icon={<FaFileAlt />} label="Tests Taken" value={myAttempts.length} color="#6d28d9" to="/student/tests" />
         </div>
-        <div className="col-12 col-md-3">
+        <div className="col-12 col-sm-6 col-lg">
           <StatCard icon={<FaCertificate />} label="Certificates" value={myCerts.length} color="#d97706" to="/student/certificates" />
         </div>
       </div>
@@ -305,6 +323,7 @@ export default function StudentDashboard() {
               <div className="d-flex flex-column gap-2">
                 {[
                   { to: '/student/courses', icon: <FaBook />, label: 'Continue Learning', sub: `${progress}% complete`, color: '#15803D' },
+                  { to: '/student/arena', icon: <FaCode />, label: 'Code Arena', sub: `${solvedCodingProblems.length}/${codingProblems.length} solved`, color: '#059669' },
                   { to: '/student/assignments', icon: <FaClipboardList />, label: 'View Assignments', sub: `${Math.max(0, myAssignments.length - mySubmissions.length)} pending`, color: '#1d4ed8' },
                   { to: '/student/tests', icon: <FaFileAlt />, label: 'Take a Test', sub: `${myAttempts.length} completed`, color: '#6d28d9' },
                   { to: '/student/certificates', icon: <FaCertificate />, label: 'My Certificates', sub: `${myCerts.length} earned`, color: '#d97706' },

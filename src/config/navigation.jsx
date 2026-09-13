@@ -17,7 +17,8 @@ import {
   FiDatabase,
   FiBookOpen,
   FiCheckSquare,
-  FiCreditCard
+  FiCreditCard,
+  FiCode
 } from 'react-icons/fi';
 
 export const ADMIN_NAV_ITEMS = [
@@ -25,6 +26,7 @@ export const ADMIN_NAV_ITEMS = [
   { id: 'batches', to: '/admin/batches', route: '/admin/batches', icon: <FiLayers />, label: 'Batches' },
   { id: 'students', to: '/admin/students', route: '/admin/students', icon: <FiUsers />, label: 'Students' },
   { id: 'courses', to: '/admin/courses', route: '/admin/courses', icon: <FiBook />, label: 'Courses' },
+  { id: 'problems', to: '/admin/problems', route: '/admin/problems', icon: <FiCode />, label: 'Code Arena' },
   { id: 'tests', to: '/admin/tests', route: '/admin/tests', icon: <FiFileText />, label: 'Test Manager' },
   { id: 'test-submissions', to: '/admin/test-submissions', route: '/admin/test-submissions', icon: <FiUpload />, label: 'Test Submissions' },
   { id: 'assignments', to: '/admin/assignments', route: '/admin/assignments', icon: <FiClipboard />, label: 'Assignments' },
@@ -40,6 +42,7 @@ export const ADMIN_NAV_ITEMS = [
 export const STUDENT_NAV_ITEMS = [
   { to: '/student/dashboard', icon: <FiHome />, label: 'Dashboard' },
   { to: '/student/courses', icon: <FiBookOpen />, label: 'My Courses' },
+  { to: '/student/arena', icon: <FiCode />, label: 'Code Arena' },
   { to: '/student/tests', icon: <FiFileText />, label: 'Tests' },
   { to: '/student/assignments', icon: <FiCheckSquare />, label: 'Assignments' },
   { to: '/student/certificates', icon: <FiAward />, label: 'Certificates' },
