@@ -4,61 +4,195 @@
    ========================================================================== */
 
 /* ─── Hero Key Metrics & Trust Ribbon ─────────────────────────────── */
+@keyframes metric-shimmer {
+  0%   { transform: translateX(-120%) skewX(-15deg); }
+  100% { transform: translateX(220%) skewX(-15deg); }
+}
+
 .cl-hero-metrics-ribbon {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 14px;
   margin-top: 36px;
 }
 
+/* Base card */
 .cl-hero-metric-item {
-  background: color-mix(in srgb, var(--card-bg, #ffffff) 85%, transparent);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  gap: 14px;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease;
+  cursor: default;
+
+  /* Default dark-glass base */
+  background: color-mix(in srgb, var(--card-bg, #0f172a) 70%, transparent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
-.cl-hero-metric-item:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 35%, var(--border-color));
+/* Top accent line */
+.cl-hero-metric-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1.5px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
+/* Shimmer sweep */
+.cl-hero-metric-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.cl-hero-metric-item:hover::after {
+  opacity: 1;
+  animation: metric-shimmer 0.6s ease forwards;
+}
+
+/* ── Per-card accent colors ── */
+
+/* Card 1 – Teal (Challenges) */
+.cl-hero-metric-item:nth-child(1) {
+  border-color: rgba(20, 184, 166, 0.30);
+  background: linear-gradient(135deg,
+    rgba(20, 184, 166, 0.08) 0%,
+    color-mix(in srgb, var(--card-bg, #0f172a) 75%, transparent) 100%);
+}
+.cl-hero-metric-item:nth-child(1):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(20, 184, 166, 0.22),
+              0 2px 8px rgba(0, 0, 0, 0.18);
+  border-color: rgba(20, 184, 166, 0.55);
+}
+.cl-hero-metric-item:nth-child(1) .cl-hero-metric-icon {
+  background: radial-gradient(circle at 30% 30%, rgba(20, 184, 166, 0.35), rgba(20, 184, 166, 0.10));
+  color: #14b8a6;
+  box-shadow: 0 0 14px rgba(20, 184, 166, 0.30);
+}
+.cl-hero-metric-item:nth-child(1) .cl-hero-metric-title { color: #99f6e4; }
+
+/* Card 2 – Violet (Mentorship) */
+.cl-hero-metric-item:nth-child(2) {
+  border-color: rgba(139, 92, 246, 0.30);
+  background: linear-gradient(135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    color-mix(in srgb, var(--card-bg, #0f172a) 75%, transparent) 100%);
+}
+.cl-hero-metric-item:nth-child(2):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(139, 92, 246, 0.22),
+              0 2px 8px rgba(0, 0, 0, 0.18);
+  border-color: rgba(139, 92, 246, 0.55);
+}
+.cl-hero-metric-item:nth-child(2) .cl-hero-metric-icon {
+  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.35), rgba(139, 92, 246, 0.10));
+  color: #8b5cf6;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.30);
+}
+.cl-hero-metric-item:nth-child(2) .cl-hero-metric-title { color: #ddd6fe; }
+
+/* Card 3 – Amber (Capstone) */
+.cl-hero-metric-item:nth-child(3) {
+  border-color: rgba(245, 158, 11, 0.30);
+  background: linear-gradient(135deg,
+    rgba(245, 158, 11, 0.08) 0%,
+    color-mix(in srgb, var(--card-bg, #0f172a) 75%, transparent) 100%);
+}
+.cl-hero-metric-item:nth-child(3):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(245, 158, 11, 0.22),
+              0 2px 8px rgba(0, 0, 0, 0.18);
+  border-color: rgba(245, 158, 11, 0.55);
+}
+.cl-hero-metric-item:nth-child(3) .cl-hero-metric-icon {
+  background: radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.35), rgba(245, 158, 11, 0.10));
+  color: #f59e0b;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.30);
+}
+.cl-hero-metric-item:nth-child(3) .cl-hero-metric-title { color: #fde68a; }
+
+/* Card 4 – Emerald (Certs) */
+.cl-hero-metric-item:nth-child(4) {
+  border-color: rgba(16, 185, 129, 0.30);
+  background: linear-gradient(135deg,
+    rgba(16, 185, 129, 0.08) 0%,
+    color-mix(in srgb, var(--card-bg, #0f172a) 75%, transparent) 100%);
+}
+.cl-hero-metric-item:nth-child(4):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(16, 185, 129, 0.22),
+              0 2px 8px rgba(0, 0, 0, 0.18);
+  border-color: rgba(16, 185, 129, 0.55);
+}
+.cl-hero-metric-item:nth-child(4) .cl-hero-metric-icon {
+  background: radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.35), rgba(16, 185, 129, 0.10));
+  color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.30);
+}
+.cl-hero-metric-item:nth-child(4) .cl-hero-metric-title { color: #a7f3d0; }
+
+/* ── Shared icon shell ── */
 .cl-hero-metric-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--bs-primary, #15803d) 14%, transparent);
-  color: var(--bs-primary, #15803d);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+.cl-hero-metric-item:hover .cl-hero-metric-icon {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+/* ── Text ── */
 .cl-hero-metric-text {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .cl-hero-metric-title {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 800;
-  color: var(--text-primary, #ffffff);
-  line-height: 1.2;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .cl-hero-metric-sub {
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   color: var(--text-secondary, #94a3b8);
   font-weight: 500;
+  line-height: 1.3;
 }
 
 /* ─── Cohort Category Quick Filter Chips ───────────────────────────── */
@@ -206,22 +340,24 @@
   }
 
   .cl-hero-metric-item {
-    padding: 10px 12px;
-    gap: 8px;
+    padding: 11px 13px;
+    gap: 10px;
+    border-radius: 14px;
   }
 
   .cl-hero-metric-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     font-size: 0.85rem;
   }
 
   .cl-hero-metric-title {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
   }
 
   .cl-hero-metric-sub {
-    font-size: 0.65rem;
+    font-size: 0.66rem;
   }
 
   .cl-cohort-img-wrap {

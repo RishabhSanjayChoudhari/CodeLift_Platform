@@ -91,48 +91,7 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Hero Key Metrics Ribbon */}
-              <div className="cl-hero-metrics-ribbon">
-                <div className="cl-hero-metric-item">
-                  <div className="cl-hero-metric-icon">
-                    <FaLaptopCode />
-                  </div>
-                  <div className="cl-hero-metric-text">
-                    <span className="cl-hero-metric-title">50+ Challenges</span>
-                    <span className="cl-hero-metric-sub">Interactive Problem Arena</span>
-                  </div>
-                </div>
 
-                <div className="cl-hero-metric-item">
-                  <div className="cl-hero-metric-icon">
-                    <FaChalkboardTeacher />
-                  </div>
-                  <div className="cl-hero-metric-text">
-                    <span className="cl-hero-metric-title">1:1 Mentorship</span>
-                    <span className="cl-hero-metric-sub">Live Code Reviews</span>
-                  </div>
-                </div>
-
-                <div className="cl-hero-metric-item">
-                  <div className="cl-hero-metric-icon">
-                    <FaCheckCircle />
-                  </div>
-                  <div className="cl-hero-metric-text">
-                    <span className="cl-hero-metric-title">Capstone Projects</span>
-                    <span className="cl-hero-metric-sub">Production Deployments</span>
-                  </div>
-                </div>
-
-                <div className="cl-hero-metric-item">
-                  <div className="cl-hero-metric-icon">
-                    <FaCertificate />
-                  </div>
-                  <div className="cl-hero-metric-text">
-                    <span className="cl-hero-metric-title">Verified Certs</span>
-                    <span className="cl-hero-metric-sub">Industry Recognized</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Right side empty on desktop — radar stage occupies visually */}

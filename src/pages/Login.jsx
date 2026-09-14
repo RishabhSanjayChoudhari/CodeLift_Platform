@@ -328,8 +328,7 @@ export default function Login() {
                   <div className="fw-semibold small mb-1">Simple &amp; Instant Reset</div>
                   <div className="small" style={{ color: 'var(--text-muted, #64748b)' }}>
                     Confirm your email below. Your admin will be notified instantly on WhatsApp and
-                    will reset your password to{' '}
-                    <strong className="font-monospace text-warning">codelift123</strong>.
+                    will reset your password.
                   </div>
                 </div>
               </div>
