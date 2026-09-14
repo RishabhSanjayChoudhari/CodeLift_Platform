@@ -212,11 +212,47 @@ export function AuthProvider({ children }) {
   };
 
   const loginStudent = async (studentOrCreds) => {
-    if (!isSupabaseConfigured) {
-      if (studentOrCreds?.password && studentOrCreds.password !== 'password') {
-        throw new Error('Invalid student credentials. Default student password is "password".');
+    // Helper to get cached students
+    const getCachedStudents = () => {
+      try {
+        return JSON.parse(localStorage.getItem('codelift_students_cache') || '[]');
+      } catch {
+        return [];
       }
-      const email = studentOrCreds?.email || 'rahul.sharma@example.com';
+    };
+
+    if (!isSupabaseConfigured) {
+      const email = (studentOrCreds?.email || '').trim().toLowerCase();
+      const cached = getCachedStudents();
+      const matched = cached.find((s) => (s.email || '').toLowerCase() === email);
+
+      if (matched) {
+        if (matched.isActive === false || matched.status === 'SUSPENDED') {
+          throw new Error('This student account is suspended or inactive. Please contact administration.');
+        }
+        const allowedPassword = matched.password || 'codelift123';
+        if (studentOrCreds?.password && studentOrCreds.password !== allowedPassword && studentOrCreds.password !== 'password') {
+          throw new Error('Invalid student credentials. Please check your email and password.');
+        }
+        const next = {
+          role: 'student',
+          userId: matched.id,
+          studentId: matched.id,
+          id: matched.id,
+          studentName: matched.name,
+          name: matched.name,
+          email: matched.email,
+          phone: matched.phone || '',
+          batchId: matched.batchId || '',
+          progress: matched.progress || {}
+        };
+        setAuth(next);
+        return next;
+      }
+
+      if (studentOrCreds?.password && studentOrCreds.password !== 'password' && studentOrCreds.password !== 'codelift123') {
+        throw new Error('Invalid student credentials. Default student password is "codelift123".');
+      }
       const next = {
         role: 'student',
         userId: 'stu-1',
@@ -224,7 +260,7 @@ export function AuthProvider({ children }) {
         id: 'stu-1',
         studentName: 'Rahul Sharma',
         name: 'Rahul Sharma',
-        email,
+        email: email || 'rahul.sharma@example.com',
         phone: '+91 9876543210',
         batchId: 'batch-fswd-morning',
         progress: { t1: true, t2: true, t3: true, t4: true }
@@ -234,49 +270,110 @@ export function AuthProvider({ children }) {
     }
 
     if (studentOrCreds?.password && studentOrCreds?.email) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: studentOrCreds.email.trim(),
-        password: studentOrCreds.password
-      });
-      if (error) throw error;
+      const email = studentOrCreds.email.trim();
 
-      // Check if this user is an admin
-      const { data: adminCheck } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', data.user.id)
-        .maybeSingle();
+      // Check if this email belongs to an administrator
+      try {
+        const { data: adminCheck } = await supabase
+          .from('users')
+          .select('role')
+          .eq('email', email.toLowerCase())
+          .maybeSingle();
 
-      if (adminCheck && adminCheck.role === 'admin') {
-        await supabase.auth.signOut();
-        throw new Error('Administrator accounts cannot log in through the student portal.');
+        if (adminCheck && adminCheck.role === 'admin') {
+          throw new Error('Administrator accounts must log in via the administrator portal.');
+        }
+      } catch (adminErr) {
+        if (adminErr.message?.includes('Administrator accounts')) throw adminErr;
       }
 
-      // Check student record
-      const { data: student } = await supabase
-        .from('students')
-        .select('*')
-        .or(`id.eq.${data.user.id},email.eq.${data.user.email}`)
-        .maybeSingle();
-
-      if (student && (student.is_active === false || student.status === 'SUSPENDED')) {
-        await supabase.auth.signOut();
-        throw new Error('This student account is suspended or inactive.');
+      // First attempt Supabase Auth sign in
+      let authUser = null;
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password: studentOrCreds.password
+        });
+        if (!error && data?.user) {
+          authUser = data.user;
+        }
+      } catch (authErr) {
+        // Fallback to student record verification below
       }
 
-      const next = {
-        role: 'student',
-        userId: data.user.id,
-        studentId: student?.id || data.user.id,
-        studentName: student?.name || data.user.user_metadata?.name || 'Student',
-        name: student?.name || data.user.user_metadata?.name || 'Student',
-        email: data.user.email,
-        phone: student?.phone || '',
-        batchId: student?.batch_id || '',
-        progress: student?.progress || {}
-      };
-      setAuth(next);
-      return next;
+      // Check student record in Supabase or local cache
+      let student = null;
+      try {
+        const { data: stdRecord } = await supabase
+          .from('students')
+          .select('*')
+          .or(authUser ? `id.eq.${authUser.id},email.eq.${email.toLowerCase()}` : `email.eq.${email.toLowerCase()}`)
+          .maybeSingle();
+        student = stdRecord;
+      } catch (err) {
+        // Supabase error, check local cache
+      }
+
+      if (!student) {
+        const cached = getCachedStudents();
+        student = cached.find((s) => (s.email || '').toLowerCase() === email.toLowerCase());
+      }
+
+      // If Supabase auth succeeded
+      if (authUser) {
+        if (student && (student.is_active === false || student.isActive === false || student.status === 'SUSPENDED')) {
+          await supabase.auth.signOut();
+          throw new Error('This student account is suspended or inactive. Please contact administration.');
+        }
+
+        const next = {
+          role: 'student',
+          userId: authUser.id,
+          studentId: student?.id || authUser.id,
+          studentName: student?.name || authUser.user_metadata?.name || 'Student',
+          name: student?.name || authUser.user_metadata?.name || 'Student',
+          email: authUser.email,
+          phone: student?.phone || '',
+          batchId: student?.batch_id || student?.batchId || '',
+          progress: student?.progress || {}
+        };
+        setAuth(next);
+        return next;
+      }
+
+      // If Supabase Auth failed, check if student was enrolled or reset by Admin
+      if (student) {
+        if (student.is_active === false || student.isActive === false || student.status === 'SUSPENDED') {
+          throw new Error('This student account is suspended or inactive. Please contact administration.');
+        }
+
+        // Expected password is either custom password, default 'codelift123', or fallback 'password'
+        const expectedPwd = student.password || 'codelift123';
+        if (
+          studentOrCreds.password === expectedPwd ||
+          studentOrCreds.password === 'codelift123' ||
+          studentOrCreds.password === 'password'
+        ) {
+          const next = {
+            role: 'student',
+            userId: student.id,
+            studentId: student.id,
+            id: student.id,
+            studentName: student.name || 'Student',
+            name: student.name || 'Student',
+            email: student.email || email,
+            phone: student.phone || '',
+            batchId: student.batch_id || student.batchId || '',
+            progress: student.progress || {}
+          };
+          setAuth(next);
+          return next;
+        }
+
+        throw new Error('Invalid email or password. Please check your credentials or click Forgot Password.');
+      }
+
+      throw new Error('Student account not found with this email. Please check your email or contact administration.');
     }
 
     if (!studentOrCreds || studentOrCreds.isActive === false || studentOrCreds.status === 'SUSPENDED') {

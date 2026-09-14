@@ -1,0 +1,248 @@
+/* ==========================================================================
+   HomeElevated.css – Top-Notch Modern Home Page Styling
+   Theme-adaptive, responsive metrics ribbon, enhanced cohort cards
+   ========================================================================== */
+
+/* ─── Hero Key Metrics & Trust Ribbon ─────────────────────────────── */
+.cl-hero-metrics-ribbon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.cl-hero-metric-item {
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 85%, transparent);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-hero-metric-item:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 35%, var(--border-color));
+}
+
+.cl-hero-metric-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 14%, transparent);
+  color: var(--bs-primary, #15803d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.cl-hero-metric-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.cl-hero-metric-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary, #ffffff);
+  line-height: 1.2;
+}
+
+.cl-hero-metric-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+}
+
+/* ─── Cohort Category Quick Filter Chips ───────────────────────────── */
+.cl-cohort-filter-pills {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.cl-cohort-filter-pill {
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 90%, transparent);
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cl-cohort-filter-pill:hover {
+  border-color: var(--bs-primary, #15803d);
+  color: var(--text-primary, #ffffff);
+}
+
+.cl-cohort-filter-pill.active {
+  background: var(--bs-primary, #15803d);
+  border-color: var(--bs-primary, #15803d);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bs-primary, #15803d) 35%, transparent);
+}
+
+/* ─── Elevated Cohort Cards ────────────────────────────────────────── */
+.cl-cohort-card-elevated {
+  background: var(--card-bg, #ffffff);
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  border-radius: 22px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cl-cohort-card-elevated:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 40%, var(--border-color));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+.cl-cohort-img-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.cl-cohort-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cl-cohort-card-elevated:hover .cl-cohort-img {
+  transform: scale(1.04);
+}
+
+.cl-cohort-badge-live {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cl-cohort-price-tag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.cl-cohort-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.cl-cohort-feature-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cl-cohort-feature-bullet {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cl-cohort-feature-bullet svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* ─── Responsive Queries ───────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .cl-hero-metrics-ribbon {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cl-hero-metrics-ribbon {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .cl-hero-metric-item {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .cl-hero-metric-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .cl-hero-metric-title {
+    font-size: 0.78rem;
+  }
+
+  .cl-hero-metric-sub {
+    font-size: 0.65rem;
+  }
+
+  .cl-cohort-img-wrap {
+    height: 180px;
+  }
+
+  .cl-cohort-body {
+    padding: 18px;
+  }
+
+  .cl-cohort-filter-pills {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cl-cohort-filter-pill {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    padding: 6px 14px;
+  }
+}

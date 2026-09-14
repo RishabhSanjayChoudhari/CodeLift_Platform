@@ -69,7 +69,7 @@ export default function CourseCatalog() {
   const electiveCount = allPublished.filter(c => c.courseType !== 'cohort' && !c.isCohort).length;
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-body, #f8fafc)', minHeight: '100vh' }}>
+    <div className="cl-marketplace-page">
       <SEO
         title="Curricula & Course Marketplace"
         description="Browse high-impact cohort bootcamps and specialized modular electives in Full Stack Web, Python, Data Analytics, and Software Engineering."
@@ -350,7 +350,7 @@ export default function CourseCatalog() {
                         <Link
                           to={`/courses/${c.slug || c.id}`}
                           className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold btn-sm py-2 d-inline-flex align-items-center justify-content-center"
-                          style={{ fontSize: '0.82rem', minHeight: '40px' }}
+                          style={{ fontSize: '0.84rem', minHeight: '44px' }}
                         >
                           View Details
                         </Link>
@@ -361,12 +361,13 @@ export default function CourseCatalog() {
                             background: '#25D366',
                             borderColor: '#25D366',
                             color: '#ffffff',
-                            minHeight: '40px'
+                            fontSize: '0.84rem',
+                            minHeight: '44px'
                           }}
                           onClick={() => setSelectedCourseForEnroll(c)}
                           title="Enroll via WhatsApp"
                         >
-                          <FaWhatsapp size={14} />
+                          <FaWhatsapp size={15} />
                           <span>Enroll</span>
                         </button>
                       </div>

@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowRight, FaStar, FaUserGraduate, FaGraduationCap, FaBookOpen, FaWhatsapp } from 'react-icons/fa';
+import {
+  FaArrowRight,
+  FaStar,
+  FaUserGraduate,
+  FaGraduationCap,
+  FaBookOpen,
+  FaWhatsapp,
+  FaLaptopCode,
+  FaChalkboardTeacher,
+  FaCertificate,
+  FaCheckCircle
+} from 'react-icons/fa';
 import InstituteNavbar from '../components/common/InstituteNavbar';
 import HomeRadar from '../components/common/HomeRadar';
 import RadarRings from '../components/common/RadarRings';
@@ -8,10 +19,12 @@ import ContactHub from '../components/home/ContactHub';
 import FloatingWhatsApp from '../components/common/FloatingWhatsApp';
 import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import { useData } from '../contexts/DataContext';
+import '../styles/HomeElevated.css';
 
 export default function Home() {
   const { courses } = useData();
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState(null);
+  const [selectedCohortTrack, setSelectedCohortTrack] = useState('all');
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
@@ -25,12 +38,23 @@ export default function Home() {
   };
 
   // Highlight strictly published cohort bootcamps on the homepage
-  const cohortCourses = (courses || []).filter(
+  const allCohorts = (courses || []).filter(
     (c) =>
       c.isPublished !== false &&
       c.isApproved !== false &&
       (c.courseType === 'cohort' || c.isCohort === true)
   );
+
+  // Filter cohorts by selected track
+  const filteredCohorts = allCohorts.filter((c) => {
+    if (selectedCohortTrack === 'all') return true;
+    const cat = (c.categoryId || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    if (selectedCohortTrack === 'web') return cat.includes('web') || title.includes('full') || title.includes('react');
+    if (selectedCohortTrack === 'python') return cat.includes('python') || title.includes('python') || title.includes('ai');
+    if (selectedCohortTrack === 'data') return cat.includes('data') || title.includes('data') || title.includes('sql');
+    return true;
+  });
 
   return (
     <>
@@ -48,16 +72,14 @@ export default function Home() {
                 <span>Admissions Open • 2026 Live Cohorts</span>
               </div>
               <h1 className="mb-3 mb-md-4">
-                Where Ambition Meets{' '}
+                Learn{' '}
                 <span className="highlight">
-                  Expertise
-                </span>{' '}
-                — Master Full-Stack &amp; Data Analytics
+                  -{' '}Build{' '}-
+                </span>{' '}  Grow
               </h1>
 
               <p className="lead-text mb-4" style={{ color: 'var(--text-secondary)' }}>
-                Join an elite community of ambitious learners. Hands-on coding, production-grade
-                projects, and personalized 1-on-1 mentorship from industry engineers.
+                Join our community and begin your journey to success. Hands-on coding, production-grade projects, and 1-on-1 mentorship.
               </p>
 
               <div className="d-flex flex-wrap gap-3 cl-hero-cta-group">
@@ -67,6 +89,49 @@ export default function Home() {
                 <button className="btn-visit" onClick={() => scrollTo('contact')}>
                   Talk to a Counselor
                 </button>
+              </div>
+
+              {/* Hero Key Metrics Ribbon */}
+              <div className="cl-hero-metrics-ribbon">
+                <div className="cl-hero-metric-item">
+                  <div className="cl-hero-metric-icon">
+                    <FaLaptopCode />
+                  </div>
+                  <div className="cl-hero-metric-text">
+                    <span className="cl-hero-metric-title">50+ Challenges</span>
+                    <span className="cl-hero-metric-sub">Interactive Problem Arena</span>
+                  </div>
+                </div>
+
+                <div className="cl-hero-metric-item">
+                  <div className="cl-hero-metric-icon">
+                    <FaChalkboardTeacher />
+                  </div>
+                  <div className="cl-hero-metric-text">
+                    <span className="cl-hero-metric-title">1:1 Mentorship</span>
+                    <span className="cl-hero-metric-sub">Live Code Reviews</span>
+                  </div>
+                </div>
+
+                <div className="cl-hero-metric-item">
+                  <div className="cl-hero-metric-icon">
+                    <FaCheckCircle />
+                  </div>
+                  <div className="cl-hero-metric-text">
+                    <span className="cl-hero-metric-title">Capstone Projects</span>
+                    <span className="cl-hero-metric-sub">Production Deployments</span>
+                  </div>
+                </div>
+
+                <div className="cl-hero-metric-item">
+                  <div className="cl-hero-metric-icon">
+                    <FaCertificate />
+                  </div>
+                  <div className="cl-hero-metric-text">
+                    <span className="cl-hero-metric-title">Verified Certs</span>
+                    <span className="cl-hero-metric-sub">Industry Recognized</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -97,7 +162,7 @@ export default function Home() {
       {/* 3. COURSES SECTION (COHORTS ONLY) */}
       <section id="courses" className="py-4 py-md-5" style={{ background: 'var(--bg-body)' }}>
         <div className="container py-2 py-md-4">
-          <div className="text-center mb-4 mb-md-5">
+          <div className="text-center mb-4 mb-md-4">
             <div
               className="cl-section-label"
               style={{
@@ -124,43 +189,66 @@ export default function Home() {
             <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '640px', fontSize: '0.96rem' }}>
               Master high-impact skills with our intensive, mentor-led cohort bootcamps featuring live problem solving, production deployments, and career placement guidance.
             </p>
+
+            {/* Quick Track Filter Pills */}
+            <div className="cl-cohort-filter-pills">
+              {[
+                { id: 'all', label: `All Cohorts (${allCohorts.length})` },
+                { id: 'web', label: 'Full-Stack Web' },
+                { id: 'python', label: 'Python & AI' },
+                { id: 'data', label: 'Data Analytics' }
+              ].map((pill) => (
+                <button
+                  key={pill.id}
+                  type="button"
+                  className={`cl-cohort-filter-pill ${selectedCohortTrack === pill.id ? 'active' : ''}`}
+                  onClick={() => setSelectedCohortTrack(pill.id)}
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Courses Grid */}
-          {cohortCourses.length === 0 ? (
+          {filteredCohorts.length === 0 ? (
             <div
               className="text-center py-5 rounded-4 border"
               style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
             >
               <FaBookOpen className="text-muted fs-1 mb-3 opacity-50" />
               <h5 className="fw-bold" style={{ color: 'var(--text-primary)' }}>
-                No active cohorts available
+                No active cohorts found for this track
               </h5>
-              <p className="text-secondary">Check back soon for upcoming cohort batch registrations.</p>
+              <p className="text-secondary mb-3">Explore all available cohorts or check back for upcoming batch dates.</p>
+              <button
+                type="button"
+                className="btn btn-outline-success rounded-pill px-4 fw-bold btn-sm"
+                onClick={() => setSelectedCohortTrack('all')}
+              >
+                View All Cohorts
+              </button>
             </div>
           ) : (
             <div className="row g-4">
-              {cohortCourses.map((c) => (
+              {filteredCohorts.map((c) => (
                 <div key={c.id} className="col-md-6 col-lg-4">
-                  <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cl-home-course-card">
-                    {/* Thumbnail & Clean Badges */}
-                    <div className="position-relative">
+                  <div className="cl-cohort-card-elevated">
+                    {/* Thumbnail & Badges */}
+                    <div className="cl-cohort-img-wrap">
                       <img
                         src={
                           c.thumbnail ||
                           'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600'
                         }
                         alt={c.title}
-                        className="card-img-top"
-                        style={{ height: 190, objectFit: 'cover' }}
+                        className="cl-cohort-img"
                       />
-                      <div className="position-absolute top-0 start-0 m-3">
-                        <span className="cl-card-cohort-pill">
-                          Live Cohort
-                        </span>
+                      <div className="cl-cohort-badge-live">
+                        <span className="live-dot" /> Live Cohort
                       </div>
                       <span
-                        className={`position-absolute top-0 end-0 m-3 badge rounded-pill cl-card-price-pill shadow-sm ${
+                        className={`badge rounded-pill cl-cohort-price-tag ${
                           c.isFree || c.price === 0 ? 'bg-success text-white' : 'bg-primary text-white'
                         }`}
                       >
@@ -169,7 +257,7 @@ export default function Home() {
                     </div>
 
                     {/* Card Body */}
-                    <div className="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
+                    <div className="cl-cohort-body">
                       <div>
                         <div className="d-flex align-items-center justify-content-between mb-2">
                           <span className="cl-course-category-tag">
@@ -186,8 +274,8 @@ export default function Home() {
                         </div>
 
                         <h5
-                          className="card-title fw-bold mb-2"
-                          style={{ fontSize: '1.08rem', minHeight: '2.6rem' }}
+                          className="fw-bold mb-2"
+                          style={{ fontSize: '1.12rem', minHeight: '2.8rem', lineHeight: 1.35 }}
                         >
                           <Link
                             to={`/courses/${c.slug || c.id}`}
@@ -198,11 +286,24 @@ export default function Home() {
                           </Link>
                         </h5>
                         <p
-                          className="card-text text-secondary small line-clamp-2 mb-3"
+                          className="text-secondary small line-clamp-2 mb-2"
                           style={{ minHeight: '38px', lineHeight: 1.55 }}
                         >
                           {c.description}
                         </p>
+
+                        {/* Feature Bullets */}
+                        <ul className="cl-cohort-feature-bullets">
+                          <li className="cl-cohort-feature-bullet">
+                            <FaCheckCircle size={12} /> 1-on-1 Mentor Code Reviews
+                          </li>
+                          <li className="cl-cohort-feature-bullet">
+                            <FaCheckCircle size={12} /> Production Capstone Project
+                          </li>
+                          <li className="cl-cohort-feature-bullet">
+                            <FaCheckCircle size={12} /> Verified Certificate of Mastery
+                          </li>
+                        </ul>
                       </div>
 
                       <div>
@@ -244,7 +345,7 @@ export default function Home() {
                           <Link
                             to={`/courses/${c.slug || c.id}`}
                             className="btn btn-outline-success flex-grow-1 rounded-pill fw-bold d-inline-flex align-items-center justify-content-center"
-                            style={{ fontSize: '0.84rem', minHeight: '42px' }}
+                            style={{ fontSize: '0.85rem', minHeight: '44px' }}
                           >
                             Curriculum
                           </Link>
@@ -255,13 +356,13 @@ export default function Home() {
                               background: '#25D366',
                               borderColor: '#25D366',
                               color: '#ffffff',
-                              fontSize: '0.84rem',
-                              minHeight: '42px'
+                              fontSize: '0.85rem',
+                              minHeight: '44px'
                             }}
                             onClick={() => setSelectedCourseForEnroll(c)}
                             title="Enroll via WhatsApp"
                           >
-                            <FaWhatsapp size={15} />
+                            <FaWhatsapp size={16} />
                             <span>Enroll</span>
                           </button>
                         </div>

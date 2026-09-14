@@ -68,23 +68,6 @@ export default function InstituteNavbar() {
           {/* Right Action Controls: Login CTAs */}
           <div className="d-flex gap-2 align-items-center mt-2 mt-lg-0">
             <Link
-              to="/admin/login"
-              className="btn-admin"
-              onClick={() => setExpanded(false)}
-              style={{
-                background: 'transparent',
-                color: 'var(--text-secondary, #94a3b8)',
-                border: '1px solid var(--border-color, rgba(255,255,255,0.15))',
-                fontSize: '0.82rem',
-                padding: '7px 14px'
-              }}
-              title="Administrator Portal"
-            >
-              <FaLock style={{ fontSize: '0.65rem' }} />
-              Admin
-            </Link>
-
-            <Link
               to="/login"
               className="btn-admin"
               onClick={() => setExpanded(false)}

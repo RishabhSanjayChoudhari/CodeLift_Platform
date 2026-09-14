@@ -377,6 +377,7 @@ export async function fetchAllData() {
       feeStatus: s.fee_status || 'PENDING',
       isGraduated: Boolean(s.is_graduated),
       isActive: Boolean(s.is_active),
+      reset_requested: Boolean(s.reset_requested), // password reset flag
       completedBatchIds: s.completed_batch_ids || [],
       progress: s.progress || {},
       createdAt: s.created_at,
@@ -670,6 +671,10 @@ export async function updateStudent(studentId, updates) {
   if (updates.isActive !== undefined) payload.is_active = Boolean(updates.isActive);
   if (updates.completedBatchIds !== undefined) payload.completed_batch_ids = updates.completedBatchIds;
   if (updates.progress !== undefined) payload.progress = updates.progress;
+  // Efficient single-flag for password reset requests — no separate table needed
+  if (updates.reset_requested !== undefined) payload.reset_requested = Boolean(updates.reset_requested);
+
+  if (Object.keys(payload).length === 0) return null;
 
   const { data, error } = await supabase
     .from('students')

@@ -14,11 +14,21 @@ import {
   FaUsers,
   FaKey,
   FaRupeeSign,
-  FaWhatsapp
+  FaWhatsapp,
+  FaTags,
+  FaShieldAlt,
+  FaTicketAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaInfoCircle,
+  FaLock,
+  FaUndo,
+  FaCopy
 } from 'react-icons/fa';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabaseClient';
-import { buildAdminNotification, openAdminWhatsApp } from '../../services/notificationService';
+import { buildAdminNotification, openAdminWhatsApp, buildWhatsAppUrl, ADMIN_WA } from '../../services/notificationService';
 
 // Zod schema for student form validation
 const studentSchema = z.object({
@@ -29,44 +39,48 @@ const studentSchema = z.object({
 });
 
 export default function StudentManager() {
-  const { students = [], batches = [], addStudent, updateStudent, toggleStudentActive, addFee } = useData();
+  const {
+    students = [],
+    batches = [],
+    addStudent,
+    updateStudent,
+    toggleStudentActive,
+    addFee,
+    passwordResetRequests = [],
+    resolvePasswordResetRequest,
+    dismissPasswordResetRequest
+  } = useData();
 
   const [selectedBatchFilter, setSelectedBatchFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+
+  // Quick Fee Payment Modal State
   const [feeModalStudent, setFeeModalStudent] = useState(null);
   const [quickFeeAmount, setQuickFeeAmount] = useState('15000');
   const [quickFeeMode, setQuickFeeMode] = useState('UPI');
   const [quickFeeStatus, setQuickFeeStatus] = useState('PAID');
 
-  // Password Reset Modal State
-  const [resetPasswordStudent, setResetPasswordStudent] = useState(null);
-  const [isSendingReset, setIsSendingReset] = useState(false);
+  // Fee Concession / Structure Modal State
+  const [feeEditStudent, setFeeEditStudent] = useState(null);
+  const [feeBaseAmount, setFeeBaseAmount] = useState('45000');
+  const [feeConcessionAmount, setFeeConcessionAmount] = useState('0');
+  const [feeConcessionReason, setFeeConcessionReason] = useState('Merit Scholarship');
+  const [feeConcessionNotes, setFeeConcessionNotes] = useState('');
 
-  const handleConfirmResetPassword = async () => {
-    if (!resetPasswordStudent?.email) {
-      toast.error('Student does not have a valid email address.');
-      return;
-    }
+  // Password Management State
+  const [passwordEditStudent, setPasswordEditStudent] = useState(null);
+  const [customPasswordInput, setCustomPasswordInput] = useState('');
+  const [showCustomPassword, setShowCustomPassword] = useState(false);
 
-    setIsSendingReset(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetPasswordStudent.email, {
-        redirectTo: `${window.location.origin}/login`
-      });
-      if (error) throw error;
-      toast.success(`Password reset instructions sent to ${resetPasswordStudent.email}.`);
-      setResetPasswordStudent(null);
-    } catch (err) {
-      toast.error(err.message || 'Failed to send password reset email.');
-    } finally {
-      setIsSendingReset(false);
-    }
-  };
+  // Password Reset Complaints State
+  const [showRequestsModal, setShowRequestsModal] = useState(false);
 
   const studentList = Array.isArray(students) ? students : [];
   const batchList = Array.isArray(batches) ? batches : [];
+  // passwordResetRequests is derived from students with reset_requested === true (Supabase flag)
+  const pendingResetRequests = passwordResetRequests.filter((r) => r.status === 'PENDING');
 
   // Form for Adding Student
   const {
@@ -141,7 +155,114 @@ export default function StudentManager() {
         phone: data.phone,
         batchId: data.batchId
       });
+      toast.success(`Updated profile for ${data.name}!`);
       setEditingStudent(null);
+    }
+  };
+
+  // Open Fee Concession Modal
+  const onStartFeeEdit = (student) => {
+    const batch = batchList.find((b) => b.id === student.batchId);
+    const standardFee = batch?.feeAmount || 45000;
+    const base = student.baseFee || (Number(student.totalFee) > 0 ? Number(student.totalFee) + Number(student.concessionAmount || 0) : standardFee);
+    const concession = student.concessionAmount || 0;
+
+    setFeeEditStudent(student);
+    setFeeBaseAmount(String(base));
+    setFeeConcessionAmount(String(concession));
+    setFeeConcessionReason(student.concessionReason || 'Merit Scholarship');
+    setFeeConcessionNotes(student.concessionNotes || '');
+  };
+
+  const onSaveFeeConcession = (e) => {
+    e.preventDefault();
+    if (!feeEditStudent) return;
+
+    const base = Math.max(0, Number(feeBaseAmount) || 0);
+    const concession = Math.max(0, Number(feeConcessionAmount) || 0);
+    const netPayable = Math.max(0, base - concession);
+    const paid = Number(feeEditStudent.paidFee) || 0;
+    const pendingBalance = Math.max(0, netPayable - paid);
+
+    updateStudent(feeEditStudent.id, {
+      baseFee: base,
+      concessionAmount: concession,
+      concessionReason: feeConcessionReason,
+      concessionNotes: feeConcessionNotes,
+      totalFee: netPayable,
+      feeStatus: pendingBalance <= 0 ? 'PAID' : (paid > 0 ? 'PARTIAL' : 'PENDING')
+    });
+
+    toast.success(`Tuition & concession saved for ${feeEditStudent.name}!`);
+    setFeeEditStudent(null);
+  };
+
+  // Open Password Modal
+  const onStartPasswordEdit = (student) => {
+    setPasswordEditStudent(student);
+    setCustomPasswordInput('');
+    setShowCustomPassword(false);
+  };
+
+  // Reset Student Password to Default
+  const handleResetToDefaultPassword = (student) => {
+    if (!student) return;
+    const defaultPwd = 'codelift123';
+    updateStudent(student.id, {
+      password: defaultPwd,
+      reset_requested: false, // clear the flag
+      isActive: true,
+      status: 'ACTIVE'
+    });
+
+    toast.success(`Password reset to default "${defaultPwd}" for ${student.name}!`);
+
+    // Offer WhatsApp confirmation
+    const waText = `Hello ${student.name},\n\nYour CodeLift Student Portal password has been reset by Administration to default: *${defaultPwd}*.\n\nLogin URL: ${window.location.origin}/login\nEmail: ${student.email}\n\nPlease login and change your password in account settings if desired.`;
+    
+    if (student.phone) {
+      window.open(buildWhatsAppUrl(student.phone, waText), '_blank');
+    }
+
+    setPasswordEditStudent(null);
+  };
+
+  // Save Custom Password
+  const handleSaveCustomPassword = (e) => {
+    e.preventDefault();
+    if (!passwordEditStudent) return;
+    if (customPasswordInput.trim().length < 6) {
+      toast.error('Password must be at least 6 characters long.');
+      return;
+    }
+
+    const newPwd = customPasswordInput.trim();
+    updateStudent(passwordEditStudent.id, {
+      password: newPwd,
+      reset_requested: false, // clear the flag
+      isActive: true,
+      status: 'ACTIVE'
+    });
+
+    toast.success(`New password updated for ${passwordEditStudent.name}!`);
+
+    if (passwordEditStudent.phone) {
+      const waText = `Hello ${passwordEditStudent.name},\n\nYour CodeLift Student Portal password has been updated by Administration to: *${newPwd}*.\n\nLogin URL: ${window.location.origin}/login\nEmail: ${passwordEditStudent.email}`;
+      window.open(buildWhatsAppUrl(passwordEditStudent.phone, waText), '_blank');
+    }
+
+    setPasswordEditStudent(null);
+  };
+
+  // Toggle Enable / Disable
+  const handleToggleActive = (student) => {
+    const willBeActive = !(student.isActive !== false && student.status !== 'SUSPENDED');
+    toggleStudentActive(student.id);
+
+    if (willBeActive) {
+      toast.success(`Student account for ${student.name} activated! Access restored.`);
+    } else {
+      toast.error(`Student account for ${student.name} suspended! Login blocked.`);
     }
   };
 
@@ -161,6 +282,30 @@ export default function StudentManager() {
 
   return (
     <div>
+      {/* Pending Password Reset Complaints Banner */}
+      {pendingResetRequests.length > 0 && (
+        <div className="alert alert-warning border-warning d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 rounded-3 shadow-sm">
+          <div className="d-flex align-items-center gap-2">
+            <FaShieldAlt className="text-warning fs-5 flex-shrink-0" />
+            <div>
+              <strong>{pendingResetRequests.length} Password Reset Complaint{pendingResetRequests.length > 1 ? 's' : ''} Pending</strong>
+              <div className="small text-muted">Students have raised official requests to reset their portal credentials to default.</div>
+            </div>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <Button
+              variant="warning"
+              size="sm"
+              className="fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm"
+              onClick={() => setShowRequestsModal(true)}
+            >
+              <FaTicketAlt size={13} />
+              <span>Review Complaints ({pendingResetRequests.length})</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Recently Added Student Notification Banner */}
       {justAddedStudent && (
         <div className="alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 rounded-3 shadow-sm">
@@ -207,23 +352,39 @@ export default function StudentManager() {
             <FaUsers className="brand-text" />
             <span>Student Management</span>
           </h4>
+          <p className="text-muted small mb-0">
+            Enroll students, manage tuition fees & concessions, reset passwords, and control portal access.
+          </p>
         </div>
-        <Button
-          variant="primary"
-          onClick={() => {
-            resetAdd({
-              name: '',
-              email: '',
-              phone: '',
-              batchId: batchList[0]?.id || ''
-            });
-            setShowAddModal(true);
-          }}
-          className="d-flex align-items-center gap-2 align-self-start align-self-sm-auto shadow-sm"
-        >
-          <FaUserPlus size={14} />
-          <span>Add New Student</span>
-        </Button>
+        <div className="d-flex align-items-center gap-2">
+          {passwordResetRequests.length > 0 && (
+            <Button
+              variant="outline-warning"
+              size="sm"
+              onClick={() => setShowRequestsModal(true)}
+              className="d-flex align-items-center gap-1.5 fw-semibold"
+            >
+              <FaTicketAlt size={13} />
+              <span>Complaints Desk ({pendingResetRequests.length})</span>
+            </Button>
+          )}
+          <Button
+            variant="primary"
+            onClick={() => {
+              resetAdd({
+                name: '',
+                email: '',
+                phone: '',
+                batchId: batchList[0]?.id || ''
+              });
+              setShowAddModal(true);
+            }}
+            className="d-flex align-items-center gap-2 align-self-start align-self-sm-auto shadow-sm"
+          >
+            <FaUserPlus size={14} />
+            <span>Add New Student</span>
+          </Button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -285,28 +446,42 @@ export default function StudentManager() {
                   <th>Student Name</th>
                   <th>Email & Phone</th>
                   <th>Assigned Batch</th>
-                  <th>Status</th>
+                  <th>Tuition & Concession</th>
+                  <th>Account Status</th>
                   <th className="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-5 text-muted">
+                    <td colSpan={6} className="text-center py-5 text-muted">
                       No students found matching current filter criteria.
                     </td>
                   </tr>
                 ) : (
                   filteredStudents.map((std) => {
                     const batch = batchList.find((b) => b.id === std.batchId);
+                    const netTotal = Number(std.totalFee || batch?.feeAmount || 45000);
+                    const concession = Number(std.concessionAmount) || 0;
+                    const paid = Number(std.paidFee) || 0;
+                    const pending = Math.max(0, netTotal - paid);
+                    const isActive = std.isActive !== false && std.status !== 'SUSPENDED';
 
                     return (
                       <tr key={std.id}>
                         <td>
-                          <div className="fw-semibold" style={{ color: 'var(--text-primary, #171717)' }}>
+                          <div className="fw-semibold d-flex align-items-center gap-1.5" style={{ color: 'var(--text-primary, #171717)' }}>
                             {std.name}
+                            {std.reset_requested && (
+                              <OverlayTrigger overlay={<Tooltip>🔑 Password Reset Requested — click the key icon to resolve</Tooltip>}>
+                                <span className="badge bg-warning text-dark fw-bold" style={{ fontSize: '0.65rem', verticalAlign: 'middle', cursor: 'pointer' }}
+                                  onClick={() => onStartPasswordEdit(std)}>
+                                  🔑 RESET REQ
+                                </span>
+                              </OverlayTrigger>
+                            )}
                           </div>
-                          <div className="text-muted font-monospace" style={{ fontSize: '0.75rem' }}>
+                          <div className="text-muted font-monospace" style={{ fontSize: '0.72rem' }}>
                             ID: {std.id}
                           </div>
                         </td>
@@ -320,12 +495,48 @@ export default function StudentManager() {
                           </Badge>
                         </td>
                         <td>
-                          <Badge bg={std.isActive !== false ? 'success' : 'danger'}>
-                            {std.isActive !== false ? 'Active' : 'Inactive'}
+                          <div>
+                            <span className="fw-bold text-dark" style={{ fontSize: '0.88rem' }}>
+                              ₹{netTotal.toLocaleString()}
+                            </span>
+                            {concession > 0 && (
+                              <Badge
+                                bg="warning"
+                                text="dark"
+                                className="ms-1.5 small fw-semibold"
+                                title={`Concession: ${std.concessionReason || 'Discount'}`}
+                              >
+                                -₹{concession.toLocaleString()} Concession
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-muted" style={{ fontSize: '0.74rem', marginTop: 2 }}>
+                            Paid: <span className="text-success fw-semibold">₹{paid.toLocaleString()}</span>
+                            <span className="mx-1">•</span>
+                            Bal: <span className={pending > 0 ? 'text-danger fw-semibold' : 'text-success'}>₹{pending.toLocaleString()}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <Badge
+                            bg={isActive ? 'success' : 'danger'}
+                            className="d-inline-flex align-items-center gap-1 px-2 py-1"
+                          >
+                            {isActive ? (
+                              <>
+                                <FaCheckCircle size={10} />
+                                <span>Active</span>
+                              </>
+                            ) : (
+                              <>
+                                <FaTimesCircle size={10} />
+                                <span>Suspended</span>
+                              </>
+                            )}
                           </Badge>
                         </td>
                         <td className="text-end">
                           <div className="d-inline-flex gap-1.5 align-items-center">
+                            {/* Record Tuition Payment */}
                             <OverlayTrigger overlay={<Tooltip>Record tuition fee payment</Tooltip>}>
                               <Button
                                 variant="outline-primary"
@@ -334,21 +545,32 @@ export default function StudentManager() {
                                 style={{ width: 32, height: 32 }}
                                 onClick={() => {
                                   setFeeModalStudent(std);
-                                  const batch = batchList.find((b) => b.id === std.batchId);
-                                  const total = Number(std.totalFee) || batch?.feeAmount || 45000;
-                                  const paid = Number(std.paidFee) || 0;
-                                  const pending = Math.max(0, total - paid);
                                   setQuickFeeAmount(pending > 0 ? String(pending) : '15000');
                                   setQuickFeeStatus('PAID');
                                   setQuickFeeMode('UPI');
                                 }}
                                 aria-label="Record tuition fee payment"
                               >
-                                <FaRupeeSign size={11} />
+                                <FaRupeeSign size={12} />
                               </Button>
                             </OverlayTrigger>
 
-                            <OverlayTrigger overlay={<Tooltip>Edit student profile and batch</Tooltip>}>
+                            {/* Edit Tuition & Concession */}
+                            <OverlayTrigger overlay={<Tooltip>Edit Fees & Concession Scholarship</Tooltip>}>
+                              <Button
+                                variant="outline-info"
+                                size="sm"
+                                className="d-inline-flex align-items-center justify-content-center rounded-2 p-1.5"
+                                style={{ width: 32, height: 32 }}
+                                onClick={() => onStartFeeEdit(std)}
+                                aria-label="Edit fee and concession"
+                              >
+                                <FaTags size={12} />
+                              </Button>
+                            </OverlayTrigger>
+
+                            {/* Edit Student Profile */}
+                            <OverlayTrigger overlay={<Tooltip>Edit student profile & batch</Tooltip>}>
                               <Button
                                 variant="outline-secondary"
                                 size="sm"
@@ -361,29 +583,37 @@ export default function StudentManager() {
                               </Button>
                             </OverlayTrigger>
 
-                            <OverlayTrigger overlay={<Tooltip>Send Password Reset Link via Email</Tooltip>}>
+                            {/* Manage Password */}
+                            <OverlayTrigger overlay={<Tooltip>Reset / Edit Student Password</Tooltip>}>
                               <Button
                                 variant="outline-warning"
                                 size="sm"
                                 className="d-inline-flex align-items-center justify-content-center rounded-2 p-1.5"
                                 style={{ width: 32, height: 32 }}
-                                onClick={() => setResetPasswordStudent(std)}
-                                aria-label="Reset password"
+                                onClick={() => onStartPasswordEdit(std)}
+                                aria-label="Reset or edit password"
                               >
                                 <FaKey size={12} />
                               </Button>
                             </OverlayTrigger>
 
-                            <OverlayTrigger overlay={<Tooltip>{std.isActive !== false ? 'Suspend student access' : 'Activate student account'}</Tooltip>}>
+                            {/* Enable / Disable Access */}
+                            <OverlayTrigger
+                              overlay={
+                                <Tooltip>
+                                  {isActive ? 'Suspend account (Block login access)' : 'Activate account (Restore login access)'}
+                                </Tooltip>
+                              }
+                            >
                               <Button
-                                variant={std.isActive !== false ? 'outline-danger' : 'outline-success'}
+                                variant={isActive ? 'outline-danger' : 'outline-success'}
                                 size="sm"
                                 className="d-inline-flex align-items-center justify-content-center rounded-2 p-1.5"
                                 style={{ width: 32, height: 32 }}
-                                onClick={() => toggleStudentActive(std.id)}
-                                aria-label={std.isActive !== false ? 'Deactivate student' : 'Activate student'}
+                                onClick={() => handleToggleActive(std)}
+                                aria-label={isActive ? 'Deactivate student' : 'Activate student'}
                               >
-                                {std.isActive !== false ? <FaUserSlash size={12} /> : <FaUserCheck size={12} />}
+                                {isActive ? <FaUserSlash size={12} /> : <FaUserCheck size={12} />}
                               </Button>
                             </OverlayTrigger>
                           </div>
@@ -463,8 +693,8 @@ export default function StudentManager() {
             </Form.Group>
 
             <div className="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-0">
-              <span>ℹ️</span>
-              <span>Default student portal password will be <strong><code>password</code></strong>.</span>
+              <FaInfoCircle className="text-primary flex-shrink-0" />
+              <span>Default student portal password will be <strong><code>codelift123</code></strong>.</span>
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -548,6 +778,306 @@ export default function StudentManager() {
         </Form>
       </Modal>
 
+      {/* Edit Fees & Concession Modal */}
+      <Modal show={Boolean(feeEditStudent)} onHide={() => setFeeEditStudent(null)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="fs-5 fw-bold d-flex align-items-center gap-2">
+            <FaTags className="text-info" />
+            <span>Edit Fees & Concession: {feeEditStudent?.name}</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={onSaveFeeConcession}>
+          <Modal.Body className="space-y-3">
+            {/* Context Info */}
+            <div className="p-3 bg-light rounded-3 mb-3 small border">
+              <div><strong>Student:</strong> {feeEditStudent?.name} ({feeEditStudent?.email})</div>
+              <div><strong>Batch:</strong> {batchList.find((b) => b.id === feeEditStudent?.batchId)?.name || 'Cohort'}</div>
+              <div><strong>Standard Batch Fee:</strong> ₹{(batchList.find((b) => b.id === feeEditStudent?.batchId)?.feeAmount || 45000).toLocaleString()}</div>
+            </div>
+
+            <div className="row g-3 mb-3">
+              <div className="col-sm-6">
+                <Form.Label className="small fw-semibold">Base Course Fee (₹) *</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  required
+                  value={feeBaseAmount}
+                  onChange={(e) => setFeeBaseAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="col-sm-6">
+                <Form.Label className="small fw-semibold">Concession / Discount (₹)</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  value={feeConcessionAmount}
+                  onChange={(e) => setFeeConcessionAmount(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-semibold">Concession Category / Reason</Form.Label>
+              <Form.Select
+                value={feeConcessionReason}
+                onChange={(e) => setFeeConcessionReason(e.target.value)}
+              >
+                <option value="Merit / Entrance High Scorer Scholarship">Merit / Entrance High Scorer Scholarship</option>
+                <option value="Need-Based Financial Aid">Need-Based Financial Aid</option>
+                <option value="Early Bird Registration Concession">Early Bird Registration Concession</option>
+                <option value="Sibling / Alumni Referral Discount">Sibling / Alumni Referral Discount</option>
+                <option value="Special Faculty / Director Approval">Special Faculty / Director Approval</option>
+                <option value="Other Promotional Concession">Other Promotional Concession</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-semibold">Approval Notes / Remarks</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                placeholder="e.g. Approved 15% merit concession based on coding screening test score."
+                value={feeConcessionNotes}
+                onChange={(e) => setFeeConcessionNotes(e.target.value)}
+              />
+            </Form.Group>
+
+            {/* Live Calculation Preview Card */}
+            {(() => {
+              const base = Number(feeBaseAmount) || 0;
+              const disc = Number(feeConcessionAmount) || 0;
+              const net = Math.max(0, base - disc);
+              const paid = Number(feeEditStudent?.paidFee) || 0;
+              const pending = Math.max(0, net - paid);
+
+              return (
+                <div className="p-3 rounded-3 border bg-white shadow-sm">
+                  <div className="d-flex justify-content-between small text-muted mb-1">
+                    <span>Base Tuition Fee:</span>
+                    <span>₹{base.toLocaleString()}</span>
+                  </div>
+                  {disc > 0 && (
+                    <div className="d-flex justify-content-between small text-warning mb-1">
+                      <span>Concession Applied:</span>
+                      <span>- ₹{disc.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between fw-bold border-top pt-1 mt-1">
+                    <span>Net Payable Course Fee:</span>
+                    <span className="text-primary fs-6">₹{net.toLocaleString()}</span>
+                  </div>
+                  <div className="d-flex justify-content-between small text-muted mt-1">
+                    <span>Amount Already Paid:</span>
+                    <span className="text-success fw-semibold">₹{paid.toLocaleString()}</span>
+                  </div>
+                  <div className="d-flex justify-content-between small border-top pt-1 mt-1">
+                    <span>Pending Balance:</span>
+                    <span className={pending > 0 ? 'text-danger fw-bold' : 'text-success fw-bold'}>
+                      ₹{pending.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" size="sm" onClick={() => setFeeEditStudent(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" type="submit">
+              Save Fee & Concession
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+      {/* Edit / Reset Student Password Modal */}
+      <Modal show={Boolean(passwordEditStudent)} onHide={() => setPasswordEditStudent(null)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="fs-5 fw-bold d-flex align-items-center gap-2">
+            <FaKey className="text-warning" />
+            <span>Manage Password: {passwordEditStudent?.name}</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="space-y-3">
+          <div className="p-3 bg-light rounded-3 mb-3 small border">
+            <div><strong>Student:</strong> {passwordEditStudent?.name}</div>
+            <div><strong>Email:</strong> {passwordEditStudent?.email}</div>
+            <div><strong>Phone:</strong> {passwordEditStudent?.phone || 'Not recorded'}</div>
+            <div><strong>Status:</strong> {passwordEditStudent?.isActive !== false ? 'Active' : 'Suspended'}</div>
+          </div>
+
+          {/* Quick 1-Click Reset to Default */}
+          <div className="p-3 rounded-3 border mb-3" style={{ backgroundColor: 'rgba(234, 179, 8, 0.08)' }}>
+            <h6 className="fw-bold mb-1 d-flex align-items-center gap-2">
+              <FaUndo className="text-warning" />
+              <span>1-Click Reset to Default</span>
+            </h6>
+            <p className="text-muted small mb-3">
+              Instantly resets this student's password to the platform standard default: <code>codelift123</code>.
+            </p>
+            <Button
+              variant="warning"
+              size="sm"
+              className="fw-bold d-inline-flex align-items-center gap-2 w-100 justify-content-center py-2 shadow-sm"
+              onClick={() => handleResetToDefaultPassword(passwordEditStudent)}
+            >
+              <FaLock size={13} />
+              <span>Reset Password to "codelift123"</span>
+            </Button>
+          </div>
+
+          {/* Or Set Custom Password */}
+          <Form onSubmit={handleSaveCustomPassword}>
+            <h6 className="fw-bold mb-2">Or Set Custom Password</h6>
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-semibold">New Custom Password</Form.Label>
+              <InputGroup size="sm">
+                <Form.Control
+                  type={showCustomPassword ? 'text' : 'password'}
+                  placeholder="Enter new password (min 6 chars)"
+                  value={customPasswordInput}
+                  onChange={(e) => setCustomPasswordInput(e.target.value)}
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setShowCustomPassword(!showCustomPassword)}
+                  type="button"
+                >
+                  {showCustomPassword ? <FiEyeOff /> : <FiEye />}
+                </Button>
+              </InputGroup>
+            </Form.Group>
+
+            <Button
+              variant="outline-primary"
+              size="sm"
+              type="submit"
+              disabled={customPasswordInput.trim().length < 6}
+              className="w-100 fw-semibold py-1.5"
+            >
+              Save Custom Password
+            </Button>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" size="sm" onClick={() => setPasswordEditStudent(null)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Password Reset Complaints Desk Modal */}
+      <Modal
+        show={showRequestsModal}
+        onHide={() => setShowRequestsModal(false)}
+        centered
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="fs-5 fw-bold d-flex align-items-center gap-2">
+            <FaTicketAlt className="text-warning" />
+            <span>Password Reset Complaints Desk</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          {passwordResetRequests.length === 0 ? (
+            <div className="text-center py-5 text-muted">
+              <FaShieldAlt size={40} className="mb-2 text-success opacity-50" />
+              <h6>No Password Reset Complaints Registered</h6>
+              <p className="small mb-0">When students raise a forgot password request on the login page, it will appear here.</p>
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {passwordResetRequests.map((req) => {
+                const isPending = req.status === 'PENDING';
+                const student = students.find(
+                  (s) => (s.email || '').toLowerCase() === req.studentEmail.toLowerCase() || (req.studentId && s.id === req.studentId)
+                );
+
+                return (
+                  <div
+                    key={req.id}
+                    className="p-3 rounded-3 border bg-light shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
+                  >
+                    <div>
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <Badge bg={isPending ? 'warning' : (req.status === 'RESOLVED' ? 'success' : 'secondary')} text={isPending ? 'dark' : 'white'} className="font-monospace">
+                          {req.ticketId}
+                        </Badge>
+                        <Badge bg={isPending ? 'danger' : 'success'}>
+                          {req.status}
+                        </Badge>
+                        <span className="text-muted small">
+                          {new Date(req.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="fw-bold fs-6">{req.studentName}</div>
+                      <div className="small text-muted">{req.studentEmail} • {req.studentPhone || 'No phone'}</div>
+                      <div className="small mt-1 text-dark">
+                        <strong>Complaint:</strong> {req.reason}
+                      </div>
+                    </div>
+
+                    <div className="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+                      {isPending ? (
+                        <>
+                          <Button
+                            variant="success"
+                            size="sm"
+                            className="d-inline-flex align-items-center gap-1.5 fw-bold shadow-sm"
+                            onClick={() => {
+                              // resolvePasswordResetRequest now takes studentId directly
+                              resolvePasswordResetRequest(req.studentId, 'codelift123');
+                              toast.success(`Password reset to codelift123 for ${req.studentName}!`);
+
+                              // Send WhatsApp notification to student if phone available
+                              const student = students.find((s) => s.id === req.studentId);
+                              const targetPhone = req.studentPhone || student?.phone;
+                              if (targetPhone) {
+                                const waMsg = `Hello ${req.studentName},\n\nYour CodeLift Student Portal password reset request has been resolved by Administration.\n\nNew Default Password: *codelift123*\nPortal URL: ${window.location.origin}/login\nEmail: ${req.studentEmail}\n\nPlease login and continue your studies! 🚀`;
+                                window.open(buildWhatsAppUrl(targetPhone, waMsg), '_blank');
+                              }
+                            }}
+                          >
+                            <FaUndo size={12} />
+                            <span>Reset to Default (codelift123)</span>
+                          </Button>
+
+                          <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            onClick={() => {
+                              dismissPasswordResetRequest(req.studentId);
+                              toast('Request dismissed.', { icon: 'ℹ️' });
+                            }}
+                          >
+                            Dismiss
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="small text-success d-flex align-items-center gap-1">
+                          <FaCheckCircle />
+                          <span>Resolved</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" size="sm" onClick={() => setShowRequestsModal(false)}>
+            Close Desk
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Quick Record Fee Modal */}
       <Modal show={Boolean(feeModalStudent)} onHide={() => setFeeModalStudent(null)} centered>
         <Modal.Header closeButton>
@@ -577,7 +1107,7 @@ export default function StudentManager() {
               <div><strong>Student:</strong> {feeModalStudent?.name} ({feeModalStudent?.email})</div>
               <div><strong>Batch:</strong> {batchList.find((b) => b.id === feeModalStudent?.batchId)?.name || 'Cohort'}</div>
               <div className="mt-1">
-                <span>Total Fee: <strong>₹{Number(feeModalStudent?.totalFee || 45000).toLocaleString()}</strong></span>
+                <span>Net Total Fee: <strong>₹{Number(feeModalStudent?.totalFee || 45000).toLocaleString()}</strong></span>
                 <span className="ms-3">Paid: <strong className="text-success">₹{Number(feeModalStudent?.paidFee || 0).toLocaleString()}</strong></span>
               </div>
             </div>
@@ -630,42 +1160,7 @@ export default function StudentManager() {
           </Modal.Footer>
         </Form>
       </Modal>
-
-      {/* Reset Password Confirmation Modal */}
-      <Modal show={Boolean(resetPasswordStudent)} onHide={() => setResetPasswordStudent(null)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="fs-5 fw-bold d-flex align-items-center gap-2">
-            <FaKey className="text-warning" />
-            <span>Reset Student Password</span>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p className="mb-2">
-            Are you sure you want to send an official password reset link to:
-          </p>
-          <div className="p-3 rounded-3 border bg-light mb-3">
-            <div className="fw-bold">{resetPasswordStudent?.name}</div>
-            <div className="text-muted small">{resetPasswordStudent?.email}</div>
-          </div>
-          <p className="text-muted small mb-0">
-            A secure link will be sent to their email via Supabase Auth, allowing the student to reset their password safely.
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" size="sm" onClick={() => setResetPasswordStudent(null)}>
-            Cancel
-          </Button>
-          <Button
-            variant="warning"
-            size="sm"
-            disabled={isSendingReset}
-            onClick={handleConfirmResetPassword}
-            className="fw-semibold px-3"
-          >
-            {isSendingReset ? 'Sending...' : 'Send Reset Link'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
+

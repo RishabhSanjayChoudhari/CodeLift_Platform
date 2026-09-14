@@ -8,7 +8,9 @@ import {
   FiPhoneCall,
   FiMail,
   FiSend,
+  FiClock
 } from 'react-icons/fi';
+import { FaWhatsapp as FaWhatsappIcon } from 'react-icons/fa';
 import InterestFormModal from './InterestFormModal';
 import './ContactHub.css';
 
@@ -16,8 +18,38 @@ export default function ContactHub() {
   const [showContactForm, setShowContactForm] = useState(false);
 
   return (
-    <section id="contact" className="contact-hub-section py-3">
+    <section id="contact" className="contact-hub-section py-4 py-md-5">
       <div className="container">
+        {/* Section Header */}
+        <div className="text-center mb-4 mb-md-5">
+          <div
+            className="cl-section-label"
+            style={{
+              color: 'var(--bs-primary)',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              marginBottom: '8px',
+            }}
+          >
+            Get In Touch
+          </div>
+          <h2
+            className="fw-bold mb-2"
+            style={{
+              color: 'var(--text-primary)',
+              fontSize: 'clamp(1.7rem, 3.5vw, 2.35rem)',
+              lineHeight: 1.25,
+            }}
+          >
+            Contact &amp; Campus Hub
+          </h2>
+          <p className="text-secondary mx-auto mb-0" style={{ maxWidth: '600px', fontSize: '0.96rem' }}>
+            Have questions about upcoming cohorts, syllabus, or career transitions? Reach out directly or visit our campus in Nagpur.
+          </p>
+        </div>
+
         {/* Unified Combined Contact & Social Hub */}
         <div className="contact-hub-wrapper">
           <div className="row g-4 align-items-stretch">
@@ -33,7 +65,7 @@ export default function ContactHub() {
                     Interested in Joining CodeLift?
                   </h3>
                   <p className="contact-hero-desc">
-                    Share your details and we'll reach out to you on WhatsApp to discuss your career goals, syllabus, and upcoming batches.
+                    Share your details and our senior counselor will reach out on WhatsApp to discuss your career goals, syllabus, and upcoming batches.
                   </p>
                 </div>
 
@@ -43,12 +75,13 @@ export default function ContactHub() {
                     className="btn btn-hero-cta w-100"
                     onClick={() => setShowContactForm(true)}
                   >
-                    <span>Share Interest</span>
+                    <span>Request Callback / Syllabus</span>
                     <FiSend size={16} />
                   </button>
-                  <small className="contact-hero-hint">
-                    Direct connection to CodeLift admissions team • Verified Campus
-                  </small>
+                  <div className="contact-hero-hint d-flex align-items-center justify-content-center gap-1.5 mt-2 text-secondary small">
+                    <FiClock size={13} />
+                    <span>Counseling hours: Mon–Sat 10:00 AM – 7:30 PM</span>
+                  </div>
                 </div>
 
                 {/* Integrated Direct Contact Footnote */}
@@ -83,7 +116,7 @@ export default function ContactHub() {
                   href="https://share.google/qZlZpyhvHoGCLU4aZ"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="channel-tile"
+                  className="channel-tile tile-google"
                 >
                   <div className="channel-tile-header">
                     <div className="channel-icon-box icon-google">
@@ -96,11 +129,11 @@ export default function ContactHub() {
                   <div className="channel-tile-body">
                     <h4 className="channel-title">Find Us on Google</h4>
                     <p className="channel-desc">
-                      Read verified student reviews, ratings, and explore our institute profile.
+                      Read verified student reviews, ratings, and view campus photos.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
-                    <span className="channel-action-label">View on Google</span>
+                    <span className="channel-action-label">View Profile &amp; Reviews</span>
                   </div>
                 </a>
 
@@ -109,7 +142,7 @@ export default function ContactHub() {
                   href="https://maps.app.goo.gl/GoQbaPXr3Gc5YvaB7"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="channel-tile"
+                  className="channel-tile tile-location"
                 >
                   <div className="channel-tile-header">
                     <div className="channel-icon-box icon-location">
@@ -126,16 +159,16 @@ export default function ContactHub() {
                     </p>
                   </div>
                   <div className="channel-tile-footer">
-                    <span className="channel-action-label">Get Directions</span>
+                    <span className="channel-action-label">Get Directions on Maps</span>
                   </div>
                 </a>
 
                 {/* 3. Instagram */}
                 <a
-                  href="https://www.instagram.com/codelift._/"
+                  href="https://www.instagram.com/codelift.official/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="channel-tile"
+                  className="channel-tile tile-instagram"
                 >
                   <div className="channel-tile-header">
                     <div className="channel-icon-box icon-instagram">
@@ -148,25 +181,26 @@ export default function ContactHub() {
                   <div className="channel-tile-body">
                     <h4 className="channel-title">Student Community</h4>
                     <p className="channel-desc">
-                      Follow project demos, hackathons, and technical announcements.
+                      Follow project demos, hackathons, and cohort announcements.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
-                    <span className="channel-action-label">@codelift._</span>
+                    <span className="channel-action-label">Follow @codelift.official</span>
                   </div>
                 </a>
 
                 {/* 4. WhatsApp Direct */}
-                <div className="channel-tile channel-tile-interactive">
+                <div className="channel-tile channel-tile-interactive tile-whatsapp">
                   <div className="channel-tile-header">
                     <div className="channel-icon-box icon-whatsapp">
-                      <FiMessageCircle size={22} />
+                      <FaWhatsappIcon size={22} />
                     </div>
+                    <span className="channel-badge-status">Instant Reply</span>
                   </div>
                   <div className="channel-tile-body">
                     <h4 className="channel-title">Admissions Desk</h4>
                     <p className="channel-desc">
-                      Inquire about upcoming batch commencement dates, curriculum, and enrollment.
+                      Inquire about upcoming batch commencement dates, fees, and syllabus.
                     </p>
                   </div>
                   <div className="channel-tile-footer">
@@ -174,9 +208,11 @@ export default function ContactHub() {
                       href="https://wa.me/919834671940?text=Hello%20CodeLift%2C%20I%20would%20like%20to%20inquire%20about%20your%20training%20programs%2C%20curriculum%2C%20and%20admissions."
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn btn-channel-wa w-100"
+                      className="btn btn-channel-wa w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                      style={{ minHeight: 44 }}
                     >
-                      Chat on WhatsApp
+                      <FaWhatsappIcon size={16} />
+                      <span>Chat on WhatsApp</span>
                     </a>
                   </div>
                 </div>

@@ -1,0 +1,482 @@
+/* ==========================================================================
+   ProblemArena.css – Premium Theme-Adaptive Problem Solving Arena Styling
+   Cohesive dark & light theme compatibility, glassmorphism, responsive cards
+   ========================================================================== */
+
+/* ─── Page Container & Ambient Backdrop ───────────────────────────── */
+.cl-arena-page {
+  background-color: var(--bg-body, #0f172a);
+  min-height: 100vh;
+  color: var(--text-primary, #f1f5f9);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Atmospheric glow at the top of the arena */
+.cl-arena-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 44px;
+  background: radial-gradient(
+    circle at 50% 0%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 18%, var(--bg-body, #0f172a)) 0%,
+    var(--bg-body, #0f172a) 75%
+  );
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+.cl-arena-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 280px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bs-primary, #15803d) 24%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.cl-arena-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 14%, var(--card-bg, #1e293b));
+  color: var(--bs-primary, #15803d);
+  border: 1px solid color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent);
+  margin-bottom: 14px;
+}
+
+.cl-arena-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  color: var(--text-primary, #ffffff);
+  margin-bottom: 12px;
+  line-height: 1.18;
+}
+
+.cl-arena-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary, #94a3b8);
+  max-width: 680px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ─── Arena Stats Ribbon ──────────────────────────────────────────── */
+.cl-arena-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cl-arena-stat-card {
+  background: color-mix(in srgb, var(--card-bg, #1e293b) 85%, transparent);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-arena-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 40%, var(--border-color));
+}
+
+.cl-stat-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.cl-stat-icon-wrap.primary {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 16%, transparent);
+  color: var(--bs-primary, #15803d);
+}
+
+.cl-stat-icon-wrap.success {
+  background: rgba(16, 185, 129, 0.16);
+  color: #10b981;
+}
+
+.cl-stat-icon-wrap.warning {
+  background: rgba(245, 158, 11, 0.16);
+  color: #f59e0b;
+}
+
+.cl-stat-icon-wrap.purple {
+  background: rgba(139, 92, 246, 0.16);
+  color: #8b5cf6;
+}
+
+.cl-stat-number {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary, #ffffff);
+  line-height: 1.1;
+}
+
+.cl-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* ─── Arena Filter Toolbar ────────────────────────────────────────── */
+.cl-arena-filters-card {
+  background: var(--card-bg, #1e293b);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.cl-arena-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--card-bg-alt, #0f172a) 80%, transparent);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  padding: 6px 14px 6px 18px;
+  transition: all 0.2s ease;
+}
+
+.cl-arena-search-box:focus-within {
+  border-color: var(--bs-primary, #15803d);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bs-primary, #15803d) 20%, transparent);
+}
+
+.cl-arena-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary, #ffffff);
+  font-size: 0.92rem;
+  width: 100%;
+}
+
+.cl-arena-search-input::placeholder {
+  color: var(--text-secondary, #64748b);
+}
+
+.cl-category-pill {
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cl-category-pill:hover {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 12%, transparent);
+  color: var(--text-primary, #ffffff);
+  border-color: color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent);
+}
+
+.cl-category-pill.active {
+  background: var(--bs-primary, #15803d);
+  border-color: var(--bs-primary, #15803d);
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--bs-primary, #15803d) 35%, transparent);
+}
+
+/* ─── Desktop Problem Table ───────────────────────────────────────── */
+.cl-arena-table-card {
+  background: var(--card-bg, #1e293b);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.cl-arena-table {
+  width: 100%;
+  margin-bottom: 0;
+  color: var(--text-primary, #ffffff);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.cl-arena-table thead th {
+  background: color-mix(in srgb, var(--card-bg-alt, #0f172a) 90%, var(--card-bg, #1e293b));
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-top: none;
+}
+
+.cl-arena-table tbody tr {
+  transition: background-color 0.18s ease;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+}
+
+.cl-arena-table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--bs-primary, #15803d) 6%, var(--card-bg, #1e293b));
+}
+
+.cl-arena-table tbody td {
+  padding: 18px 20px;
+  vertical-align: middle;
+  border-top: none;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.07));
+}
+
+.cl-problem-title-link {
+  color: var(--text-primary, #ffffff);
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.cl-problem-title-link:hover {
+  color: var(--bs-primary, #10b981);
+}
+
+.cl-problem-category-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg-alt, #0f172a) 80%, transparent);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* Difficulty Badges */
+.cl-diff-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.cl-diff-badge.easy {
+  background: rgba(16, 185, 129, 0.14);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cl-diff-badge.medium {
+  background: rgba(245, 158, 11, 0.14);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.cl-diff-badge.hard {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.cl-xp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.cl-btn-solve {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bs-primary, #10b981);
+  border: 1.5px solid var(--bs-primary, #10b981);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cl-btn-solve:hover {
+  background: var(--bs-primary, #10b981);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--bs-primary, #10b981) 35%, transparent);
+}
+
+/* ─── Mobile Cards View (< 768px) ─────────────────────────────────── */
+.cl-arena-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cl-arena-mobile-card {
+  background: var(--card-bg, #1e293b);
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 18px;
+  padding: 18px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cl-arena-mobile-card:active {
+  transform: scale(0.99);
+}
+
+.cl-arena-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cl-arena-mobile-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary, #ffffff);
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.cl-arena-mobile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+/* ─── Problem Detail IDE Terminal Chrome ───────────────────────────── */
+.cl-ide-frame {
+  background: #0b0f19;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.35);
+}
+
+.cl-ide-header {
+  background: #111726;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cl-ide-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cl-ide-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.cl-ide-dot.close { background: #ff5f56; }
+.cl-ide-dot.minimize { background: #ffbd2e; }
+.cl-ide-dot.maximize { background: #27c93f; }
+
+.cl-ide-editor-area {
+  padding: 16px;
+  background: #080c14;
+}
+
+.cl-ide-textarea {
+  width: 100%;
+  background: transparent;
+  color: #e2e8f0;
+  border: none;
+  outline: none;
+  font-family: 'Fira Code', 'Cascadia Code', 'Source Code Pro', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .cl-arena-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .cl-arena-hero {
+    padding: 36px 0 28px;
+  }
+  .cl-arena-stats-strip {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .cl-arena-stat-card {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .cl-stat-number {
+    font-size: 1.2rem;
+  }
+  .cl-stat-label {
+    font-size: 0.68rem;
+  }
+  .cl-arena-filters-card {
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+  .cl-category-pills-wrap {
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+}

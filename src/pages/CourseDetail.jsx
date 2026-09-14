@@ -42,7 +42,7 @@ export default function CourseDetail() {
 
   if (!course) {
     return (
-      <div style={{ backgroundColor: 'var(--bg-body, #f8fafc)', minHeight: '100vh' }}>
+      <div style={{ backgroundColor: 'var(--bg-body, #0f172a)', color: 'var(--text-primary)', minHeight: '100vh' }}>
         <Navbar />
         <div className="container text-center py-5">
           <h3>Course Not Found</h3>
@@ -116,7 +116,7 @@ export default function CourseDetail() {
   );
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-body, #f8fafc)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--bg-body, #0f172a)', color: 'var(--text-primary)', minHeight: '100vh' }}>
       <SEO title={course.title} description={course.description} />
       <Navbar />
 

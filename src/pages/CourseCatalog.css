@@ -3,6 +3,14 @@
    Theme-adaptive, rich glassmorphic search bar, responsive layout
    ========================================================================== */
 
+.cl-marketplace-page {
+  background-color: var(--bg-body, #0f172a);
+  min-height: 100vh;
+  color: var(--text-primary, #f1f5f9);
+  position: relative;
+  overflow-x: hidden;
+}
+
 .cl-marketplace-hero {
   position: relative;
   overflow: hidden;
@@ -255,10 +263,21 @@
     padding: 40px 0 30px;
   }
   .cl-marketplace-search-box {
-    padding: 4px 12px 4px 16px;
+    padding: 6px 14px;
   }
   .cl-marketplace-search-input {
     font-size: 0.9rem;
+  }
+  .cl-marketplace-quick-chips {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .cl-quick-chip-btn {
+    flex-shrink: 0;
   }
   .cl-marketplace-toolbar {
     padding: 14px 14px;
@@ -278,3 +297,4 @@
     min-width: 100px;
   }
 }
+

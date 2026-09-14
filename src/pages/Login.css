@@ -369,3 +369,36 @@
     align-items: center;
   }
 }
+
+/* ─── REGISTRATION & COMPLAINT MODAL STYLES ───────────────────────────────── */
+.login-register-card {
+  position: relative;
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 60%, transparent);
+  border-radius: 16px;
+  padding: 16px 14px 8px;
+  border: 1px dashed color-mix(in srgb, var(--bs-primary, #15803d) 30%, var(--border-color, #e2e8f0));
+}
+
+.login-register-card .btn {
+  font-size: 0.82rem;
+  letter-spacing: -0.01em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-register-card .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.login-modal-dialog {
+  max-width: 520px;
+  margin: 1.75rem auto;
+}
+
+@media (max-width: 576px) {
+  .login-modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+

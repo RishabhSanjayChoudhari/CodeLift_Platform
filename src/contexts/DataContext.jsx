@@ -43,7 +43,19 @@ const DEFAULT_PLATFORM_SETTINGS = {
 export function DataProvider({ children }) {
   // Collections State initialized with local seeds for instant render
   const [users, setUsers] = useState(usersSeed);
-  const [students, setStudents] = useState(studentsSeed);
+  const [students, setStudents] = useState(() => {
+    try {
+      const saved = localStorage.getItem('codelift_students_cache');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return studentsSeed;
+  });
+  // NOTE: passwordResetRequests is derived on-the-fly from students (reset_requested flag on Supabase).
+  // No useState needed here — see the derived const below in this component.
+
   const [categories, setCategories] = useState(categoriesSeed);
   const [courses, setCourses] = useState(coursesSeed);
   const [enrollments, setEnrollments] = useState(enrollmentsSeed);
@@ -93,6 +105,10 @@ export function DataProvider({ children }) {
     }
   }, [codingAttempts]);
 
+  // Note: passwordResetRequests is derived on-the-fly from students.filter(s => s.reset_requested)
+  // No localStorage persistence needed — Supabase is the single source of truth for the flag.
+
+
   // Hydrate all collections from Supabase on mount and window focus (no polling)
   useEffect(() => {
     let isMounted = true;
@@ -104,7 +120,25 @@ export function DataProvider({ children }) {
 
         if (data.users?.length) setUsers(data.users);
         if (data.students?.length) {
-          setStudents(data.students.map((s) => ({ ...s, isActive: s.isActive !== false })));
+          let localCache = [];
+          try {
+            localCache = JSON.parse(localStorage.getItem('codelift_students_cache') || '[]');
+          } catch (e) {}
+          const cacheMap = new Map(localCache.map((s) => [s.id, s]));
+          setStudents(data.students.map((s) => {
+            const cached = cacheMap.get(s.id) || {};
+            return {
+              ...s,
+              isActive: cached.isActive !== undefined ? cached.isActive : (s.isActive !== false),
+              status: cached.status || s.status || (s.isActive !== false ? 'ACTIVE' : 'SUSPENDED'),
+              password: cached.password || s.password || undefined,
+              concessionAmount: cached.concessionAmount !== undefined ? cached.concessionAmount : (s.concessionAmount || 0),
+              concessionReason: cached.concessionReason || s.concessionReason || '',
+              totalFee: cached.totalFee !== undefined ? cached.totalFee : s.totalFee,
+              // Always prefer Supabase's authoritative reset_requested flag
+              reset_requested: s.reset_requested !== undefined ? s.reset_requested : (cached.reset_requested || false)
+            };
+          }));
         }
         if (data.categories?.length) setCategories(data.categories);
         if (data.courses?.length) setCourses(data.courses);
@@ -169,20 +203,102 @@ export function DataProvider({ children }) {
   };
 
   const updateStudent = (studentId, updates) => {
-    setStudents((prev) => prev.map((s) => (s.id === studentId || s.legacyId === studentId ? { ...s, ...updates } : s)));
+    setStudents((prev) => {
+      const updated = prev.map((s) => (s.id === studentId || s.legacyId === studentId ? { ...s, ...updates } : s));
+      try {
+        localStorage.setItem('codelift_students_cache', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     supabaseDataService.updateStudent(studentId, updates).catch((e) => console.error('[DataContext] updateStudent failed:', e));
   };
 
   const toggleStudentActive = (studentId) => {
     const current = students.find((s) => s.id === studentId || s.legacyId === studentId);
     const nextActive = current ? !(current.isActive !== false) : true;
-    updateStudent(studentId, { isActive: nextActive });
+    updateStudent(studentId, {
+      isActive: nextActive,
+      status: nextActive ? 'ACTIVE' : 'SUSPENDED'
+    });
   };
 
   const deleteStudent = (studentId) => {
-    setStudents((prev) => prev.filter((s) => s.id !== studentId && s.legacyId !== studentId));
+    setStudents((prev) => {
+      const updated = prev.filter((s) => s.id !== studentId && s.legacyId !== studentId);
+      try {
+        localStorage.setItem('codelift_students_cache', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     supabaseDataService.deleteStudent(studentId).catch((e) => console.error('[DataContext] deleteStudent failed:', e));
   };
+
+  // ── PASSWORD RESET FLAG MANAGEMENT (Supabase-backed, zero extra tables) ──────
+  // Derive password reset requests dynamically from the students list
+  const passwordResetRequests = students
+    .filter((s) => s.reset_requested)
+    .map((s) => ({
+      id: s.id,
+      ticketId: `PWD-${s.id.slice(-5).toUpperCase()}`,
+      studentId: s.id,
+      studentEmail: s.email,
+      studentName: s.name,
+      studentPhone: s.phone || '',
+      status: 'PENDING',
+      createdAt: s.updatedAt || s.createdAt || new Date().toISOString()
+    }));
+
+  /**
+   * Student raises a forgot-password request.
+   * Sets reset_requested = true on the student record in Supabase.
+   * Returns a ticket-like object for UI display.
+   */
+  const createPasswordResetRequest = ({ studentEmail }) => {
+    const emailLower = (studentEmail || '').trim().toLowerCase();
+    const matched = students.find((s) => (s.email || '').toLowerCase() === emailLower);
+
+    if (!matched) {
+      // Email not found — still return a ticket but no DB write
+      return {
+        ticketId: `PWD-NOTFOUND`,
+        studentEmail: emailLower,
+        studentName: 'Unknown Student',
+        notFound: true
+      };
+    }
+
+    // Optimistically update local state
+    updateStudent(matched.id, { reset_requested: true });
+
+    return {
+      ticketId: `PWD-${matched.id.slice(-5).toUpperCase()}`,
+      studentId: matched.id,
+      studentEmail: emailLower,
+      studentName: matched.name,
+      studentPhone: matched.phone || ''
+    };
+  };
+
+  /**
+   * Admin resolves the request: resets password + clears the flag.
+   */
+  const resolvePasswordResetRequest = (studentId, defaultPassword = 'codelift123') => {
+    updateStudent(studentId, {
+      password: defaultPassword,
+      reset_requested: false,
+      isActive: true,
+      status: 'ACTIVE'
+    });
+  };
+
+  /**
+   * Admin dismisses the request without resetting password.
+   */
+  const dismissPasswordResetRequest = (studentId) => {
+    updateStudent(studentId, { reset_requested: false });
+  };
+
+
 
   // ── BATCH MANAGEMENT ────────────────────────────────────────────────────────
   const addBatch = (batchData) => {
@@ -1156,6 +1272,7 @@ export function DataProvider({ children }) {
         problemAttempts,
         codingProblems,
         codingAttempts,
+        passwordResetRequests,
         notifications: [],
         platformSettings,
 
@@ -1166,6 +1283,9 @@ export function DataProvider({ children }) {
         updateStudent,
         deleteStudent,
         toggleStudentActive,
+        createPasswordResetRequest,
+        resolvePasswordResetRequest,
+        dismissPasswordResetRequest,
         addBatch,
         updateBatch,
         deleteBatch,
