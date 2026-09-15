@@ -22,10 +22,21 @@ function saveLocalLog(entry) {
   }
 }
 
+const isConfigured = () => (typeof isSupabaseConfigured === 'function' ? isSupabaseConfigured() : Boolean(isSupabaseConfigured));
+
+let isLoggingInternal = false;
+const errorThrottleMap = new Map(); // key -> { timestamp, count }
+const THROTTLE_WINDOW_MS = 2500;
+
 /**
  * Log an error to Supabase database with local storage backup.
  */
 export async function logError(error, context = {}) {
+  // Prevent infinite loop if logging itself triggers an unhandled error/rejection
+  if (isLoggingInternal) {
+    return null;
+  }
+
   const message = error?.message || (typeof error === 'string' ? error : 'Unknown error');
   const stack = error?.stack || null;
   const level = context.level || 'error';
@@ -33,6 +44,23 @@ export async function logError(error, context = {}) {
   const url = typeof window !== 'undefined' ? window.location.href : '';
   const userId = context.userId || null;
   const userRole = context.userRole || null;
+
+  // Throttle identical error spam (prevents 26k identical loop crashes)
+  const throttleKey = `${level}:${message}:${source}`;
+  const now = Date.now();
+  const existingThrottle = errorThrottleMap.get(throttleKey);
+  if (existingThrottle && (now - existingThrottle.timestamp) < THROTTLE_WINDOW_MS) {
+    existingThrottle.count += 1;
+    return null;
+  }
+  errorThrottleMap.set(throttleKey, { timestamp: now, count: 1 });
+
+  // Clean old throttle keys periodically
+  if (errorThrottleMap.size > 200) {
+    for (const [k, v] of errorThrottleMap.entries()) {
+      if (now - v.timestamp > 10000) errorThrottleMap.delete(k);
+    }
+  }
 
   const logEntry = {
     id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -47,32 +75,40 @@ export async function logError(error, context = {}) {
     created_at: new Date().toISOString()
   };
 
-  // Always save locally first
-  saveLocalLog(logEntry);
+  try {
+    isLoggingInternal = true;
 
-  // Sync to Supabase if configured
-  if (isSupabaseConfigured()) {
-    try {
-      const { error: dbError } = await supabase
-        .from('error_logs')
-        .insert({
-          level: logEntry.level,
-          message: logEntry.message,
-          stack: logEntry.stack,
-          context: logEntry.context,
-          source: logEntry.source,
-          url: logEntry.url,
-          user_id: logEntry.user_id,
-          user_role: logEntry.user_role,
-          created_at: logEntry.created_at
-        });
+    // Always save locally first
+    saveLocalLog(logEntry);
 
-      if (dbError) {
-        console.warn('[Logger] Supabase error_logs write deferred:', dbError.message);
+    // Sync to Supabase if configured
+    if (isConfigured()) {
+      try {
+        const { error: dbError } = await supabase
+          .from('error_logs')
+          .insert({
+            level: logEntry.level,
+            message: logEntry.message,
+            stack: logEntry.stack,
+            context: logEntry.context,
+            source: logEntry.source,
+            url: logEntry.url,
+            user_id: logEntry.user_id,
+            user_role: logEntry.user_role,
+            created_at: logEntry.created_at
+          });
+
+        if (dbError) {
+          console.warn('[Logger] Supabase error_logs write deferred:', dbError.message);
+        }
+      } catch (err) {
+        console.warn('[Logger] Could not send log to Supabase:', err);
       }
-    } catch (err) {
-      console.warn('[Logger] Could not send log to Supabase:', err);
     }
+  } catch (outerErr) {
+    console.warn('[Logger] logError internal failure:', outerErr);
+  } finally {
+    isLoggingInternal = false;
   }
 
   return logEntry;
@@ -91,7 +127,7 @@ export async function logWarn(message, context = {}) {
 export async function fetchErrorLogs() {
   const localLogs = getLocalLogs();
 
-  if (!isSupabaseConfigured()) {
+  if (!isConfigured()) {
     return localLogs;
   }
 
@@ -133,7 +169,7 @@ export async function clearErrorLogs() {
     localStorage.removeItem(LOCAL_STORAGE_LOGS_KEY);
   } catch {}
 
-  if (isSupabaseConfigured()) {
+  if (isConfigured()) {
     try {
       const { error } = await supabase
         .from('error_logs')
@@ -160,7 +196,7 @@ export async function deleteErrorLog(id) {
     localStorage.setItem(LOCAL_STORAGE_LOGS_KEY, JSON.stringify(logs));
   } catch {}
 
-  if (isSupabaseConfigured() && id) {
+  if (isConfigured() && id) {
     try {
       await supabase.from('error_logs').delete().eq('id', id);
     } catch (err) {
@@ -174,7 +210,8 @@ export async function deleteErrorLog(id) {
 // Global unhandled error listeners
 if (typeof window !== 'undefined') {
   window.addEventListener('error', (event) => {
-    // Avoid infinite loop if logging itself fails
+    // Avoid recursion or logging from within loggerService
+    if (isLoggingInternal) return;
     if (event.filename && event.filename.includes('loggerService')) return;
     logError(event.error || event.message, {
       source: 'uncaught-error',
@@ -185,7 +222,10 @@ if (typeof window !== 'undefined') {
   });
 
   window.addEventListener('unhandledrejection', (event) => {
-    logError(event.reason || 'Unhandled Promise Rejection', {
+    if (isLoggingInternal) return;
+    const reason = event.reason;
+    if (reason && typeof reason.message === 'string' && reason.message.includes('loggerService')) return;
+    logError(reason || 'Unhandled Promise Rejection', {
       source: 'unhandled-promise-rejection'
     });
   });

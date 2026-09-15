@@ -475,8 +475,12 @@ export default function CoursePreview({
   const isLastModule = currentModuleIndex === modules.length - 1;
   const isFirstModule = currentModuleIndex === 0;
 
-  // Check mandatory quiz status for active topic
-  const hasQuiz = Array.isArray(activeTopic?.quizQuestions) && activeTopic.quizQuestions.length > 0;
+  // Check mandatory quiz status for active topic (supports topic-level or module capstone)
+  const isLastTopicInCurrentModule = currentModule?.topics?.length > 0 && currentModule.topics[currentModule.topics.length - 1]?.id === activeTopic?.id;
+  const activeQuizQuestions = (Array.isArray(activeTopic?.quizQuestions) && activeTopic.quizQuestions.length > 0)
+    ? activeTopic.quizQuestions
+    : (isLastTopicInCurrentModule && Array.isArray(currentModule?.quizQuestions) && currentModule.quizQuestions.length > 0 ? currentModule.quizQuestions : []);
+  const hasQuiz = activeQuizQuestions.length > 0;
   const currentAttempt = activeTopic?.id ? quizAttempts?.[activeTopic.id] : null;
   const isQuizPassed = Boolean(currentAttempt?.passed || (currentAttempt?.percentage >= 75));
   const isTopicCompleted = Boolean(
@@ -1125,7 +1129,7 @@ export default function CoursePreview({
                 {/* ── Topic MCQ Assessment & Practice Questions (MANDATORY & RATED) ── */}
                 {hasQuiz && (
                   <TopicQuiz
-                    questions={activeTopic.quizQuestions}
+                    questions={activeQuizQuestions}
                     topicTitle={activeTopic.title}
                     topicId={activeTopic.id}
                     savedAttempt={currentAttempt}

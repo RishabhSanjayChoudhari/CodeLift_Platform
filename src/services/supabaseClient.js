@@ -16,6 +16,8 @@ export const isSupabaseConfigured = Boolean(
   rawUrl && isValidUrl(rawUrl) && rawAnonKey && rawAnonKey.trim().length > 0
 );
 
+export const checkIsSupabaseConfigured = () => isSupabaseConfigured;
+
 if (!isSupabaseConfigured) {
   console.warn(
     '[SupabaseClient] Notice: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not defined in this build. ' +

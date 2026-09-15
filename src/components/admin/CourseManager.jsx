@@ -210,7 +210,10 @@ export default function CourseManager() {
                     );
                     const isExpanded = expandedCourseId === course.id;
                     const totalTopics = course.modules?.reduce((acc, m) => acc + (m.topics?.length || 0), 0) || 0;
-                    const totalQuizzes = course.modules?.reduce((acc, m) => acc + (m.topics?.reduce((tAcc, t) => tAcc + (t.quizQuestions?.length || 0), 0) || 0), 0) || 0;
+                    const totalQuizzes = course.modules?.reduce((acc, m) => {
+                      const topicQ = m.topics?.reduce((tAcc, t) => tAcc + (t.quizQuestions?.length || 0), 0) || 0;
+                      return acc + (topicQ > 0 ? topicQ : (m.quizQuestions?.length || 0));
+                    }, 0) || 0;
                     const associatedBatchIds = associatedBatches.map(b => b.id);
                     const enrolledCount = students.filter(s => associatedBatchIds.includes(s.batchId)).length;
 
@@ -342,7 +345,8 @@ export default function CourseManager() {
                                 </h6>
                                 <div className="space-y-2">
                                   {course.modules?.map((mod, mi) => {
-                                    const mQuizCount = mod.topics?.reduce((sum, t) => sum + (t.quizQuestions?.length || 0), 0) || 0;
+                                    const topicQ = mod.topics?.reduce((sum, t) => sum + (t.quizQuestions?.length || 0), 0) || 0;
+                                    const mQuizCount = topicQ > 0 ? topicQ : (mod.quizQuestions?.length || 0);
                                     return (
                                       <div key={mod.id || mi} className="p-2.5 border rounded mb-2 d-flex justify-content-between align-items-center" style={{ background: 'var(--bg-body)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}>
                                         <span className="fw-semibold small">

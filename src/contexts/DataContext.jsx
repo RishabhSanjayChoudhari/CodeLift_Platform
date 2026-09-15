@@ -56,6 +56,31 @@ const DEFAULT_PLATFORM_SETTINGS = {
   }
 };
 
+function normalizeCourse(c) {
+  if (!c) return c;
+  const courseId = c.id || c.slug;
+  const modules = (c.modules || []).map((m) => {
+    const quizQuestions = Array.isArray(m.quizQuestions) ? m.quizQuestions : [];
+    const topics = (m.topics || []).map((t) => ({
+      ...t,
+      quizQuestions: Array.isArray(t.quizQuestions) ? t.quizQuestions : []
+    }));
+    if (quizQuestions.length > 0 && topics.length > 0 && !topics.some((t) => t.quizQuestions.length > 0)) {
+      topics[topics.length - 1].quizQuestions = quizQuestions;
+    }
+    return {
+      ...m,
+      topics,
+      quizQuestions
+    };
+  });
+  return {
+    ...c,
+    id: courseId,
+    modules
+  };
+}
+
 export function DataProvider({ children }) {
   // Collections State initialized with local seeds for instant render
   const [users, setUsers] = useState(usersSeed);
@@ -73,7 +98,7 @@ export function DataProvider({ children }) {
   // No useState needed here — see the derived const below in this component.
 
   const [categories, setCategories] = useState(categoriesSeed);
-  const [courses, setCourses] = useState(coursesSeed);
+  const [courses, setCourses] = useState(() => (coursesSeed || []).map(normalizeCourse));
   const [enrollments, setEnrollments] = useState(enrollmentsSeed);
   const [coupons, setCoupons] = useState(couponsSeed);
   const [payments, setPayments] = useState(paymentsSeed);
@@ -157,7 +182,7 @@ export function DataProvider({ children }) {
           }));
         }
         if (data.categories?.length) setCategories(data.categories);
-        if (data.courses?.length) setCourses(data.courses);
+        if (data.courses?.length) setCourses(data.courses.map(normalizeCourse));
         if (data.enrollments?.length) setEnrollments(data.enrollments);
         if (data.coupons?.length) setCoupons(data.coupons);
         if (data.payments?.length) setPayments(data.payments);
@@ -347,9 +372,41 @@ export function DataProvider({ children }) {
     supabaseDataService.updateBatch(batchId, updates).catch((e) => console.error('[DataContext] updateBatch failed:', e));
   };
 
-  const deleteBatch = (batchId) => {
+  const deleteBatch = async (batchId) => {
+    // 1. Remove batch from batches list
     setBatches((prev) => prev.filter((b) => b.id !== batchId));
-    supabaseDataService.deleteBatch(batchId).catch((e) => console.error('[DataContext] deleteBatch failed:', e));
+    // 2. Unassign students in local state
+    setStudents((prev) =>
+      prev.map((s) => (s.batchId === batchId ? { ...s, batchId: '' } : s))
+    );
+    // 3. Detach courses in local state
+    setCourses((prev) =>
+      prev.map((c) => ({
+        ...c,
+        batchId: c.batchId === batchId ? null : c.batchId,
+        batchIds: Array.isArray(c.batchIds) ? c.batchIds.filter((id) => id !== batchId) : []
+      }))
+    );
+    // 4. Detach tests in local state
+    setTests((prev) =>
+      prev.map((t) => ({
+        ...t,
+        assignedBatchIds: Array.isArray(t.assignedBatchIds) ? t.assignedBatchIds.filter((id) => id !== batchId) : []
+      }))
+    );
+    // 5. Detach assignments in local state
+    setAssignments((prev) =>
+      prev.map((a) => ({
+        ...a,
+        batchIds: Array.isArray(a.batchIds) ? a.batchIds.filter((id) => id !== batchId) : []
+      }))
+    );
+
+    try {
+      await supabaseDataService.deleteBatch(batchId);
+    } catch (e) {
+      console.error('[DataContext] deleteBatch failed:', e);
+    }
   };
 
   const completeBatch = async (batchId) => {

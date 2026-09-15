@@ -14,6 +14,7 @@ import { runThemeConsistencyTests } from './verify-theme-consistency.js';
 import { runBatchCourseAndFeeTests } from './batch-course-and-fee.test.js';
 import { runEnrollmentAndMarketplaceTests } from './enrollment-journey-and-marketplace.test.js';
 import { runProblemEditorialTests } from './problem-solutions.test.js';
+import { runBatchManagementAndQuizzesTests } from './batch-management-and-quizzes.test.js';
 
 async function runAll() {
   console.log('===============================================================');
@@ -95,6 +96,15 @@ async function runAll() {
     suiteResults.push({ name: 'Problem Arena Editorials & Detailed Explanations', passed: r8.passedCount, total: r8.totalCount, ok: true });
   } catch (err) {
     suiteResults.push({ name: 'Problem Arena Editorials & Detailed Explanations', error: err.message, ok: false });
+  }
+
+  try {
+    const r9 = runBatchManagementAndQuizzesTests();
+    totalPassed += r9.passedCount;
+    totalTests += r9.totalCount;
+    suiteResults.push({ name: 'Batch Management, Safe Deletion & Course Quizzes', passed: r9.passedCount, total: r9.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Batch Management, Safe Deletion & Course Quizzes', error: err.message, ok: false });
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);

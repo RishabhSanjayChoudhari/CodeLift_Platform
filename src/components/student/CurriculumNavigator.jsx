@@ -237,20 +237,27 @@ export default function CurriculumNavigator({
                           </span>
 
                           {/* Quiz Indicator Badge */}
-                          {Array.isArray(topic.quizQuestions) && topic.quizQuestions.length > 0 && (
-                            <span
-                              className="badge rounded-pill ms-auto me-1 flex-shrink-0"
-                              style={{
-                                fontSize: '0.65rem',
-                                background: quizAttempts[topic.id]?.passed ? 'rgba(var(--bs-success-rgb, 22, 163, 74), 0.16)' : 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)',
-                                color: quizAttempts[topic.id]?.passed ? 'var(--bs-success, #16a34a)' : 'var(--bs-primary)',
-                                border: '1px solid currentColor',
-                                fontWeight: 700
-                              }}
-                            >
-                              {quizAttempts[topic.id]?.passed ? `✓ ${quizAttempts[topic.id]?.score}/${quizAttempts[topic.id]?.totalMarks}` : `Quiz (${topic.quizQuestions.length})`}
-                            </span>
-                          )}
+                          {(() => {
+                            const qCount = (Array.isArray(topic.quizQuestions) && topic.quizQuestions.length > 0)
+                              ? topic.quizQuestions.length
+                              : (originalTIdx === module.topics?.length - 1 && Array.isArray(module.quizQuestions) ? module.quizQuestions.length : 0);
+                            if (!qCount) return null;
+                            const isPassed = quizAttempts[topic.id]?.passed;
+                            return (
+                              <span
+                                className="badge rounded-pill ms-auto me-1 flex-shrink-0"
+                                style={{
+                                  fontSize: '0.65rem',
+                                  background: isPassed ? 'rgba(var(--bs-success-rgb, 22, 163, 74), 0.16)' : 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)',
+                                  color: isPassed ? 'var(--bs-success, #16a34a)' : 'var(--bs-primary)',
+                                  border: '1px solid currentColor',
+                                  fontWeight: 700
+                                }}
+                              >
+                                {isPassed ? `✓ ${quizAttempts[topic.id]?.score}/${quizAttempts[topic.id]?.totalMarks}` : `Quiz (${qCount})`}
+                              </span>
+                            );
+                          })()}
 
                           {/* Duration */}
                           {topic.durationMinutes && (

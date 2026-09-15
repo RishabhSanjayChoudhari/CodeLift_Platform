@@ -321,7 +321,10 @@ export default function Home() {
                             <button
                               type="button"
                               className="cl-btn-enroll"
-                              onClick={() => setSelectedCourseForEnroll({ ...c, price: feeInfo.price, isFree: feeInfo.isFree })}
+                              onClick={() => {
+                                Object.assign(c, { price: feeInfo.price, isFree: feeInfo.isFree });
+                                setSelectedCourseForEnroll(c);
+                              }}
                               title="Enroll via WhatsApp"
                             >
                               <FaWhatsapp size={15} />

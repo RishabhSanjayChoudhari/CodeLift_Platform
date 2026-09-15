@@ -290,7 +290,8 @@ export async function fetchAllData() {
             .map((t) => ({
               id: t.id,
               title: t.title,
-              contentMd: t.content_md || ''
+              contentMd: t.content_md || '',
+              quizQuestions: Array.isArray(t.quiz_questions) ? t.quiz_questions : (Array.isArray(t.quizQuestions) ? t.quizQuestions : [])
             }))
         }));
 
@@ -795,6 +796,15 @@ export async function updateBatch(batchId, updates) {
 }
 
 export async function deleteBatch(batchId) {
+  // 1. Delete associated junction records
+  await supabase.from('batch_courses').delete().eq('batch_id', batchId);
+  await supabase.from('batch_tests').delete().eq('batch_id', batchId);
+  await supabase.from('batch_assignments').delete().eq('batch_id', batchId);
+
+  // 2. Unassign students
+  await supabase.from('students').update({ batch_id: null }).eq('batch_id', batchId);
+
+  // 3. Delete batch record itself
   const { error } = await supabase.from('batches').delete().eq('id', batchId);
   if (error) handleSupabaseError(error, 'Failed to delete batch');
   return true;
@@ -1191,8 +1201,12 @@ export async function deleteBatchCleanup(batchId) {
   // 5. Delete batch-courses links
   await supabase.from('batch_courses').delete().eq('batch_id', batchId);
 
-  // 6. Delete assignments for this batch
+  // 6. Delete assignments and batch_assignments for this batch
+  await supabase.from('batch_assignments').delete().eq('batch_id', batchId);
   await supabase.from('assignments').delete().eq('batch_id', batchId);
+
+  // 6.5 Unassign students from this batch
+  await supabase.from('students').update({ batch_id: null }).eq('batch_id', batchId);
 
   // 7. Delete the batch record itself
   const { error } = await supabase.from('batches').delete().eq('id', batchId);

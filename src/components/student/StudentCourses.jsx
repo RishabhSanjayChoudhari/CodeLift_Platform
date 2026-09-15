@@ -448,29 +448,38 @@ export default function StudentCourses() {
                 />
 
                 {/* ── Topic MCQ Assessment & Quiz ── */}
-                {Array.isArray(currentTopic?.quizQuestions) && currentTopic.quizQuestions.length > 0 && (
-                  <div className="mt-4 pt-3 border-top" style={{ borderColor: 'var(--border-color)' }}>
-                    <TopicQuiz
-                      questions={currentTopic.quizQuestions}
-                      topicTitle={currentTopic.title}
-                      topicId={currentTopic.id}
-                      savedAttempt={student?.quizAttempts?.[currentTopic.id]}
-                      onSaveAttempt={(attemptData) => {
-                        if (saveQuizAttempt) {
-                          saveQuizAttempt({
-                            studentId: student?.id,
-                            courseId: activeCourse?.id,
-                            topicId: currentTopic?.id,
-                            ...attemptData
-                          });
-                        }
-                        if (attemptData.passed && currentTopic?.id && markTopicComplete) {
-                          markTopicComplete(currentTopic.id);
-                        }
-                      }}
-                    />
-                  </div>
-                )}
+                {(() => {
+                  const isLastTopicInModule = currentTopicIndex === topics.length - 1;
+                  const activeQuizQuestions = (Array.isArray(currentTopic?.quizQuestions) && currentTopic.quizQuestions.length > 0)
+                    ? currentTopic.quizQuestions
+                    : (isLastTopicInModule && Array.isArray(currentModule?.quizQuestions) && currentModule.quizQuestions.length > 0 ? currentModule.quizQuestions : []);
+
+                  if (activeQuizQuestions.length === 0) return null;
+
+                  return (
+                    <div className="mt-4 pt-3 border-top" style={{ borderColor: 'var(--border-color)' }}>
+                      <TopicQuiz
+                        questions={activeQuizQuestions}
+                        topicTitle={currentTopic.title}
+                        topicId={currentTopic.id}
+                        savedAttempt={student?.quizAttempts?.[currentTopic.id]}
+                        onSaveAttempt={(attemptData) => {
+                          if (saveQuizAttempt) {
+                            saveQuizAttempt({
+                              studentId: student?.id,
+                              courseId: activeCourse?.id,
+                              topicId: currentTopic?.id,
+                              ...attemptData
+                            });
+                          }
+                          if (attemptData.passed && currentTopic?.id && markTopicComplete) {
+                            markTopicComplete(currentTopic.id);
+                          }
+                        }}
+                      />
+                    </div>
+                  );
+                })()}
 
                 {/* ── Desktop Inline Navigation ── */}
                 <div className="cv-inline-nav">

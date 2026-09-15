@@ -50,6 +50,7 @@ export default function BatchManager() {
     courses = [],
     addBatch,
     updateBatch,
+    deleteBatch,
     toggleBatchActive,
     markBatchComplete,
     cleanupBatch,
@@ -71,8 +72,14 @@ export default function BatchManager() {
   const [archiveWarning, setArchiveWarning] = useState(null);
   const [completionModalBatch, setCompletionModalBatch] = useState(null);
   const [cleanupModalBatch, setCleanupModalBatch] = useState(null);
+  const [deleteModalBatch, setDeleteModalBatch] = useState(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isCleaningUp, setIsCleaningUp] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('ALL'); // 'ALL' | 'ACTIVE' | 'ARCHIVED' | 'COMPLETED'
 
   // Batch Operations Hub state
   const [hubBatch, setHubBatch] = useState(null);
@@ -325,201 +332,264 @@ export default function BatchManager() {
         </Button>
       </div>
 
+      {/* Search & Status Filter Toolbar */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+        {/* Search Input */}
+        <div className="input-group" style={{ maxWidth: 360 }}>
+          <span className="input-group-text bg-transparent border-end-0" style={{ borderColor: 'var(--border-color)', color: 'var(--text-secondary)' }}>
+            <FaSearch size={13} />
+          </span>
+          <Form.Control
+            type="text"
+            placeholder="Search cohorts by name, description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border-start-0 ps-0 shadow-none"
+            style={{ fontSize: '0.88rem' }}
+          />
+          {searchQuery && (
+            <button
+              className="btn btn-sm btn-outline-secondary border-start-0"
+              onClick={() => setSearchQuery('')}
+              type="button"
+            >
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Status Filter Pills */}
+        <div className="d-flex gap-1.5 p-1 rounded-pill border bg-body" style={{ borderColor: 'var(--border-color)' }}>
+          {[
+            { id: 'ALL', label: 'All', count: batches.length },
+            { id: 'ACTIVE', label: 'Active', count: batches.filter((b) => b.isActive && !b.isCompleted).length },
+            { id: 'ARCHIVED', label: 'Archived', count: batches.filter((b) => !b.isActive).length },
+            { id: 'COMPLETED', label: 'Completed', count: batches.filter((b) => b.isCompleted).length }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setFilterStatus(tab.id)}
+              className={`btn btn-sm rounded-pill px-3 py-1 d-flex align-items-center gap-1.5 border-0 fw-semibold ${
+                filterStatus === tab.id ? 'btn-primary text-white shadow-sm' : 'text-muted bg-transparent'
+              }`}
+              style={{ fontSize: '0.8rem' }}
+            >
+              <span>{tab.label}</span>
+              <span className={`badge rounded-pill ${filterStatus === tab.id ? 'bg-white text-primary' : 'bg-secondary bg-opacity-25 text-body'}`} style={{ fontSize: '0.7rem' }}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Batches Table Card */}
       <Card className="shadow-sm border rounded-4 overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
         <Card.Body className="p-0">
           <div className="table-responsive">
-            <Table hover striped className="mb-0 align-middle">
+            <Table hover className="mb-0 align-middle">
               <thead style={{ background: 'var(--bg-body)' }}>
-                <tr className="small text-uppercase" style={{ letterSpacing: '0.5px' }}>
-                  <th>Cohort / Batch</th>
-                  <th>Capacity & Enrolled</th>
-                  <th>Attached Courses</th>
-                  <th>Assigned Tests</th>
-                  <th>Tuition Fee</th>
-                  <th>Start Date</th>
+                <tr className="small text-uppercase text-muted" style={{ letterSpacing: '0.5px' }}>
+                  <th>Cohort & Curriculum</th>
+                  <th>Enrollment</th>
+                  <th>Tuition & Schedule</th>
                   <th>Status</th>
-                  <th className="text-end">Batch Operations</th>
+                  <th className="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {batches.map((batch) => {
-                  const enrolledStudents = getBatchStudents(batch);
-                  const enrolledCount = enrolledStudents.length;
-                  const attachedCourses = getBatchCourses(batch);
-                  const assignedTests = getBatchTests(batch);
-                  const capacityPct = Math.min(100, Math.round((enrolledCount / (batch.capacity || 1)) * 100));
+                {(() => {
+                  const filteredBatches = batches.filter((b) => {
+                    if (filterStatus === 'ACTIVE' && (!b.isActive || b.isCompleted)) return false;
+                    if (filterStatus === 'ARCHIVED' && b.isActive) return false;
+                    if (filterStatus === 'COMPLETED' && !b.isCompleted) return false;
+                    if (searchQuery.trim()) {
+                      const q = searchQuery.toLowerCase();
+                      const matchName = (b.name || '').toLowerCase().includes(q);
+                      const matchDesc = (b.description || '').toLowerCase().includes(q);
+                      if (!matchName && !matchDesc) return false;
+                    }
+                    return true;
+                  });
 
-                  return (
-                    <tr key={batch.id}>
-                      {/* Batch Name & Subtext */}
-                      <td>
-                        <div className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.93rem' }}>
-                          {batch.name}
-                        </div>
-                        <div className="text-muted small text-truncate" style={{ maxWidth: 220, fontSize: '0.78rem' }}>
-                          {batch.description || 'General cohort track'}
-                        </div>
-                      </td>
+                  if (filteredBatches.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={5} className="text-center py-5 text-muted">
+                          <FaLayerGroup size={32} className="text-muted opacity-50 mb-2" />
+                          <div className="fw-semibold">No batches found matching criteria</div>
+                          <div className="small">Try adjusting your search query or status filter.</div>
+                        </td>
+                      </tr>
+                    );
+                  }
 
-                      {/* Capacity & Enrolled with visual bar */}
-                      <td style={{ minWidth: 140 }}>
-                        <div className="d-flex justify-content-between align-items-center mb-1">
-                          <span className="small fw-semibold" style={{ fontSize: '0.78rem' }}>
-                            {enrolledCount} / {batch.capacity}
-                          </span>
-                          <span
-                            className={`badge rounded-pill ${
-                              enrolledCount >= batch.capacity
-                                ? 'bg-danger-subtle text-danger border border-danger-subtle'
-                                : enrolledCount > 0
-                                ? 'bg-primary-subtle text-primary border border-primary-subtle'
-                                : 'bg-light text-muted border'
-                            }`}
-                            style={{ fontSize: '0.7rem' }}
-                          >
-                            {capacityPct}% Full
-                          </span>
-                        </div>
-                        <div className="progress rounded-pill" style={{ height: 6, background: 'var(--bg-body)' }}>
-                          <div
-                            className={`progress-bar rounded-pill ${enrolledCount >= batch.capacity ? 'bg-danger' : 'bg-primary'}`}
-                            style={{ width: `${capacityPct}%` }}
-                          />
-                        </div>
-                      </td>
+                  return filteredBatches.map((batch) => {
+                    const enrolledStudents = getBatchStudents(batch);
+                    const enrolledCount = enrolledStudents.length;
+                    const attachedCourses = getBatchCourses(batch);
+                    const assignedTests = getBatchTests(batch);
+                    const capacityPct = Math.min(100, Math.round((enrolledCount / (batch.capacity || 1)) * 100));
 
-                      {/* Attached Courses */}
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenHub(batch, 'courses')}
-                          className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 rounded-pill px-2.5 py-1"
-                          style={{ fontSize: '0.78rem', background: 'var(--bg-body)' }}
-                          title="Click to view or edit attached courses"
-                        >
-                          <FaBook className="text-primary" size={11} />
-                          <span className="fw-bold">{attachedCourses.length}</span>
-                          <span className="text-muted">Courses</span>
-                        </button>
-                      </td>
-
-                      {/* Assigned Tests */}
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenHub(batch, 'tests')}
-                          className="btn btn-sm btn-light border d-inline-flex align-items-center gap-1.5 rounded-pill px-2.5 py-1"
-                          style={{ fontSize: '0.78rem', background: 'var(--bg-body)' }}
-                          title="Click to view or edit assigned tests"
-                        >
-                          <FaFileAlt className="text-info" size={11} />
-                          <span className="fw-bold">{assignedTests.length}</span>
-                          <span className="text-muted">Tests</span>
-                        </button>
-                      </td>
-
-                      {/* Fee Amount */}
-                      <td className="fw-bold font-monospace" style={{ color: '#16a34a' }}>
-                        ₹{batch.feeAmount?.toLocaleString()}
-                      </td>
-
-                      {/* Start Date */}
-                      <td className="small text-muted">
-                        <span className="d-flex align-items-center gap-1">
-                          <FaCalendarAlt size={10} />
-                          <span>{batch.startDate}</span>
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td>
-                        {batch.isCompleted ? (
-                          <Badge bg="info" className="text-dark rounded-pill px-2.5 py-1">
-                            Completed
-                          </Badge>
-                        ) : (
-                          <Badge
-                            bg={batch.isActive ? 'success' : 'secondary'}
-                            className="rounded-pill px-2.5 py-1"
-                          >
-                            {batch.isActive ? 'Active' : 'Archived'}
-                          </Badge>
-                        )}
-                      </td>
-
-                      {/* Operations Actions */}
-                      <td className="text-end">
-                        <div className="d-inline-flex gap-1.5 flex-wrap justify-content-end">
-                          {/* Manage Hub Button */}
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={() => handleOpenHub(batch, 'students')}
-                            className="d-inline-flex align-items-center gap-1.5 rounded-pill px-3 shadow-sm"
-                            style={{ fontSize: '0.82rem', fontWeight: 600 }}
-                            title="Manage Students, Courses, Tests & Settings for this batch"
-                          >
-                            <FaCogs size={12} />
-                            <span>Manage Hub</span>
-                          </Button>
-
-                          {/* Quick Edit */}
-                          <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => handleOpenHub(batch, 'settings')}
-                            className="d-inline-flex align-items-center gap-1 rounded-pill px-2.5"
-                            title="Edit Batch Name, Capacity, Fees, or Dates"
-                          >
-                            <FaEdit size={11} />
-                          </Button>
-
-                          {/* Mark Complete */}
-                          {batch.isActive && !batch.isCompleted && (
-                            <Button
-                              variant="outline-success"
-                              size="sm"
-                              onClick={() => setCompletionModalBatch(batch)}
-                              className="d-inline-flex align-items-center gap-1 rounded-pill px-2.5"
-                              title="Mark this cohort as complete and transition students to Alumni"
-                            >
-                              <FaGraduationCap size={12} />
-                            </Button>
+                    return (
+                      <tr key={batch.id}>
+                        {/* Cohort & Curriculum */}
+                        <td style={{ minWidth: 220 }}>
+                          <div className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.93rem' }}>
+                            {batch.name}
+                          </div>
+                          {batch.description && (
+                            <div className="text-muted small text-truncate" style={{ maxWidth: 260, fontSize: '0.78rem' }}>
+                              {batch.description}
+                            </div>
                           )}
+                          <div className="d-flex align-items-center gap-2 mt-1">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenHub(batch, 'courses')}
+                              className="btn btn-sm p-0 text-primary border-0 d-inline-flex align-items-center gap-1"
+                              style={{ fontSize: '0.75rem' }}
+                              title="Click to manage courses"
+                            >
+                              <FaBook size={10} />
+                              <span>{attachedCourses.length} Courses</span>
+                            </button>
+                            <span className="text-muted small">•</span>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenHub(batch, 'tests')}
+                              className="btn btn-sm p-0 text-info border-0 d-inline-flex align-items-center gap-1"
+                              style={{ fontSize: '0.75rem' }}
+                              title="Click to manage tests"
+                            >
+                              <FaFileAlt size={10} />
+                              <span>{assignedTests.length} Tests</span>
+                            </button>
+                          </div>
+                        </td>
 
-                          {/* Clean Up Activity (only for completed batches) */}
-                          {batch.isCompleted && (
+                        {/* Enrollment */}
+                        <td style={{ minWidth: 160 }}>
+                          <div className="d-flex justify-content-between align-items-center mb-1">
+                            <span className="small fw-semibold" style={{ fontSize: '0.78rem' }}>
+                              {enrolledCount} / {batch.capacity} Students
+                            </span>
+                            <span
+                              className={`badge rounded-pill ${
+                                enrolledCount >= batch.capacity
+                                  ? 'bg-danger-subtle text-danger border border-danger-subtle'
+                                  : enrolledCount > 0
+                                  ? 'bg-primary-subtle text-primary border border-primary-subtle'
+                                  : 'bg-light text-muted border'
+                              }`}
+                              style={{ fontSize: '0.68rem' }}
+                            >
+                              {capacityPct}% Full
+                            </span>
+                          </div>
+                          <div className="progress rounded-pill" style={{ height: 6, background: 'var(--bg-body)' }}>
+                            <div
+                              className={`progress-bar rounded-pill ${enrolledCount >= batch.capacity ? 'bg-danger' : 'bg-primary'}`}
+                              style={{ width: `${capacityPct}%` }}
+                            />
+                          </div>
+                        </td>
+
+                        {/* Tuition & Schedule */}
+                        <td>
+                          <div className="fw-bold font-monospace" style={{ color: '#16a34a', fontSize: '0.92rem' }}>
+                            ₹{batch.feeAmount?.toLocaleString()}
+                          </div>
+                          <div className="small text-muted d-flex align-items-center gap-1" style={{ fontSize: '0.76rem' }}>
+                            <FaCalendarAlt size={10} />
+                            <span>Starts: {batch.startDate || 'Immediate'}</span>
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td>
+                          {batch.isCompleted ? (
+                            <Badge bg="info" className="text-dark rounded-pill px-2.5 py-1">
+                              Completed
+                            </Badge>
+                          ) : (
+                            <Badge
+                              bg={batch.isActive ? 'success' : 'secondary'}
+                              className="rounded-pill px-2.5 py-1"
+                            >
+                              {batch.isActive ? 'Active' : 'Archived'}
+                            </Badge>
+                          )}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="text-end">
+                          <div className="d-inline-flex gap-1.5 align-items-center justify-content-end flex-wrap">
+                            {/* Manage Hub Button */}
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => handleOpenHub(batch, 'students')}
+                              className="d-inline-flex align-items-center gap-1.5 rounded-pill px-3 shadow-sm"
+                              style={{ fontSize: '0.82rem', fontWeight: 600 }}
+                              title="Manage Students, Courses, Tests & Settings"
+                            >
+                              <FaCogs size={12} />
+                              <span>Manage</span>
+                            </Button>
+
+                            {/* Quick Edit */}
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              onClick={() => handleOpenHub(batch, 'settings')}
+                              className="rounded-pill px-2.5"
+                              title="Edit Batch Settings"
+                            >
+                              <FaEdit size={11} />
+                            </Button>
+
+                            {/* Mark Complete */}
+                            {batch.isActive && !batch.isCompleted && (
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => setCompletionModalBatch(batch)}
+                                className="rounded-pill px-2.5"
+                                title="Mark cohort complete"
+                              >
+                                <FaGraduationCap size={12} />
+                              </Button>
+                            )}
+
+                            {/* Archive / Activate */}
+                            <Button
+                              variant={batch.isActive ? 'outline-warning' : 'outline-success'}
+                              size="sm"
+                              onClick={() => handleToggleClick(batch)}
+                              className="rounded-pill px-2.5"
+                              title={batch.isActive ? 'Archive cohort' : 'Activate cohort'}
+                            >
+                              {batch.isActive ? <FaArchive size={11} /> : <FaCheckCircle size={11} />}
+                            </Button>
+
+                            {/* Delete Batch */}
                             <Button
                               variant="outline-danger"
                               size="sm"
-                              onClick={() => {
-                                setCleanupModalBatch(batch);
-                                setDeleteConfirmText('');
-                              }}
-                              className="d-inline-flex align-items-center gap-1 rounded-pill px-2.5"
-                              title="Clean up batch activity data (purges submissions, tests & files while preserving students & progress)"
+                              onClick={() => setDeleteModalBatch(batch)}
+                              className="rounded-pill px-2.5"
+                              title="Delete this cohort"
                             >
                               <FaTrash size={11} />
-                              <span style={{ fontSize: '0.75rem' }}>Clean Up</span>
                             </Button>
-                          )}
-
-                          {/* Archive / Activate */}
-                          <Button
-                            variant={batch.isActive ? 'outline-danger' : 'outline-success'}
-                            size="sm"
-                            onClick={() => handleToggleClick(batch)}
-                            className="d-inline-flex align-items-center gap-1 rounded-pill px-2.5"
-                            title={batch.isActive ? 'Archive cohort' : 'Activate cohort'}
-                          >
-                            {batch.isActive ? <FaArchive size={11} /> : <FaCheckCircle size={11} />}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </Table>
           </div>
@@ -1150,15 +1220,26 @@ export default function BatchManager() {
                       </Form.Control.Feedback>
                     </Form.Group>
 
-                    <div className="d-flex justify-content-between align-items-center pt-2">
-                      <Button
-                        variant={currentBatch.isActive ? 'outline-danger' : 'outline-success'}
-                        size="sm"
-                        onClick={() => handleToggleClick(currentBatch)}
-                        className="rounded-pill px-3"
-                      >
-                        {currentBatch.isActive ? 'Archive Cohort' : 'Activate Cohort'}
-                      </Button>
+                    <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2">
+                      <div className="d-flex gap-2">
+                        <Button
+                          variant={currentBatch.isActive ? 'outline-warning' : 'outline-success'}
+                          size="sm"
+                          onClick={() => handleToggleClick(currentBatch)}
+                          className="rounded-pill px-3"
+                        >
+                          {currentBatch.isActive ? 'Archive Cohort' : 'Activate Cohort'}
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => setDeleteModalBatch(currentBatch)}
+                          className="rounded-pill px-3 d-flex align-items-center gap-1.5"
+                        >
+                          <FaTrash size={11} />
+                          <span>Delete Batch</span>
+                        </Button>
+                      </div>
 
                       <Button variant="primary" type="submit" className="rounded-pill px-4 shadow-sm fw-semibold">
                         Save Batch Updates
@@ -1516,6 +1597,87 @@ export default function BatchManager() {
           </Modal.Footer>
         </Modal>
       )}
+
+      {/* DIRECT DELETE BATCH MODAL */}
+      {deleteModalBatch && (() => {
+        const enrolledStudents = getBatchStudents(deleteModalBatch);
+        const attachedCourses = getBatchCourses(deleteModalBatch);
+        const assignedTests = getBatchTests(deleteModalBatch);
+
+        const handleConfirmDelete = async () => {
+          try {
+            setIsDeleting(true);
+            await deleteBatch(deleteModalBatch.id);
+            toast.success(`Batch "${deleteModalBatch.name}" deleted successfully.`);
+            setDeleteModalBatch(null);
+            if (hubBatch?.id === deleteModalBatch.id) {
+              setHubBatch(null);
+            }
+          } catch (err) {
+            toast.error('Failed to delete batch: ' + (err.message || 'Unknown error'));
+          } finally {
+            setIsDeleting(false);
+          }
+        };
+
+        return (
+          <Modal show={true} onHide={() => !isDeleting && setDeleteModalBatch(null)} centered>
+            <Modal.Header closeButton style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
+              <Modal.Title className="fs-5 fw-bold text-danger d-flex align-items-center gap-2">
+                <FaTrash size={16} />
+                <span>Delete Batch Cohort</span>
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ background: 'var(--card-bg)' }}>
+              <p className="mb-2">
+                Are you sure you want to delete the batch cohort <strong>"{deleteModalBatch.name}"</strong>?
+              </p>
+
+              {enrolledStudents.length > 0 ? (
+                <Alert variant="warning" className="small mb-3">
+                  <strong>Notice:</strong> <strong>{enrolledStudents.length} student(s)</strong> are currently assigned to this batch.
+                  Deleting this batch will safely unassign them so they become unassigned students.
+                  <strong> Student accounts, payments, and learning progress will NOT be deleted.</strong>
+                </Alert>
+              ) : (
+                <p className="small text-muted mb-3">
+                  This batch currently has no active enrolled students and can be safely deleted.
+                </p>
+              )}
+
+              <div className="p-2.5 rounded-3 border mb-2 bg-light small text-muted">
+                <div>• {attachedCourses.length} course link(s) will be unlinked</div>
+                <div>• {assignedTests.length} benchmark test assignment(s) will be detached</div>
+                <div>• The batch cohort record will be permanently removed</div>
+              </div>
+            </Modal.Body>
+            <Modal.Footer style={{ background: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={isDeleting}
+                onClick={() => setDeleteModalBatch(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="d-flex align-items-center gap-1.5 fw-semibold px-3"
+              >
+                {isDeleting ? 'Deleting...' : (
+                  <>
+                    <FaTrash size={12} />
+                    <span>Yes, Delete Batch</span>
+                  </>
+                )}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        );
+      })()}
     </div>
   );
 }
