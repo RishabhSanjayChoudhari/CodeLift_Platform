@@ -568,6 +568,7 @@ body {
   --bg-body: #0F172A;
   --card-bg: #1E293B;
   --card-bg-alt: #162032;
+  --card-bg-rgb: 30, 41, 59;
   --bg-card: #1E293B;
   --bg-card-alt: #162032;
   --text-primary: #F1F5F9;
@@ -640,6 +641,7 @@ body {
   --bg-body: #0B0F19;
   --card-bg: #151E2F;
   --card-bg-alt: #101726;
+  --card-bg-rgb: 21, 30, 47;
   --bg-card: #151E2F;
   --bg-card-alt: #101726;
   --text-primary: #E2E8F0;
@@ -712,6 +714,7 @@ body {
   --bg-body: #000000;
   --card-bg: #111111;
   --card-bg-alt: #181818;
+  --card-bg-rgb: 17, 17, 17;
   --bg-card: #111111;
   --bg-card-alt: #181818;
   --text-primary: #FFFFFF;
@@ -787,6 +790,9 @@ body {
 [data-theme-mode="dark"],
 [data-bs-theme="dark"] {
   color-scheme: dark;
+  --card-bg: #151E2F;
+  --card-bg-alt: #101726;
+  --card-bg-rgb: 21, 30, 47;
   --bg-card: var(--card-bg, #1e293b);
   --bg-card-alt: var(--card-bg-alt, #162032);
 
@@ -1402,10 +1408,13 @@ body {
 
 /* Home / Landing Page Dark Mode Overrides */
 [data-bs-theme="dark"] .cl-navbar,
+[data-bs-theme="dark"] .navbar,
 [data-theme-mode="dark"] .cl-navbar,
-[data-theme*="dark"] .cl-navbar {
-  background-color: rgba(30, 41, 59, 0.95) !important;
-  border-bottom-color: var(--border-color) !important;
+[data-theme-mode="dark"] .navbar,
+[data-theme*="dark"] .cl-navbar,
+[data-theme*="dark"] .navbar {
+  background-color: var(--card-bg, #151e2f) !important;
+  border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.08)) !important;
 }
 
 [data-bs-theme="dark"] .cl-hero,
@@ -1666,28 +1675,55 @@ input:-webkit-autofill:focus {
 /* ================================================================
    =========== NAVBAR SCROLL GLASS EFFECT =========================
    ================================================================ */
-.navbar.scrolled {
-  background: rgba(var(--card-bg-rgb, 255,255,255), 0.88) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.10) !important;
+.navbar {
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-/* Active nav link — themed underline indicator */
+.navbar.scrolled {
+  background: color-mix(in srgb, var(--card-bg, #ffffff) 92%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10) !important;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08)) !important;
+}
+
+/* Scrolled navbar in Dark Modes & Dark Themes — NEVER WHITE */
+[data-bs-theme="dark"] .navbar,
+[data-theme-mode="dark"] .navbar,
+[data-theme*="dark"] .navbar {
+  background-color: var(--card-bg, #151e2f) !important;
+  border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+}
+
+[data-bs-theme="dark"] .navbar.scrolled,
+[data-theme-mode="dark"] .navbar.scrolled,
+[data-theme*="dark"] .navbar.scrolled {
+  background: color-mix(in srgb, var(--card-bg, #151e2f) 92%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+  border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+}
+
+[data-theme="dark-nebula"] .navbar.scrolled,
+[data-theme="nebula-night"] .navbar.scrolled {
+  background: color-mix(in srgb, #151E2F 92%, transparent) !important;
+}
+
+[data-theme="dark-emerald"] .navbar.scrolled,
+[data-theme="midnight-emerald"] .navbar.scrolled {
+  background: color-mix(in srgb, #1E293B 92%, transparent) !important;
+}
+
+[data-theme="dark-carbon"] .navbar.scrolled,
+[data-theme="carbon-black"] .navbar.scrolled {
+  background: color-mix(in srgb, #111111 92%, transparent) !important;
+}
+
+/* Active nav link — color-only indicator (no underline) */
 .navbar .nav-link.active,
 .navbar .nav-link:local(.active) {
   color: var(--bs-primary) !important;
-  position: relative;
-}
-.navbar .nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 12px;
-  right: 12px;
-  height: 2.5px;
-  background: var(--bs-primary);
-  border-radius: 99px;
 }
 
 /* ================================================================
@@ -3853,4 +3889,148 @@ html {
   color: #ffffff !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL DESIGN SYSTEM UTILITIES — v2
+   Section headers · Navbar brand/link/portal · Theme-safe via CSS vars
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Section Header System ── */
+.cl-eyebrow {
+  display: inline-block;
+  color: var(--bs-primary, #15803d);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  margin-bottom: 10px;
+}
+
+.cl-section-title {
+  font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--text-primary, #171717);
+  text-wrap: balance;
+}
+
+.cl-section-sub {
+  font-size: 0.93rem;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.65;
+}
+
+/* ── Navbar — Brand ── */
+.cl-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary, #171717) !important;
+  text-decoration: none !important;
+}
+
+.cl-nav-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    var(--bs-primary, #15803d) 0%,
+    color-mix(in srgb, var(--bs-primary, #15803d) 75%, #000) 100%
+  );
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  box-shadow: 0 3px 10px rgba(var(--bs-primary-rgb, 21, 128, 61), 0.3);
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cl-nav-brand:hover .cl-nav-brand-icon { transform: rotate(-8deg) scale(1.08); }
+
+.cl-nav-brand-accent { color: var(--bs-primary, #15803d); }
+
+/* ── Navbar — Nav links ── */
+.cl-nav-link {
+  position: relative;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary, #6b7280) !important;
+  text-decoration: none;
+  padding: 6px 14px !important;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cl-nav-link:hover {
+  color: var(--bs-primary, #15803d) !important;
+  background: rgba(var(--bs-primary-rgb, 21, 128, 61), 0.07) !important;
+}
+
+.cl-nav-link.active {
+  color: var(--bs-primary, #15803d) !important;
+  background: rgba(var(--bs-primary-rgb, 21, 128, 61), 0.08) !important;
+}
+
+/* ── Navbar — Student Portal button ── */
+.cl-nav-portal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bs-primary, #15803d);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-decoration: none !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 12px rgba(var(--bs-primary-rgb, 21, 128, 61), 0.28);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cl-nav-portal-btn:hover {
+  background: color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(var(--bs-primary-rgb, 21, 128, 61), 0.38);
+  color: #ffffff !important;
+}
+
+.cl-nav-portal-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(var(--bs-primary-rgb, 21, 128, 61), 0.22);
+}
+
+/* Dark theme text-balance fallback */
+[data-theme*="dark"] .cl-section-title,
+[data-theme="midnight-emerald"] .cl-section-title,
+[data-theme="nebula-night"] .cl-section-title,
+[data-theme="carbon-black"] .cl-section-title {
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme*="dark"] .cl-section-sub,
+[data-theme="midnight-emerald"] .cl-section-sub,
+[data-theme="nebula-night"] .cl-section-sub,
+[data-theme="carbon-black"] .cl-section-sub {
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* ── Prevent btn-link default browser styles on nav buttons ── */
+.cl-nav-link.btn-link {
+  box-shadow: none !important;
+  outline: none;
+}
+.cl-nav-link.btn-link:focus-visible {
+  outline: 2px solid var(--bs-primary, #15803d);
+  outline-offset: 2px;
+}
 

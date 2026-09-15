@@ -279,8 +279,8 @@ YOUR EXCLUSIVE REFERRAL CODE: ${refCode}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Share this code with your friends or college peers.
 When they enroll at CodeLift using your code:
-- They get an instant ₹1,000 discount on tuition fees
-- You receive a ₹1,000 Amazon Voucher / direct UPI cashback!
+- They get an instant ₹500 discount on tuition fees
+- You receive a ₹500 Amazon Voucher / direct UPI cashback!
 
 Download your high-resolution certificate from the Student Portal today.
 
@@ -295,8 +295,8 @@ You have officially graduated in *${courseName}*!
 
 *YOUR EXCLUSIVE REFERRAL CODE:* \`${refCode}\`
 Share this with friends:
-• They get *₹1,000 OFF* any CodeLift course
-• You get *₹1,000 Cash reward* per enrollment!
+• They get *₹500 OFF* any CodeLift course
+• You get *₹500 Cash reward* per enrollment!
 
 Download your certificate now in the Student Portal!`;
 

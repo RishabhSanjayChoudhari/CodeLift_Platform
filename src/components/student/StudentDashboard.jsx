@@ -43,32 +43,32 @@ function StatCard({ icon, label, value, color, to }) {
 
 export default function StudentDashboard() {
   const { auth } = useAuth();
-  const { 
-    students, 
-    batches, 
-    completedBatches = [], 
-    assignments, 
-    submissions, 
-    testAttempts, 
-    certificates, 
-    courses, 
-    codingProblems = [], 
-    codingAttempts = [], 
-    getBatchHistory 
+  const {
+    students,
+    batches,
+    completedBatches = [],
+    assignments,
+    submissions,
+    testAttempts,
+    certificates,
+    courses,
+    codingProblems = [],
+    codingAttempts = [],
+    getBatchHistory
   } = useData();
 
   const student = Array.isArray(students) ? students.find(s => s.id === auth?.studentId) : null;
   const batch = Array.isArray(batches) ? batches.find(b => b.id === student?.batchId) : null;
   const historyBatches = getBatchHistory ? getBatchHistory(student?.id) : [];
-  
+
   const batchCourses = Array.isArray(courses)
     ? courses.filter(c => {
-        if (!student?.batchId) return false;
-        if (Array.isArray(batch?.courseIds)) {
-          return batch.courseIds.includes(c.id);
-        }
-        return c.batchId === student.batchId || c.batchIds?.includes(student.batchId);
-      })
+      if (!student?.batchId) return false;
+      if (Array.isArray(batch?.courseIds)) {
+        return batch.courseIds.includes(c.id);
+      }
+      return c.batchId === student.batchId || c.batchIds?.includes(student.batchId);
+    })
     : [];
   const activeCourses = batchCourses;
   const allTopics = activeCourses.flatMap(c => (c.modules || []).flatMap(m => Array.isArray(m?.topics) ? m.topics : []));
@@ -191,11 +191,11 @@ export default function StudentDashboard() {
                   Refer & Earn Program
                 </h6>
                 <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">
-                  ₹1,000 Reward / Referral
+                  ₹500 Reward / Referral
                 </span>
               </div>
               <p className="small mb-0" style={{ color: 'var(--text-secondary)' }}>
-                Share your unique code with friends. When they enroll at CodeLift, they get <strong>₹1,000 OFF</strong> tuition, and you receive <strong>₹1,000 Cash/Voucher</strong>!
+                Share your unique code with friends. When they enroll at CodeLift, they get <strong>₹500 OFF</strong> tuition, and you receive <strong>₹500 Cash/Voucher</strong>!
               </p>
             </div>
 
@@ -206,7 +206,7 @@ export default function StudentDashboard() {
                   Your Referral Code
                 </div>
                 <code className="fw-bold fs-6" style={{ color: 'var(--bs-primary)', letterSpacing: '1px' }}>
-                  LIFT-{(student?.name || 'STUDENT').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)}2026
+                  LIFT-{(student?.name || 'STUDENT').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)}{new Date().getFullYear()}
                 </code>
               </div>
               <button
@@ -214,7 +214,7 @@ export default function StudentDashboard() {
                 className="btn btn-primary fw-bold px-3 py-2 d-flex align-items-center justify-content-center gap-1.5"
                 style={{ minHeight: '44px' }}
                 onClick={() => {
-                  const code = `LIFT-${(student?.name || 'STUDENT').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)}2026`;
+                  const code = `LIFT-${(student?.name || 'STUDENT').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4)}${new Date().getFullYear()}`;
                   navigator.clipboard.writeText(code);
                   toast.success('Referral code copied to clipboard.');
                 }}

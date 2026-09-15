@@ -13,6 +13,7 @@ import { runCookieThemePersistenceTests } from './cookie-theme-persistence.test.
 import { runThemeConsistencyTests } from './verify-theme-consistency.js';
 import { runBatchCourseAndFeeTests } from './batch-course-and-fee.test.js';
 import { runEnrollmentAndMarketplaceTests } from './enrollment-journey-and-marketplace.test.js';
+import { runProblemEditorialTests } from './problem-solutions.test.js';
 
 async function runAll() {
   console.log('===============================================================');
@@ -85,6 +86,15 @@ async function runAll() {
     suiteResults.push({ name: 'Smooth WhatsApp Enrollment Journey & Marketplace UI', passed: r7.passedCount, total: r7.totalCount, ok: true });
   } catch (err) {
     suiteResults.push({ name: 'Smooth WhatsApp Enrollment Journey & Marketplace UI', error: err.message, ok: false });
+  }
+
+  try {
+    const r8 = await runProblemEditorialTests();
+    totalPassed += r8.passedCount;
+    totalTests += r8.totalCount;
+    suiteResults.push({ name: 'Problem Arena Editorials & Detailed Explanations', passed: r8.passedCount, total: r8.totalCount, ok: true });
+  } catch (err) {
+    suiteResults.push({ name: 'Problem Arena Editorials & Detailed Explanations', error: err.message, ok: false });
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);

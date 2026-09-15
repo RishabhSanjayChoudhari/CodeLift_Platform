@@ -9,7 +9,7 @@ import InvoiceModal from '../components/common/InvoiceModal';
 import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import toast from 'react-hot-toast';
 import {
-  FaStar, FaUserGraduate, FaCheckCircle, FaBookOpen, FaLock,
+  FaStar, FaCheckCircle, FaBookOpen, FaLock,
   FaCertificate, FaAward, FaFileInvoice, FaGraduationCap,
   FaChevronDown, FaChevronUp, FaPlay, FaShieldAlt, FaClock, FaLayerGroup,
   FaWhatsapp
@@ -161,10 +161,6 @@ export default function CourseDetail() {
                   <FaStar style={{ color: '#fbbf24' }} />
                   <strong style={{ color: '#fbbf24' }}>{course.rating || 5.0}</strong>
                   <span> rating</span>
-                </div>
-                <div className="d-flex align-items-center gap-1">
-                  <FaUserGraduate style={{ color: '#60a5fa' }} />
-                  <span><strong style={{ color: '#fff' }}>{course.studentsEnrolled || 0}</strong> students</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <FaLayerGroup style={{ color: '#a78bfa' }} />

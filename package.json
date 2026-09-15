@@ -9,6 +9,7 @@
     "start": "vite preview --port 3000",
     "preview": "vite preview",
     "test": "node test/run-all-tests.js",
+    "test:arena": "node test/code-arena.test.js",
     "test:associations": "node test/entity-associations.test.js",
     "test:courses": "node test/course-import-export.test.js",
     "db:migrate": "node scripts/db-migrate.js",

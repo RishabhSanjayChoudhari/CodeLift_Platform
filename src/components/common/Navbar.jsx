@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaGraduationCap, FaBook, FaCode, FaUserCircle, FaSignOutAlt, FaRocket } from 'react-icons/fa';
+import {
+  FaGraduationCap,
+  FaBook,
+  FaCode,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaRocket,
+  FaHome,
+  FaPhoneAlt
+} from 'react-icons/fa';
 
 export default function Navbar() {
   const { auth, currentUser, logout, isAdmin, isStudent } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [navExpanded, setNavExpanded] = useState(false);
 
   // Scroll glass effect
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile nav on route change
+  useEffect(() => {
+    setNavExpanded(false);
+  }, [location.pathname]);
 
   const getDashboardPath = () => {
     if (isAdmin) return '/admin/dashboard';
@@ -22,94 +37,139 @@ export default function Navbar() {
     return '/login';
   };
 
-  const isActive = (path) => location.pathname.startsWith(path);
+  const isHome = location.pathname === '/';
+  const isCoursesActive = location.pathname.startsWith('/courses');
+  const isProblemsActive = location.pathname.startsWith('/problems');
+
+  const handleHomeClick = (e) => {
+    setNavExpanded(false);
+    if (isHome) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleContactClick = (e) => {
+    setNavExpanded(false);
+    if (isHome) {
+      e.preventDefault();
+      const el = document.getElementById('contact');
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 72;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <nav
-      className={`navbar navbar-expand-lg sticky-top py-2 px-3 ${scrolled ? 'scrolled' : ''}`}
+      className={`cl-navbar navbar navbar-expand-lg sticky-top py-2 px-3 ${scrolled ? 'scrolled' : ''}`}
       style={{
-        backgroundColor: 'var(--card-bg, #ffffff)',
-        borderBottom: '1px solid var(--border-color, #e5e7eb)',
-        zIndex: 1040,
-        transition: 'background 0.3s ease, box-shadow 0.3s ease'
+        zIndex: 1040
       }}
     >
       <div className="container-fluid max-w-7xl">
         {/* Brand */}
-        <Link className="navbar-brand d-flex align-items-center gap-2 text-decoration-none" to="/">
+        <Link
+          className="navbar-brand d-flex align-items-center gap-2 text-decoration-none"
+          to="/"
+          onClick={handleHomeClick}
+        >
           <div
             className="d-flex align-items-center justify-content-center rounded-3 text-white fw-bold"
             style={{
-              width: 38,
-              height: 38,
+              width: 36,
+              height: 36,
               background: 'linear-gradient(135deg, var(--bs-primary, #15803D) 0%, color-mix(in srgb, var(--bs-primary, #15803D) 80%, #000) 100%)',
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               boxShadow: '0 3px 10px rgba(var(--bs-primary-rgb, 21,128,61), 0.35)',
               flexShrink: 0
             }}
           >
-            <FaCode size={18} />
+            <FaCode size={17} />
           </div>
-          <div>
-            <span className="brand-text fw-extrabold" style={{ letterSpacing: '-0.5px', fontSize: '1.2rem' }}>
-              CodeLift
-            </span>
-            <span
-              className="ms-2 badge text-uppercase"
-              style={{
-                fontSize: '0.6rem',
-                background: 'rgba(var(--bs-primary-rgb, 21,128,61), 0.10)',
-                color: 'var(--bs-primary)',
-                border: '1px solid rgba(var(--bs-primary-rgb, 21,128,61), 0.2)',
-                borderRadius: 6,
-                letterSpacing: '0.06em',
-                padding: '2px 7px'
-              }}
-            >
-              Marketplace
-            </span>
-          </div>
+          <span className="brand-text fw-extrabold" style={{ letterSpacing: '-0.5px', fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+            Code<span style={{ color: 'var(--bs-primary, #15803D)' }}>Lift</span>
+          </span>
         </Link>
 
+        {/* Hamburger Toggler */}
         <button
-          className="navbar-toggler border-0"
+          className="navbar-toggler border-0 shadow-none p-1"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
+          aria-expanded={navExpanded}
           aria-label="Toggle navigation"
+          onClick={() => setNavExpanded(!navExpanded)}
         >
           <span className="navbar-toggler-icon" />
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarContent">
+        <div className={`collapse navbar-collapse ${navExpanded ? 'show' : ''}`} id="navbarContent">
           {/* Navigation Links */}
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1">
             <li className="nav-item">
               <Link
+                to="/"
+                className={`nav-link fw-semibold px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 ${isHome ? 'active' : ''}`}
+                style={{
+                  color: isHome ? 'var(--bs-primary)' : 'var(--text-secondary)',
+                  background: isHome ? 'rgba(var(--bs-primary-rgb, 21,128,61), 0.08)' : 'transparent',
+                  transition: 'all 0.18s ease'
+                }}
+                onClick={handleHomeClick}
+              >
+                <FaHome size={14} />
+                <span>Home</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
                 to="/courses"
-                className={`nav-link fw-semibold px-3 rounded-3 d-flex align-items-center gap-2 position-relative ${isActive('/courses') ? 'active' : ''}`}
-                style={{ color: isActive('/courses') ? 'var(--bs-primary)' : 'var(--text-secondary)' }}
+                className={`nav-link fw-semibold px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 ${isCoursesActive ? 'active' : ''}`}
+                style={{
+                  color: isCoursesActive ? 'var(--bs-primary)' : 'var(--text-secondary)',
+                  background: isCoursesActive ? 'rgba(var(--bs-primary-rgb, 21,128,61), 0.08)' : 'transparent',
+                  transition: 'all 0.18s ease'
+                }}
+                onClick={() => setNavExpanded(false)}
               >
                 <FaBook size={13} />
-                <span>Courses</span>
+                <span>Cohorts &amp; Courses</span>
               </Link>
             </li>
             <li className="nav-item">
               <Link
                 to="/problems"
-                className={`nav-link fw-semibold px-3 rounded-3 d-flex align-items-center gap-2 position-relative ${isActive('/problems') ? 'active' : ''}`}
-                style={{ color: isActive('/problems') ? 'var(--bs-primary)' : 'var(--text-secondary)' }}
+                className={`nav-link fw-semibold px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 ${isProblemsActive ? 'active' : ''}`}
+                style={{
+                  color: isProblemsActive ? 'var(--bs-primary)' : 'var(--text-secondary)',
+                  background: isProblemsActive ? 'rgba(var(--bs-primary-rgb, 21,128,61), 0.08)' : 'transparent',
+                  transition: 'all 0.18s ease'
+                }}
+                onClick={() => setNavExpanded(false)}
               >
                 <FaCode size={13} />
-                <span>Problem Solving</span>
+                <span>Problem Arena</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/#contact"
+                className="nav-link fw-semibold px-3 py-1.5 rounded-3 d-flex align-items-center gap-2"
+                style={{
+                  color: 'var(--text-secondary)',
+                  transition: 'all 0.18s ease'
+                }}
+                onClick={handleContactClick}
+              >
+                <FaPhoneAlt size={12} />
+                <span>Contact</span>
               </Link>
             </li>
           </ul>
 
           {/* Right Actions */}
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0">
             {auth ? (
               <div className="dropdown">
                 <button
@@ -166,6 +226,7 @@ export default function Navbar() {
                       className="dropdown-item rounded-2 py-2 fw-semibold d-flex align-items-center gap-2"
                       to={getDashboardPath()}
                       style={{ color: 'var(--text-primary)', fontSize: '0.875rem' }}
+                      onClick={() => setNavExpanded(false)}
                     >
                       <FaGraduationCap style={{ color: 'var(--bs-primary)' }} />
                       My Dashboard
@@ -176,7 +237,7 @@ export default function Navbar() {
                     <button
                       className="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2 fw-semibold"
                       style={{ color: '#dc2626', fontSize: '0.875rem' }}
-                      onClick={() => { logout(); navigate('/'); }}
+                      onClick={() => { logout(); navigate('/'); setNavExpanded(false); }}
                     >
                       <FaSignOutAlt />
                       Sign Out
@@ -185,16 +246,21 @@ export default function Navbar() {
                 </ul>
               </div>
             ) : (
-              <div className="d-flex align-items-center gap-2">
-                <Link to="/login" className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
-                  Sign In
+              <div className="d-flex align-items-center gap-2 w-100 w-lg-auto justify-content-start">
+                <Link
+                  to="/login"
+                  className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
+                  onClick={() => setNavExpanded(false)}
+                >
+                  Student Portal
                 </Link>
                 <Link
                   to="/courses"
-                  className="btn btn-sm btn-primary rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                  className="btn btn-sm btn-primary rounded-pill px-3 fw-bold d-flex align-items-center gap-1.5"
+                  onClick={() => setNavExpanded(false)}
                 >
                   <FaRocket size={11} />
-                  <span>Explore</span>
+                  <span>Explore Cohorts</span>
                 </Link>
               </div>
             )}

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SEED_PROBLEMS } from '../data/problemsSeed';
+import { getProblemDetails } from '../data/problemSolutions';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/common/Navbar';
 import SEO from '../components/common/SEO';
+import CodeEditor from '../components/common/CodeEditor';
+import { runCode, warmupPyodide, isPythonCategory } from '../utils/codeRunner';
 import toast from 'react-hot-toast';
 import {
   FaPlay,
@@ -15,7 +18,17 @@ import {
   FaCode,
   FaTerminal,
   FaFire,
-  FaSpinner
+  FaSpinner,
+  FaExclamationTriangle,
+  FaLock,
+  FaUnlock,
+  FaCopy,
+  FaCheck,
+  FaBookOpen,
+  FaChevronRight,
+  FaChevronLeft,
+  FaChevronDown,
+  FaRocket,
 } from 'react-icons/fa';
 import '../styles/ProblemArena.css';
 
@@ -25,41 +38,86 @@ export default function ProblemDetail() {
   const { recordProblemAttempt } = useData();
 
   const problem = SEED_PROBLEMS.find((p) => p.id === id);
+  const currentIndex = SEED_PROBLEMS.findIndex((p) => p.id === id);
+  const prevProblem = currentIndex > 0 ? SEED_PROBLEMS[currentIndex - 1] : null;
+  const nextProblem =
+    currentIndex >= 0 && currentIndex < SEED_PROBLEMS.length - 1
+      ? SEED_PROBLEMS[currentIndex + 1]
+      : null;
+
+  // Enrich with LeetCode-tier detailed specification, structured examples & editorial
+  const detail = useMemo(() => (problem ? getProblemDetails(problem) : null), [problem]);
 
   const [code, setCode] = useState(problem?.starterCode || '');
-  const [showHints, setShowHints] = useState(false);
+  const [activeTab, setActiveTab] = useState('description'); // 'description' | 'solution' | 'hints' | 'tests'
+  const [revealedSolution, setRevealedSolution] = useState(false);
+  const [revealedHints, setRevealedHints] = useState({});
+  const [solutionCopied, setSolutionCopied] = useState(false);
+  const [fontSize, setFontSize] = useState(14);
   const [testResults, setTestResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [executionMode, setExecutionMode] = useState(null);
+  const [pyodideStatus, setPyodideStatus] = useState('idle'); // 'idle' | 'loading' | 'ready' | 'error'
+  const pyodideToastRef = useRef(null);
 
-  // Update starter code when problem changes
+  // Update starter code and reset tabs when problem changes
   useEffect(() => {
     if (problem) {
       setCode(problem.starterCode || '');
       setTestResults(null);
+      setExecutionMode(null);
+      setRevealedSolution(false);
+      setRevealedHints({});
+      setActiveTab('description');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // Reset to starter code handler
+  const resetCode = () => {
+    if (!problem) return;
+    setCode(problem.starterCode || '');
+    setTestResults(null);
+    toast.success('Code reset to starter template.', { duration: 1500 });
+  };
+
+  // Warm up Pyodide in background when page loads (Python problems)
+  useEffect(() => {
+    if (problem && isPythonCategory(problem.category)) {
+      setPyodideStatus('loading');
+      warmupPyodide();
+      const probe = setInterval(() => {
+        if (window.__pyodideLoaded) {
+          setPyodideStatus('ready');
+          clearInterval(probe);
+        }
+      }, 800);
+      setTimeout(() => clearInterval(probe), 30000);
     }
   }, [problem]);
 
-  // Keyboard shortcut: Ctrl + Enter to Run Solution
+  // Keyboard shortcut: Ctrl+Enter to Run Solution
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        if (!isRunning) {
-          runCodeExecution();
-        }
+        if (!isRunning) runSolution();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, isRunning]);
 
-  if (!problem) {
+  if (!problem || !detail) {
     return (
       <div className="cl-arena-page">
         <Navbar />
         <div className="container text-center py-5">
           <h3 className="fw-bold mb-3">Problem Challenge Not Found</h3>
-          <p className="text-secondary mb-4">The challenge you requested does not exist or may have been updated.</p>
+          <p className="text-secondary mb-4">
+            The challenge you requested does not exist or may have been updated.
+          </p>
           <Link to="/problems" className="btn btn-success rounded-pill px-4 fw-bold">
             Back to Problems Arena
           </Link>
@@ -68,36 +126,40 @@ export default function ProblemDetail() {
     );
   }
 
-  // Simulated Code Execution Engine
-  const runCodeExecution = () => {
+  // ── Real Code Execution ──────────────────────────────────────────────────
+  const runSolution = async () => {
+    if (isRunning) return;
     setIsRunning(true);
-    setTimeout(() => {
-      // Evaluate test cases
-      const results = problem.testCases.map((tc) => {
-        let passed = false;
-        if (
-          code.includes('return') ||
-          code.includes('SELECT') ||
-          code.includes('def') ||
-          code.includes('function')
-        ) {
-          passed = true;
-        }
+    setTestResults(null);
 
-        return {
-          input: tc.input,
-          expected: tc.expected,
-          actual: tc.expected,
-          passed
-        };
+    if (isPythonCategory(problem.category) && pyodideStatus !== 'ready') {
+      pyodideToastRef.current = toast.loading('Starting Python runtime…', {
+        id: 'pyodide-load',
+        duration: Infinity,
       });
+    }
+
+    try {
+      const { results, executionMode: mode } = await runCode(
+        code,
+        problem.testCases,
+        problem.category
+      );
+
+      toast.dismiss('pyodide-load');
+      if (pyodideToastRef.current) pyodideToastRef.current = null;
 
       setTestResults(results);
-      setIsRunning(false);
+      setExecutionMode(mode);
+      setPyodideStatus('ready');
 
       const allPassed = results.every((r) => r.passed);
+      const passCount = results.filter((r) => r.passed).length;
+
       if (allPassed) {
-        toast.success(`All test cases passed! +${problem.xp} XP awarded!`);
+        toast.success(`🎉 All ${results.length} test cases passed! +${problem.xp} XP`, {
+          duration: 4000,
+        });
         if (currentUser) {
           recordProblemAttempt({
             studentId: currentUser.id,
@@ -106,13 +168,48 @@ export default function ProblemDetail() {
             passed: true,
             score: problem.xp,
             testResults: results,
-            hintsUsed: showHints ? 1 : 0
+            hintsUsed: Object.keys(revealedHints).length,
           });
         }
       } else {
-        toast.error('Some test cases failed. Review code output.');
+        toast.error(`${passCount}/${results.length} passed — review your output below.`, {
+          duration: 3000,
+        });
       }
-    }, 600);
+    } catch (err) {
+      toast.dismiss('pyodide-load');
+      setPyodideStatus('error');
+      toast.error('Execution error — check console for details.');
+      console.error('[CodeArena] Execution error:', err);
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const loadSolutionIntoEditor = () => {
+    if (detail?.editorial?.solutionCode) {
+      setCode(detail.editorial.solutionCode);
+      toast.success('Official solution loaded into editor! You can now run or edit it.', {
+        icon: '⚡',
+        duration: 3000,
+      });
+    }
+  };
+
+  const copySolutionToClipboard = () => {
+    if (detail?.editorial?.solutionCode) {
+      navigator.clipboard.writeText(detail.editorial.solutionCode);
+      setSolutionCopied(true);
+      toast.success('Solution copied to clipboard!');
+      setTimeout(() => setSolutionCopied(false), 2000);
+    }
+  };
+
+  const toggleHint = (idx) => {
+    setRevealedHints((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
   };
 
   const getDifficultyClass = (diff) => {
@@ -121,22 +218,56 @@ export default function ProblemDetail() {
     return 'hard';
   };
 
+  const getLanguageFromCategory = (cat) => {
+    if (cat === 'SQL') return 'sql';
+    if (cat === 'Web Dev') return 'javascript';
+    return 'python';
+  };
+
+  const language = getLanguageFromCategory(problem.category);
+
   return (
     <div className="cl-arena-page">
-      <SEO title={`${problem.title} — Problem Solving Arena`} description={problem.description} />
+      <SEO
+        title={`${problem.title} — Problem Solving Arena`}
+        description={detail.description || problem.description}
+      />
       <Navbar />
 
       <main className="container-fluid max-w-7xl py-4 px-3 px-md-4">
-        {/* Navigation Breadcrumb */}
+        {/* Navigation Breadcrumb & Controls */}
         <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-          <Link
-            to="/problems"
-            className="text-decoration-none text-secondary small fw-bold d-flex align-items-center gap-2"
-          >
-            <FaArrowLeft /> Back to Problem Arena
-          </Link>
+          <div className="d-flex align-items-center gap-3">
+            <Link
+              to="/problems"
+              className="text-decoration-none text-secondary small fw-bold d-flex align-items-center gap-2"
+            >
+              <FaArrowLeft /> Problem Arena
+            </Link>
 
-          <div className="d-flex align-items-center gap-2">
+            {/* Prev / Next navigation */}
+            <div className="d-flex align-items-center gap-1">
+              <Link
+                to={prevProblem ? `/problems/${prevProblem.id}` : '#'}
+                className={`cl-problem-nav-link ${!prevProblem ? 'disabled' : ''}`}
+                title={prevProblem ? `Previous: ${prevProblem.title}` : 'First problem'}
+              >
+                <FaChevronLeft size={10} /> Prev
+              </Link>
+              <span className="text-secondary small font-monospace px-1">
+                {currentIndex + 1} / {SEED_PROBLEMS.length}
+              </span>
+              <Link
+                to={nextProblem ? `/problems/${nextProblem.id}` : '#'}
+                className={`cl-problem-nav-link ${!nextProblem ? 'disabled' : ''}`}
+                title={nextProblem ? `Next: ${nextProblem.title}` : 'Last problem'}
+              >
+                Next <FaChevronRight size={10} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="d-flex align-items-center gap-2 flex-wrap">
             <span className="cl-problem-category-tag">{problem.category}</span>
             <span className={`cl-diff-badge ${getDifficultyClass(problem.difficulty)}`}>
               {problem.difficulty}
@@ -144,80 +275,533 @@ export default function ProblemDetail() {
             <span className="cl-xp-pill">
               <FaFire size={11} /> +{problem.xp} XP
             </span>
+
+            {/* Pyodide status indicator */}
+            {isPythonCategory(problem.category) && (
+              <span
+                className={`cl-runtime-badge ${
+                  pyodideStatus === 'ready'
+                    ? 'ready'
+                    : pyodideStatus === 'error'
+                    ? 'error'
+                    : 'loading'
+                }`}
+                title={
+                  pyodideStatus === 'ready'
+                    ? 'Python runtime ready'
+                    : pyodideStatus === 'error'
+                    ? 'Python runtime failed to load'
+                    : 'Loading Python runtime…'
+                }
+              >
+                {pyodideStatus === 'ready' ? (
+                  '🐍 Python Ready'
+                ) : pyodideStatus === 'error' ? (
+                  '⚠ Runtime Error'
+                ) : (
+                  <>
+                    <FaSpinner className="cl-spin-icon" size={10} /> Loading Python…
+                  </>
+                )}
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="row g-4">
-          {/* Left Panel: Problem Statement & Test Cases */}
-          <div className="col-lg-5">
-            <div className="cl-arena-filters-card h-100 d-flex flex-column justify-content-between mb-0">
-              <div>
-                <h3 className="fw-extrabold mb-3" style={{ color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
-                  {problem.title}
-                </h3>
-                <p className="text-secondary mb-4" style={{ lineHeight: '1.7', fontSize: '0.95rem' }}>
-                  {problem.description}
-                </p>
-
-                {/* Example Test Cases */}
-                <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                  <FaTerminal size={14} className="text-success" /> Example Test Cases:
-                </h6>
-                <div className="d-flex flex-column gap-2 mb-4">
-                  {problem.testCases.map((tc, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-3 font-monospace small"
-                      style={{
-                        background: 'color-mix(in srgb, var(--card-bg-alt, #0f172a) 80%, transparent)',
-                        border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                        color: 'var(--text-primary)'
-                      }}
-                    >
-                      <div className="mb-1">
-                        <strong className="text-success opacity-90">Input:</strong>{' '}
-                        <span className="text-light">{tc.input}</span>
-                      </div>
-                      <div>
-                        <strong className="text-warning opacity-90">Expected:</strong>{' '}
-                        <span className="text-light">{tc.expected}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Hints Drawer */}
-              <div className="pt-3 border-top" style={{ borderColor: 'var(--border-color, rgba(255, 255, 255, 0.1))' }}>
+        <div className="row g-4 align-items-start">
+          {/* ── Left Panel: Problem Statement, Solution, Hints & Tests ── */}
+          <div className="col-lg-5 cl-arena-left-col">
+            <div className="cl-arena-filters-card cl-arena-detail-card d-flex flex-column mb-0">
+              {/* Tab Navigation Header */}
+              <div className="cl-arena-tabs-header">
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold d-flex align-items-center gap-2"
-                  onClick={() => setShowHints(!showHints)}
+                  id="tab-btn-description"
+                  className={`cl-arena-tab-btn ${activeTab === 'description' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('description')}
                 >
-                  <FaLightbulb /> {showHints ? 'Hide Hints' : 'Reveal Solution Hints'}
+                  <FaBookOpen size={13} /> Description
                 </button>
-                {showHints && (
-                  <div
-                    className="p-3 rounded-3 mt-3 small border"
-                    style={{
-                      background: 'rgba(245, 158, 11, 0.08)',
-                      borderColor: 'rgba(245, 158, 11, 0.3)',
-                      color: 'var(--text-primary)'
-                    }}
-                  >
-                    <ul className="mb-0 ps-3">
-                      {problem.hints.map((h, i) => (
-                        <li key={i} className="mb-1">{h}</li>
-                      ))}
-                    </ul>
+                <button
+                  type="button"
+                  id="tab-btn-solution"
+                  className={`cl-arena-tab-btn ${activeTab === 'solution' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('solution')}
+                >
+                  {revealedSolution ? <FaUnlock size={13} className="text-warning" /> : <FaLock size={12} />}
+                  Editorial &amp; Solution
+                  {revealedSolution && (
+                    <span className="cl-tab-badge bg-warning text-dark">Unlocked</span>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  id="tab-btn-hints"
+                  className={`cl-arena-tab-btn ${activeTab === 'hints' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('hints')}
+                >
+                  <FaLightbulb size={13} /> Hints ({detail.hints?.length || 0})
+                </button>
+                <button
+                  type="button"
+                  id="tab-btn-tests"
+                  className={`cl-arena-tab-btn ${activeTab === 'tests' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tests')}
+                >
+                  <FaTerminal size={12} /> Test Cases
+                  {testResults && (
+                    <span
+                      className={`cl-tab-badge ${
+                        testResults.every((r) => r.passed) ? 'bg-success text-white' : 'bg-danger text-white'
+                      }`}
+                    >
+                      {testResults.filter((r) => r.passed).length}/{testResults.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* Scrollable Tab Content Container */}
+              <div className="cl-arena-tab-scroll-pane">
+                {/* Tab 1: Description Panel */}
+                {activeTab === 'description' && (
+                <div className="flex-grow-1">
+                  <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <h3
+                      className="fw-extrabold mb-0"
+                      style={{ color: 'var(--text-primary)', letterSpacing: '-0.3px' }}
+                    >
+                      {detail.title}
+                    </h3>
                   </div>
-                )}
+
+                  {/* Topic Tags */}
+                  {detail.tags && detail.tags.length > 0 && (
+                    <div className="d-flex flex-wrap gap-1 mb-3">
+                      {detail.tags.map((tag, idx) => (
+                        <span key={idx} className="cl-tag-pill">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Narrative Description */}
+                  <p
+                    className="text-secondary mb-4"
+                    style={{ lineHeight: '1.75', fontSize: '0.95rem' }}
+                  >
+                    {detail.description}
+                  </p>
+
+                  {/* Input / Output Format Specifications */}
+                  {detail.inputFormat && (
+                    <div className="cl-spec-box">
+                      <div className="cl-spec-label">Input Format</div>
+                      <div style={{ color: 'var(--text-primary)' }}>{detail.inputFormat}</div>
+                    </div>
+                  )}
+
+                  {detail.outputFormat && (
+                    <div className="cl-spec-box">
+                      <div className="cl-spec-label">Output Format</div>
+                      <div style={{ color: 'var(--text-primary)' }}>{detail.outputFormat}</div>
+                    </div>
+                  )}
+
+                  {/* Structured Examples with Step-by-Step Explanations */}
+                  <h6
+                    className="fw-bold mb-3 d-flex align-items-center gap-2 mt-4"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    <FaCode size={13} className="text-success" /> Examples &amp; Detailed Walkthrough:
+                  </h6>
+
+                  <div className="mb-4">
+                    {(detail.examples || []).map((ex, idx) => (
+                      <div key={idx} className="cl-example-card">
+                        <div className="cl-example-title">
+                          <span>Example {idx + 1}</span>
+                        </div>
+                        <div className="cl-example-io-row">
+                          <span className="cl-example-io-label in">Input:</span>
+                          <span className="cl-example-io-val">{ex.input}</span>
+                        </div>
+                        <div className="cl-example-io-row">
+                          <span className="cl-example-io-label out">Output:</span>
+                          <span className="cl-example-io-val text-success">{ex.output}</span>
+                        </div>
+                        {ex.explanation && (
+                          <div className="cl-example-explanation">
+                            <div className="cl-example-explanation-title">Explanation</div>
+                            <div>{ex.explanation}</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Algorithmic Constraints */}
+                  {detail.constraints && detail.constraints.length > 0 && (
+                    <>
+                      <h6
+                        className="fw-bold mb-2 d-flex align-items-center gap-2"
+                        style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}
+                      >
+                        Constraints:
+                      </h6>
+                      <div className="cl-constraints-box">
+                        <ul className="cl-constraints-list">
+                          {detail.constraints.map((c, i) => (
+                            <li key={i}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 2: Editorial & Official Solution Panel */}
+              {activeTab === 'solution' && (
+                <div className="flex-grow-1">
+                  {!revealedSolution ? (
+                    <div className="cl-solution-gate-card">
+                      <div className="cl-solution-gate-icon">
+                        <FaLock />
+                      </div>
+                      <h4 className="cl-solution-gate-title">Official Editorial &amp; Solution</h4>
+                      <p className="cl-solution-gate-desc">
+                        Problem-solving skills grow strongest when you brainstorm and test your own
+                        approach first! If you are stuck or want to inspect the optimal reference
+                        implementation, unlock the solution below.
+                      </p>
+                      <button
+                        type="button"
+                        id="cl-unlock-solution-btn"
+                        className="btn btn-success rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2"
+                        onClick={() => setRevealedSolution(true)}
+                      >
+                        <FaUnlock size={13} /> Unlock Official Solution
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="cl-solution-unlocked-card">
+                      <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 fw-bold rounded-pill">
+                            ✓ Solution Unlocked
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1"
+                          onClick={() => setRevealedSolution(false)}
+                          title="Hide solution to practice clean"
+                        >
+                          <FaLock size={10} className="me-1" /> Re-lock
+                        </button>
+                      </div>
+
+                      {/* Intuition & Approach */}
+                      {detail.editorial?.intuition && (
+                        <div className="cl-editorial-section">
+                          <h6 className="cl-editorial-heading">
+                            <FaLightbulb className="text-warning" /> Approach &amp; Intuition
+                          </h6>
+                          <div className="cl-editorial-prose">{detail.editorial.intuition}</div>
+                        </div>
+                      )}
+
+                      {/* Step-by-step Algorithm */}
+                      {detail.editorial?.algorithm && detail.editorial.algorithm.length > 0 && (
+                        <div className="cl-editorial-section">
+                          <h6 className="cl-editorial-heading">
+                            <FaRocket className="text-primary" /> Step-by-Step Algorithm
+                          </h6>
+                          <div className="d-flex flex-column gap-1">
+                            {detail.editorial.algorithm.map((step, idx) => (
+                              <div key={idx} className="cl-algorithm-step-item">
+                                {step}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Complexity Analysis Cards */}
+                      <div className="cl-editorial-section">
+                        <h6 className="cl-editorial-heading">Complexity Analysis</h6>
+                        <div className="cl-complexity-grid">
+                          <div className="cl-complexity-card">
+                            <div className="cl-complexity-header">Time Complexity</div>
+                            <div className="cl-complexity-val">
+                              {detail.editorial?.timeComplexity || 'O(N)'}
+                            </div>
+                            <div className="cl-complexity-desc">
+                              {detail.editorial?.complexityExplanation ||
+                                'Optimal single-pass or bounded operational complexity.'}
+                            </div>
+                          </div>
+
+                          <div className="cl-complexity-card">
+                            <div className="cl-complexity-header">Space Complexity</div>
+                            <div className="cl-complexity-val">
+                              {detail.editorial?.spaceComplexity || 'O(1)'}
+                            </div>
+                            <div className="cl-complexity-desc">
+                              Auxiliary memory allocated during execution.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Reference Model Solution Code */}
+                      <div className="cl-editorial-section">
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <h6 className="cl-editorial-heading mb-0">
+                            <FaCode className="text-success" /> Reference Solution
+                          </h6>
+                          <div className="d-flex align-items-center gap-2">
+                            <button
+                              type="button"
+                              id="cl-copy-solution-btn"
+                              className="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1"
+                              onClick={copySolutionToClipboard}
+                              title="Copy code to clipboard"
+                            >
+                              {solutionCopied ? (
+                                <>
+                                  <FaCheck size={11} className="text-success" /> Copied!
+                                </>
+                              ) : (
+                                <>
+                                  <FaCopy size={11} /> Copy Code
+                                </>
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              id="cl-load-solution-btn"
+                              className="btn btn-success btn-sm rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1"
+                              onClick={loadSolutionIntoEditor}
+                              title="Load official solution directly into the interactive editor"
+                            >
+                              ⚡ Load into Editor
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="cl-model-code-box">
+                          <div className="cl-model-code-header">
+                            <span className="font-monospace small text-secondary">
+                              solution.{language === 'sql' ? 'sql' : language === 'javascript' ? 'js' : 'py'}
+                            </span>
+                            <span className="badge bg-dark text-secondary border border-secondary border-opacity-25 font-monospace">
+                              Optimal
+                            </span>
+                          </div>
+                          <pre className="cl-model-code-content">
+                            {detail.editorial?.solutionCode || problem.starterCode}
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 3: Progressive Hints Panel */}
+              {activeTab === 'hints' && (
+                <div className="flex-grow-1">
+                  <div className="mb-3">
+                    <h6 className="fw-bold" style={{ color: 'var(--text-primary)' }}>
+                      Progressive Problem Hints
+                    </h6>
+                    <p className="text-secondary small">
+                      Need a push in the right direction? Reveal hints incrementally to keep your
+                      mental momentum going without spoiling the solution.
+                    </p>
+                  </div>
+
+                  <div className="d-flex flex-column gap-2">
+                    {(detail.hints || []).map((hint, idx) => {
+                      const isRevealed = !!revealedHints[idx];
+                      return (
+                        <div key={idx} className="cl-progressive-hint-card">
+                          <button
+                            type="button"
+                            className="cl-progressive-hint-trigger"
+                            onClick={() => toggleHint(idx)}
+                          >
+                            <span className="d-flex align-items-center gap-2">
+                              <FaLightbulb
+                                className={isRevealed ? 'text-warning' : 'text-secondary'}
+                                size={13}
+                              />
+                              <span>Hint {idx + 1}</span>
+                            </span>
+                            <span className="text-secondary small d-flex align-items-center gap-1">
+                              {isRevealed ? 'Hide' : 'Reveal'}
+                              <FaChevronDown
+                                size={10}
+                                style={{
+                                  transform: isRevealed ? 'rotate(180deg)' : 'rotate(0deg)',
+                                  transition: 'transform 0.2s ease',
+                                }}
+                              />
+                            </span>
+                          </button>
+                          {isRevealed && (
+                            <div className="cl-progressive-hint-body">{hint}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Test Cases & Execution Results Panel */}
+              {activeTab === 'tests' && (
+                <div className="flex-grow-1">
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <h6 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>
+                      Verification Test Cases
+                    </h6>
+                    {testResults && (
+                      <span
+                        className={`badge rounded-pill fw-bold px-3 py-1 ${
+                          testResults.every((r) => r.passed)
+                            ? 'bg-success'
+                            : testResults.some((r) => r.passed)
+                            ? 'bg-warning text-dark'
+                            : 'bg-danger'
+                        }`}
+                      >
+                        {testResults.filter((r) => r.passed).length} / {testResults.length} Passed
+                      </span>
+                    )}
+                  </div>
+
+                  {testResults ? (
+                    <div className="d-flex flex-column gap-2">
+                      {testResults.map((res, idx) => (
+                        <div
+                          key={idx}
+                          className="cl-test-case-card"
+                          style={{
+                            background: res.passed
+                              ? 'rgba(16, 185, 129, 0.07)'
+                              : 'rgba(239, 68, 68, 0.07)',
+                            borderColor: res.passed
+                              ? 'rgba(16, 185, 129, 0.3)'
+                              : 'rgba(239, 68, 68, 0.3)',
+                          }}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-2">
+                            <span
+                              className="font-monospace"
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                color: 'var(--text-secondary, #64748b)',
+                              }}
+                            >
+                              Test Case #{idx + 1}
+                            </span>
+                            {res.passed ? (
+                              <span className="cl-result-badge pass">
+                                <FaCheckCircle size={12} /> PASS
+                              </span>
+                            ) : (
+                              <span className="cl-result-badge fail">
+                                <FaTimesCircle size={12} /> FAIL
+                              </span>
+                            )}
+                          </div>
+                          <div className="cl-result-row">
+                            <span className="cl-result-label input">Input</span>
+                            <code className="cl-result-value">{res.input}</code>
+                          </div>
+                          <div className="cl-result-row">
+                            <span className="cl-result-label expected">Expected</span>
+                            <code className="cl-result-value text-success">{res.expected}</code>
+                          </div>
+                          <div className="cl-result-row">
+                            <span className="cl-result-label actual">Actual</span>
+                            <code
+                              className={`cl-result-value ${
+                                res.passed ? 'text-success' : 'text-danger'
+                              }`}
+                            >
+                              {res.actual}
+                            </code>
+                          </div>
+                          {res.errorMsg && (
+                            <div className="cl-result-error mt-2">
+                              <FaExclamationTriangle size={11} />
+                              <span>{res.errorMsg}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="d-flex flex-column gap-2">
+                      <p className="text-secondary small mb-3">
+                        Run your code using the Run button or <kbd className="bg-dark text-light">Ctrl+Enter</kbd> to see real execution results against these test cases:
+                      </p>
+                      {problem.testCases.map((tc, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-3 font-monospace small"
+                          style={{
+                            background:
+                              'color-mix(in srgb, var(--card-bg-alt, #0f172a) 80%, transparent)',
+                            border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
+                            color: 'var(--text-primary)',
+                          }}
+                        >
+                          <div className="mb-1">
+                            <strong
+                              className="text-secondary"
+                              style={{
+                                fontSize: '0.72rem',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                              }}
+                            >
+                              Test {idx + 1} Input:
+                            </strong>{' '}
+                            <span style={{ color: '#a5f3fc' }}>{tc.input}</span>
+                          </div>
+                          <div>
+                            <strong
+                              className="text-warning opacity-90"
+                              style={{
+                                fontSize: '0.72rem',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                              }}
+                            >
+                              Expected:
+                            </strong>{' '}
+                            <span style={{ color: '#86efac' }}>{tc.expected}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
             </div>
           </div>
 
-          {/* Right Panel: Interactive Code Playground */}
-          <div className="col-lg-7">
+          {/* ── Right Panel: Interactive Code Playground ── */}
+          <div className="col-lg-7 cl-arena-ide-col">
             <div className="cl-ide-frame">
               {/* macOS Terminal Window Chrome Header */}
               <div className="cl-ide-header">
@@ -225,88 +809,185 @@ export default function ProblemDetail() {
                   <div className="cl-ide-dot close" />
                   <div className="cl-ide-dot minimize" />
                   <div className="cl-ide-dot maximize" />
-                  <span className="ms-2 font-monospace small text-secondary">solution.py</span>
+                  <span className="ms-2 font-monospace small text-secondary">
+                    solution.{language === 'sql' ? 'sql' : language === 'javascript' ? 'js' : 'py'}
+                  </span>
                 </div>
 
                 <div className="d-flex align-items-center gap-2">
-                  <span className="d-none d-sm-inline small text-secondary font-monospace me-2">
+                  {/* Font Size controls */}
+                  <div className="d-none d-sm-flex align-items-center gap-1 me-2">
+                    <button
+                      type="button"
+                      className="cl-arena-btn-icon"
+                      onClick={() => setFontSize((s) => Math.max(12, s - 1))}
+                      title="Decrease Editor Font Size"
+                    >
+                      A-
+                    </button>
+                    <button
+                      type="button"
+                      className="cl-arena-btn-icon"
+                      onClick={() => setFontSize((s) => Math.min(20, s + 1))}
+                      title="Increase Editor Font Size"
+                    >
+                      A+
+                    </button>
+                  </div>
+
+                  <span className="d-none d-md-inline small text-secondary font-monospace me-2">
                     Ctrl + Enter to run
                   </span>
+
+                  {/* Reset to starter code */}
                   <button
                     type="button"
+                    id="cl-reset-code-btn"
+                    className="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1"
+                    onClick={resetCode}
+                    disabled={isRunning}
+                    title="Reset to starter code"
+                    style={{ minHeight: 38, fontSize: '0.78rem' }}
+                  >
+                    ↺ Reset
+                  </button>
+
+                  {/* Run & Submit button */}
+                  <button
+                    type="button"
+                    id="cl-run-submit-btn"
                     className="btn btn-success btn-sm rounded-pill px-4 fw-bold d-inline-flex align-items-center gap-2"
-                    onClick={runCodeExecution}
+                    onClick={runSolution}
                     disabled={isRunning}
                     style={{ minHeight: 38 }}
                   >
                     {isRunning ? (
                       <>
-                        <FaSpinner className="fa-spin" /> Running...
+                        <FaSpinner className="fa-spin" /> Running…
                       </>
                     ) : (
                       <>
-                        <FaPlay size={11} /> Run & Submit
+                        <FaPlay size={11} /> Run &amp; Submit
                       </>
                     )}
                   </button>
                 </div>
               </div>
 
-              {/* Code Editor Area */}
-              <div className="cl-ide-editor-area">
-                <textarea
-                  className="cl-ide-textarea"
-                  rows={15}
+              {/* ── Smart Code Editor ── */}
+              <div className="cl-ide-editor-area" style={{ padding: 0 }}>
+                <CodeEditor
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="# Write your solution here..."
-                  spellCheck="false"
+                  onChange={setCode}
+                  language={language}
+                  minRows={16}
+                  fontSize={fontSize}
                 />
               </div>
 
-              {/* Execution & Test Results Panel */}
+              {/* ── Direct Execution Results Drawer under Editor ── */}
               {testResults && (
                 <div
-                  className="p-4 border-top"
+                  className="cl-test-results-panel"
                   style={{
                     background: '#070a10',
-                    borderColor: 'rgba(255, 255, 255, 0.1)'
+                    borderTop: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
-                  <div className="d-flex align-items-center justify-content-between mb-3">
+                  <div className="d-flex align-items-center justify-content-between mb-3 px-4 pt-4">
                     <h6 className="fw-bold text-light mb-0 d-flex align-items-center gap-2">
-                      <FaTerminal className="text-success" /> Execution & Test Results:
+                      <FaTerminal className="text-success" /> Live Test Results
+                      {executionMode && executionMode !== 'pyodide' && (
+                        <span
+                          className="cl-exec-mode-badge"
+                          title={`Execution mode: ${executionMode}`}
+                        >
+                          {executionMode === 'sql-pattern'
+                            ? 'SQL Pattern Check'
+                            : 'Conceptual Check'}
+                        </span>
+                      )}
                     </h6>
-                    <span className="badge rounded-pill bg-success-subtle text-success fw-bold px-3 py-1">
-                      {testResults.filter((r) => r.passed).length} / {testResults.length} Passed
-                    </span>
+                    <div className="d-flex align-items-center gap-2">
+                      <span
+                        className={`badge rounded-pill fw-bold px-3 py-1 ${
+                          testResults.every((r) => r.passed)
+                            ? 'bg-success'
+                            : testResults.some((r) => r.passed)
+                            ? 'bg-warning text-dark'
+                            : 'bg-danger'
+                        }`}
+                      >
+                        {testResults.filter((r) => r.passed).length} / {testResults.length} Passed
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="d-flex flex-column gap-2">
+                  <div className="d-flex flex-column gap-2 px-4 pb-4">
                     {testResults.map((res, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-3 border d-flex justify-content-between align-items-center"
+                        id={`test-result-${idx}`}
+                        className="cl-test-case-card"
                         style={{
-                          background: res.passed ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-                          borderColor: res.passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'
+                          background: res.passed
+                            ? 'rgba(16, 185, 129, 0.07)'
+                            : 'rgba(239, 68, 68, 0.07)',
+                          borderColor: res.passed
+                            ? 'rgba(16, 185, 129, 0.3)'
+                            : 'rgba(239, 68, 68, 0.3)',
                         }}
                       >
-                        <div className="font-monospace small">
-                          <div className="text-light">
-                            <strong className="text-secondary">Test #{idx + 1}:</strong> {res.input}
-                          </div>
-                          <div className="text-secondary mt-1">
-                            Expected: <span className="text-light">{res.expected}</span> | Actual:{' '}
-                            <span className={res.passed ? 'text-success' : 'text-danger'}>
-                              {res.actual}
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                          <span
+                            className="font-monospace"
+                            style={{
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.6px',
+                              color: 'var(--text-secondary, #64748b)',
+                            }}
+                          >
+                            Test Case #{idx + 1}
+                          </span>
+                          {res.passed ? (
+                            <span className="cl-result-badge pass">
+                              <FaCheckCircle size={12} /> PASS
                             </span>
-                          </div>
+                          ) : (
+                            <span className="cl-result-badge fail">
+                              <FaTimesCircle size={12} /> FAIL
+                            </span>
+                          )}
                         </div>
-                        {res.passed ? (
-                          <FaCheckCircle className="fs-4 text-success flex-shrink-0" />
-                        ) : (
-                          <FaTimesCircle className="fs-4 text-danger flex-shrink-0" />
+
+                        <div className="cl-result-row">
+                          <span className="cl-result-label input">Input</span>
+                          <code className="cl-result-value">{res.input}</code>
+                        </div>
+
+                        <div className="cl-result-row">
+                          <span className="cl-result-label expected">Expected</span>
+                          <code className="cl-result-value text-success">{res.expected}</code>
+                        </div>
+
+                        <div className="cl-result-row">
+                          <span className="cl-result-label actual">Actual</span>
+                          <code
+                            className={`cl-result-value ${
+                              res.passed ? 'text-success' : 'text-danger'
+                            }`}
+                          >
+                            {res.actual}
+                          </code>
+                        </div>
+
+                        {res.errorMsg && (
+                          <div className="cl-result-error mt-2">
+                            <FaExclamationTriangle size={11} />
+                            <span>{res.errorMsg}</span>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -320,4 +1001,3 @@ export default function ProblemDetail() {
     </div>
   );
 }
-

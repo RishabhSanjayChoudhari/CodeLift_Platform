@@ -244,7 +244,7 @@ export default function StudentProfile() {
                 <div className="d-flex justify-content-between py-1 text-muted">
                   <span>Referral Code:</span>
                   <span className="font-monospace fw-bold" style={{ color: 'var(--bs-primary)' }}>
-                    {student.referralCode || (student.id ? `LIFT-${String(student.id).slice(-4).toUpperCase()}` : 'LIFT-2026')}
+                    {student.referralCode || (student.id ? `LIFT-${String(student.id).slice(-4).toUpperCase()}` : `LIFT-${new Date().getFullYear()}`)}
                   </span>
                 </div>
               </div>

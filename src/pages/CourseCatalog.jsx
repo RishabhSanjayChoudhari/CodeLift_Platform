@@ -7,7 +7,6 @@ import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import {
   FaSearch,
   FaStar,
-  FaUserGraduate,
   FaBookOpen,
   FaGraduationCap,
   FaWhatsapp,
@@ -61,7 +60,7 @@ export default function CourseCatalog() {
     if (sortBy === 'price-low') return (a.price || 0) - (b.price || 0);
     if (sortBy === 'price-high') return (b.price || 0) - (a.price || 0);
     if (sortBy === 'newest') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-    return (b.studentsEnrolled || 0) - (a.studentsEnrolled || 0); // popular default
+    return (b.rating || 0) - (a.rating || 0); // top rated default
   });
 
   const allPublished = (courses || []).filter(c => c.isPublished && c.isApproved !== false);
@@ -306,7 +305,7 @@ export default function CourseCatalog() {
                           {c.categoryId?.replace('cat-', '').toUpperCase() || 'COURSE'}
                         </span>
                         <div className="d-flex align-items-center gap-1 text-warning fw-bold small" style={{ fontSize: '0.8rem' }}>
-                          <FaStar /> {c.rating || 5.0} ({c.numReviews || 0})
+                          <FaStar /> {c.rating || 5.0}
                         </div>
                       </div>
 
@@ -322,27 +321,22 @@ export default function CourseCatalog() {
 
                     <div>
                       <hr className="my-3 opacity-25" style={{ borderColor: 'var(--border-color)' }} />
-                      <div className="d-flex align-items-center justify-content-between mb-3">
-                        <div className="d-flex align-items-center gap-2">
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                            style={{
-                              width: 28,
-                              height: 28,
-                              fontSize: '0.8rem',
-                              background: 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.15)',
-                              color: 'var(--bs-primary)'
-                            }}
-                          >
-                            <FaGraduationCap size={13} />
-                          </div>
-                          <span className="small fw-semibold" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
-                            CodeLift Faculty
-                          </span>
+                      <div className="d-flex align-items-center gap-2 mb-3">
+                        <div
+                          className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                          style={{
+                            width: 28,
+                            height: 28,
+                            fontSize: '0.8rem',
+                            background: 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.15)',
+                            color: 'var(--bs-primary)'
+                          }}
+                        >
+                          <FaGraduationCap size={13} />
                         </div>
-                        <div className="small text-muted d-flex align-items-center gap-1" style={{ fontSize: '0.8rem' }}>
-                          <FaUserGraduate /> {c.studentsEnrolled || 0}
-                        </div>
+                        <span className="small fw-semibold" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                          CodeLift Faculty
+                        </span>
                       </div>
 
                       {/* Action Buttons: View Details & Direct WhatsApp Enrollment */}

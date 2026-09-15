@@ -37,8 +37,8 @@
           var theme = m ? decodeURIComponent(m[1]) : null;
           if (!theme) theme = localStorage.getItem('codelift_theme');
           if (theme && aliases[theme]) theme = aliases[theme];
-          if (!theme || themes.indexOf(theme) === -1) theme = 'dark-nebula';
-          var isDark = theme.indexOf('dark') !== -1 || theme === 'midnight-emerald' || theme === 'nebula-night' || theme === 'carbon-black' || theme === 'nebula';
+          var darkThemeList = ['dark-emerald', 'dark-nebula', 'dark-carbon', 'midnight-emerald', 'nebula-night', 'carbon-black', 'nebula'];
+          var isDark = darkThemeList.indexOf(theme) !== -1;
           var mode = isDark ? 'dark' : 'light';
           document.documentElement.setAttribute('data-theme', theme);
           document.documentElement.setAttribute('data-bs-theme', mode);

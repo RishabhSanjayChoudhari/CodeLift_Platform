@@ -18,10 +18,10 @@ export default function ContactHub() {
   const [showContactForm, setShowContactForm] = useState(false);
 
   return (
-    <section id="contact" className="contact-hub-section py-4 py-md-5">
+    <section id="contact" className="contact-hub-section pt-3 pt-md-4 pb-4 pb-md-5">
       <div className="container">
         {/* Section Header */}
-        <div className="text-center mb-4 mb-md-5">
+        <div className="text-center mb-3 mb-md-4">
           <div
             className="cl-section-label"
             style={{
