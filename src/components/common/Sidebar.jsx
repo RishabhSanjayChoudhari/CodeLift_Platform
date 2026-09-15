@@ -5,6 +5,7 @@ import { FiChevronLeft, FiChevronRight, FiX, FiLock } from 'react-icons/fi';
 import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../../config/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../services/supabaseClient';
+import { PLATFORM_VERSION } from '../../config/version';
 import toast from 'react-hot-toast';
 
 // Re-export navigation configs for backward compatibility
@@ -452,6 +453,11 @@ export default function Sidebar({
                 );
               })}
             </nav>
+            <div className="p-2 border-top text-center mt-auto flex-shrink-0" style={{ borderColor: 'var(--border-color)' }}>
+              <span className="badge rounded-pill" style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.03))', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', fontSize: '0.70rem', fontWeight: 600 }}>
+                {PLATFORM_VERSION}
+              </span>
+            </div>
           </div>
         )}
       </aside>
@@ -590,6 +596,11 @@ export default function Sidebar({
             );
           })}
         </nav>
+        <div className="p-2 border-top text-center mt-auto flex-shrink-0" style={{ borderColor: 'var(--border-color)' }}>
+          <span className="badge rounded-pill" style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.03))', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', fontSize: '0.70rem', fontWeight: 600 }}>
+            {PLATFORM_VERSION}
+          </span>
+        </div>
       </aside>
       {renderFeesModal()}
     </>

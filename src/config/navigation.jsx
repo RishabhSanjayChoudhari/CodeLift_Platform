@@ -18,7 +18,8 @@ import {
   FiBookOpen,
   FiCheckSquare,
   FiCreditCard,
-  FiCode
+  FiCode,
+  FiAlertTriangle
 } from 'react-icons/fi';
 
 export const ADMIN_NAV_ITEMS = [
@@ -37,6 +38,7 @@ export const ADMIN_NAV_ITEMS = [
   // { id: 'settings', to: '/admin/settings', route: '/admin/settings', icon: <FiSettings />, label: 'Platform Settings' },
   { id: 'reports', to: '/admin/reports', route: '/admin/reports', icon: <FiBarChart2 />, label: 'Revenue Reports' },
   { id: 'data', to: '/admin/data', route: '/admin/data', icon: <FiDatabase />, label: 'Data Backup' },
+  { id: 'logs', to: '/admin/logs', route: '/admin/logs', icon: <FiAlertTriangle />, label: 'Error Logs' },
 ];
 
 export const STUDENT_NAV_ITEMS = [

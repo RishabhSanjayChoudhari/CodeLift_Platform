@@ -47,6 +47,26 @@ function handleSupabaseError(error, defaultMsg = 'Database operation failed') {
   throw new AppError(error.message || defaultMsg);
 }
 
+export function isValidUUID(id) {
+  if (typeof id !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+}
+
+export function genUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+export function checkConfigured() {
+  return typeof isSupabaseConfigured === 'function' ? isSupabaseConfigured() : Boolean(isSupabaseConfigured);
+}
+
 // ==============================================================================
 // COHORT & ELECTIVE COURSES RESOLUTION
 // ==============================================================================
@@ -633,24 +653,29 @@ export async function fetchAllData() {
 // STUDENT MUTATIONS
 // ==============================================================================
 export async function addStudent(studentData) {
+  const insertPayload = {
+    legacy_id: studentData.legacyId || studentData.legacy_id || (!isValidUUID(studentData.id) ? studentData.id : null),
+    name: studentData.name,
+    email: studentData.email,
+    phone: studentData.phone || '',
+    batch_id: isValidUUID(studentData.batchId) ? studentData.batchId : null,
+    enrolled_date: studentData.enrolledDate || new Date().toISOString(),
+    total_fee: Number(studentData.totalFee || 0),
+    paid_fee: Number(studentData.paidFee || 0),
+    fee_status: studentData.feeStatus || 'PENDING',
+    is_graduated: Boolean(studentData.isGraduated),
+    is_active: studentData.isActive !== false,
+    completed_batch_ids: studentData.completedBatchIds || [],
+    progress: studentData.progress || {}
+  };
+
+  if (isValidUUID(studentData.id)) {
+    insertPayload.id = studentData.id;
+  }
+
   const { data, error } = await supabase
     .from('students')
-    .insert({
-      id: studentData.id,
-      legacy_id: studentData.legacyId || null,
-      name: studentData.name,
-      email: studentData.email,
-      phone: studentData.phone || '',
-      batch_id: studentData.batchId || null,
-      enrolled_date: studentData.enrolledDate || new Date().toISOString(),
-      total_fee: Number(studentData.totalFee || 0),
-      paid_fee: Number(studentData.paidFee || 0),
-      fee_status: studentData.feeStatus || 'PENDING',
-      is_graduated: Boolean(studentData.isGraduated),
-      is_active: studentData.isActive !== false,
-      completed_batch_ids: studentData.completedBatchIds || [],
-      progress: studentData.progress || {}
-    })
+    .insert(insertPayload)
     .select()
     .single();
 
@@ -1216,7 +1241,7 @@ export async function gradeSubmission(submissionId, grade, feedback) {
 // CODING ARENA & ATTEMPTS
 // ==============================================================================
 export async function addCodingAttempt(attemptData) {
-  if (!isSupabaseConfigured()) return null;
+  if (!checkConfigured()) return null;
   try {
     const { data, error } = await supabase
       .from('coding_attempts')
@@ -1246,7 +1271,7 @@ export async function addCodingAttempt(attemptData) {
 }
 
 export async function saveCodingProblem(problemData) {
-  if (!isSupabaseConfigured()) return null;
+  if (!checkConfigured()) return null;
   try {
     const { data, error } = await supabase
       .from('coding_problems')
@@ -1278,7 +1303,7 @@ export async function saveCodingProblem(problemData) {
 }
 
 export async function deleteCodingProblemSupabase(problemId) {
-  if (!isSupabaseConfigured()) return null;
+  if (!checkConfigured()) return null;
   try {
     const { error } = await supabase.from('coding_problems').delete().eq('id', problemId);
     if (error) console.warn('[SupabaseDataService] Delete coding problem from Supabase deferred:', error.message);
@@ -1288,4 +1313,142 @@ export async function deleteCodingProblemSupabase(problemId) {
     return null;
   }
 }
+
+// ==============================================================================
+// FULL DATABASE EXPORT & RESTORE (ALL SUPABASE TABLES)
+// ==============================================================================
+export async function exportAllDatabaseData() {
+  const result = {
+    exportedAt: new Date().toISOString(),
+    engine: 'supabase',
+    tables: {}
+  };
+
+  if (!checkConfigured()) {
+    return result;
+  }
+
+  const tableList = [
+    'users',
+    'students',
+    'categories',
+    'courses',
+    'course_modules',
+    'course_topics',
+    'batches',
+    'batch_courses',
+    'batch_tests',
+    'enrollments',
+    'coupons',
+    'payments',
+    'fees',
+    'tests',
+    'test_questions',
+    'test_attempts',
+    'assignments',
+    'batch_assignments',
+    'submissions',
+    'certificates',
+    'certificate_templates',
+    'completed_batches',
+    'problem_attempts',
+    'coding_problems',
+    'coding_attempts',
+    'error_logs'
+  ];
+
+  await Promise.all(
+    tableList.map(async (tableName) => {
+      try {
+        const { data, error } = await supabase.from(tableName).select('*');
+        if (!error && Array.isArray(data)) {
+          result.tables[tableName] = data;
+        } else {
+          result.tables[tableName] = [];
+        }
+      } catch (err) {
+        console.warn(`[SupabaseDataService] Table ${tableName} export deferred:`, err.message);
+        result.tables[tableName] = [];
+      }
+    })
+  );
+
+  return result;
+}
+
+export async function importAllDatabaseData(tablesPayload) {
+  if (!checkConfigured()) {
+    console.warn('[SupabaseDataService] Supabase not configured; skipping remote upsert');
+    return { success: true, restoredCount: 0, offline: true };
+  }
+
+  if (!tablesPayload || typeof tablesPayload !== 'object') {
+    throw new Error('Invalid tables payload for import');
+  }
+
+  const summary = { success: true, tableCounts: {} };
+
+  // Tables in dependency order
+  const order = [
+    'categories',
+    'users',
+    'batches',
+    'students',
+    'courses',
+    'course_modules',
+    'course_topics',
+    'batch_courses',
+    'enrollments',
+    'coupons',
+    'payments',
+    'fees',
+    'tests',
+    'test_questions',
+    'batch_tests',
+    'test_attempts',
+    'assignments',
+    'batch_assignments',
+    'submissions',
+    'certificates',
+    'certificate_templates',
+    'completed_batches',
+    'problem_attempts',
+    'coding_problems',
+    'coding_attempts',
+    'error_logs'
+  ];
+
+  for (const tableName of order) {
+    const records = tablesPayload[tableName];
+    if (Array.isArray(records) && records.length > 0) {
+      try {
+        // Sanitize records for specific tables (e.g. students UUID)
+        const sanitized = records.map((rec) => {
+          if (tableName === 'students') {
+            const hasUUID = isValidUUID(rec.id);
+            return {
+              ...rec,
+              id: hasUUID ? rec.id : genUUID(),
+              legacy_id: rec.legacy_id || (!hasUUID ? rec.id : null),
+              batch_id: isValidUUID(rec.batch_id) ? rec.batch_id : null
+            };
+          }
+          return rec;
+        });
+
+        const { error } = await supabase.from(tableName).upsert(sanitized);
+        if (error) {
+          console.warn(`[SupabaseDataService] Import upsert for ${tableName} had issue:`, error.message);
+        } else {
+          summary.tableCounts[tableName] = sanitized.length;
+        }
+      } catch (err) {
+        console.warn(`[SupabaseDataService] Import for ${tableName} skipped:`, err.message);
+      }
+    }
+  }
+
+  return summary;
+}
+
 

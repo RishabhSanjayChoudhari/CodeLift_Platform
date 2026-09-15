@@ -30,6 +30,7 @@ import ProblemManager from './components/admin/ProblemManager';
 import AppearancePage from './pages/admin/AppearancePage';
 import DataManager from './components/admin/DataManager';
 import AdminProfile from './components/admin/AdminProfile';
+import ErrorLogsManager from './components/admin/ErrorLogsManager';
 import AdminLogin from './pages/AdminLogin';
 
 // Student components
@@ -141,6 +142,8 @@ export default function App() {
                   <Route path="appearance" element={<AppearancePage />} />
                   <Route path="data" element={<DataManager />} />
                   <Route path="data-backup" element={<DataManager />} />
+                  <Route path="logs" element={<ErrorLogsManager />} />
+                  <Route path="error-logs" element={<ErrorLogsManager />} />
                   <Route path="profile" element={<AdminProfile />} />
 
                   {/* Backward compatibility redirects */}

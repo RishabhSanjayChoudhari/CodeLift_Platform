@@ -3,6 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { executePython, judgeProblem, getPyodide } from '../../services/pythonRunner';
+import { useTheme } from '../../contexts/ThemeContext';
+import { isDarkTheme } from '../../utils/themeUtils';
+import { FiSun, FiMoon } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import {
   FaPlay,
@@ -31,6 +34,12 @@ export default function PythonIDE() {
   } = useData();
 
   const studentId = auth?.studentId || auth?.user?.id || 'demo-student';
+
+  // Theme support: Follow app theme (dark/light) with optional in-IDE toggle
+  const { currentTheme } = useTheme();
+  const appIsDark = isDarkTheme(currentTheme);
+  const [editorThemeMode, setEditorThemeMode] = useState(null);
+  const isDark = editorThemeMode !== null ? editorThemeMode === 'dark' : appIsDark;
 
   // Find current problem
   const problem = useMemo(() => {
@@ -537,20 +546,44 @@ export default function PythonIDE() {
         <div className="col-12 col-lg-7 d-flex flex-column">
           <div 
             className="card border-0 rounded-4 shadow-sm flex-grow-1 d-flex flex-column overflow-hidden"
-            style={{ background: '#0b1120', border: '1px solid #1e293b' }}
+            style={{
+              background: isDark ? '#0b1120' : 'var(--card-bg, #ffffff)',
+              border: isDark ? '1px solid #1e293b' : '1px solid var(--border-color, #e2e8f0)'
+            }}
           >
             {/* Editor Top Toolbar */}
-            <div className="px-3 py-2 d-flex justify-content-between align-items-center" style={{ background: '#0f172a', borderBottom: '1px solid #1e293b' }}>
+            <div 
+              className="px-3 py-2 d-flex justify-content-between align-items-center" 
+              style={{
+                background: isDark ? '#0f172a' : 'var(--card-bg-alt, #f8fafc)',
+                borderBottom: isDark ? '1px solid #1e293b' : '1px solid var(--border-color, #e2e8f0)'
+              }}
+            >
               <div className="d-flex align-items-center gap-2">
                 <span className="badge bg-success bg-opacity-20 text-success" style={{ fontSize: '0.75rem' }}>
                   Python 3 (Pyodide Wasm)
                 </span>
                 <span className="small text-muted" style={{ fontSize: '0.75rem' }}>
-                  {lineCount} lines · Tab key indents 4 spaces
+                  {lineCount} lines · Tab indents 4 spaces
                 </span>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <span className="badge bg-dark text-muted" style={{ fontSize: '0.72rem' }}>UTF-8</span>
+                <button
+                  type="button"
+                  className="btn btn-sm py-0.5 px-2 rounded-pill d-flex align-items-center gap-1 border"
+                  style={{
+                    fontSize: '0.72rem',
+                    background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                    color: isDark ? '#cbd5e1' : '#475569',
+                    borderColor: isDark ? '#334155' : '#cbd5e1'
+                  }}
+                  onClick={() => setEditorThemeMode(isDark ? 'light' : 'dark')}
+                  title="Toggle editor theme mode"
+                >
+                  {isDark ? <FiSun size={11} className="text-warning" /> : <FiMoon size={11} className="text-primary" />}
+                  <span>{isDark ? 'Dark Theme' : 'Light Theme'}</span>
+                </button>
+                <span className={`badge ${isDark ? 'bg-dark text-muted' : 'bg-light text-secondary border'}`} style={{ fontSize: '0.72rem' }}>UTF-8</span>
               </div>
             </div>
 
@@ -565,8 +598,8 @@ export default function PythonIDE() {
                 className="form-control border-0 font-monospace p-3"
                 placeholder="# Write your Python code here..."
                 style={{
-                  background: '#0b1120',
-                  color: '#e2e8f0',
+                  background: isDark ? '#0b1120' : '#ffffff',
+                  color: isDark ? '#e2e8f0' : '#0f172a',
                   fontSize: '0.94rem',
                   lineHeight: '1.6',
                   height: '100%',
@@ -580,19 +613,22 @@ export default function PythonIDE() {
             </div>
 
             {/* Bottom Panel: Test Results / Terminal */}
-            <div style={{ background: '#0f172a', borderTop: '1px solid #1e293b' }}>
+            <div style={{
+              background: isDark ? '#0f172a' : 'var(--card-bg-alt, #f8fafc)',
+              borderTop: isDark ? '1px solid #1e293b' : '1px solid var(--border-color, #e2e8f0)'
+            }}>
               {/* Console Tabs */}
-              <div className="px-3 pt-2 d-flex justify-content-between align-items-center border-bottom" style={{ borderColor: '#1e293b' }}>
+              <div className="px-3 pt-2 d-flex justify-content-between align-items-center border-bottom" style={{ borderColor: isDark ? '#1e293b' : 'var(--border-color, #e2e8f0)' }}>
                 <div className="d-flex gap-2">
                   <button
-                    className={`btn btn-sm rounded-top-2 rounded-bottom-0 px-3 fw-semibold ${consoleTab === 'tests' ? 'btn-primary' : 'btn-dark text-muted'}`}
+                    className={`btn btn-sm rounded-top-2 rounded-bottom-0 px-3 fw-semibold ${consoleTab === 'tests' ? 'btn-primary' : (isDark ? 'btn-dark text-muted' : 'btn-outline-secondary text-secondary')}`}
                     onClick={() => setConsoleTab('tests')}
                     style={{ fontSize: '0.8rem' }}
                   >
                     Judge & Test Results
                   </button>
                   <button
-                    className={`btn btn-sm rounded-top-2 rounded-bottom-0 px-3 fw-semibold ${consoleTab === 'terminal' ? 'btn-primary' : 'btn-dark text-muted'}`}
+                    className={`btn btn-sm rounded-top-2 rounded-bottom-0 px-3 fw-semibold ${consoleTab === 'terminal' ? 'btn-primary' : (isDark ? 'btn-dark text-muted' : 'btn-outline-secondary text-secondary')}`}
                     onClick={() => setConsoleTab('terminal')}
                     style={{ fontSize: '0.8rem' }}
                   >
@@ -607,7 +643,11 @@ export default function PythonIDE() {
                   <pre 
                     className="font-monospace mb-0" 
                     style={{ 
-                      color: '#4ade80', 
+                      color: isDark ? '#4ade80' : '#15803d', 
+                      background: isDark ? 'transparent' : '#ffffff',
+                      padding: isDark ? 0 : '12px',
+                      borderRadius: '8px',
+                      border: isDark ? 'none' : '1px solid var(--border-color, #e2e8f0)',
                       fontSize: '0.86rem', 
                       whiteSpace: 'pre-wrap', 
                       lineHeight: 1.5 

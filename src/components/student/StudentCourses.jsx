@@ -10,6 +10,7 @@ import {
   FaChevronRight, FaTimes, FaBookOpen, FaClipboard
 } from 'react-icons/fa';
 import CurriculumNavigator from './CurriculumNavigator';
+import TopicQuiz from '../common/TopicQuiz';
 import '../../styles/CourseView.css';
 
 // ══════════════════════════════════════════════════════════
@@ -184,7 +185,7 @@ export default function StudentCourses() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { auth } = useAuth();
-  const { students = [], courses = [], batches = [], markTopicComplete } = useData();
+  const { students = [], courses = [], batches = [], markTopicComplete, saveQuizAttempt } = useData();
 
   const student = students.find(s => s.id === auth?.studentId);
   const batch = batches.find(b => b.id === student?.batchId);
@@ -251,8 +252,8 @@ export default function StudentCourses() {
 
   const isCurrentTopicCompleted = currentTopic
     ? student?.progress?.[currentTopic.id] === 'completed' ||
-      student?.progress?.[currentTopic.id] === true ||
-      student?.quizAttempts?.[currentTopic.id]?.passed
+    student?.progress?.[currentTopic.id] === true ||
+    student?.quizAttempts?.[currentTopic.id]?.passed
     : false;
 
   const handleSelectCourse = (courseId) => {
@@ -446,6 +447,31 @@ export default function StudentCourses() {
                   content={currentTopic?.contentMd || currentTopic?.description || 'No lecture content has been added yet.'}
                 />
 
+                {/* ── Topic MCQ Assessment & Quiz ── */}
+                {Array.isArray(currentTopic?.quizQuestions) && currentTopic.quizQuestions.length > 0 && (
+                  <div className="mt-4 pt-3 border-top" style={{ borderColor: 'var(--border-color)' }}>
+                    <TopicQuiz
+                      questions={currentTopic.quizQuestions}
+                      topicTitle={currentTopic.title}
+                      topicId={currentTopic.id}
+                      savedAttempt={student?.quizAttempts?.[currentTopic.id]}
+                      onSaveAttempt={(attemptData) => {
+                        if (saveQuizAttempt) {
+                          saveQuizAttempt({
+                            studentId: student?.id,
+                            courseId: activeCourse?.id,
+                            topicId: currentTopic?.id,
+                            ...attemptData
+                          });
+                        }
+                        if (attemptData.passed && currentTopic?.id && markTopicComplete) {
+                          markTopicComplete(currentTopic.id);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* ── Desktop Inline Navigation ── */}
                 <div className="cv-inline-nav">
                   <button
@@ -487,53 +513,13 @@ export default function StudentCourses() {
                     Next <FaArrowRight size={12} />
                   </button>
                 </div>
-
-                {/* Notes callout */}
-                <div className="cv-notes-section">
-                  <div className="cv-notes-title">📝 Study Notes & Key Takeaways</div>
-                  <p className="cv-notes-text">
-                    Complete this lecture, examine all code snippets, and solve the assigned module problems.
-                    Mark complete above to log your progress and unlock the next section.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* ── Right: Desktop Curriculum Sidebar ── */}
-          {!isSidebarHidden && (
-            <aside className="cv-sidebar d-none d-lg-flex flex-column" aria-label="Course curriculum">
-              <CurriculumNavigator
-                course={activeCourse}
-                modules={modules}
-                currentModuleIndex={currentModuleIndex}
-                currentTopicIndex={currentTopicIndex}
-                expandedSections={expandedSections}
-                onToggleSection={handleToggleSection}
-                onSelectLecture={handleSelectLecture}
-                studentProgress={student?.progress || {}}
-                quizAttempts={student?.quizAttempts || {}}
-                progressPct={activeStats.progressPct}
-                isOpen={false}
-                onClose={() => {}}
-              />
-            </aside>
-          )}
-
-          {/* ── Mobile Drawer ── */}
-          {mobileDrawerOpen && (
-            <>
-              <div
-                className="cv-drawer-backdrop d-lg-none"
-                onClick={() => setMobileDrawerOpen(false)}
-                aria-hidden="true"
-              />
-              <div
-                className="cv-drawer d-lg-none"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Course curriculum navigator"
-              >
+            {/* ── Right: Desktop Curriculum Sidebar ── */}
+            {!isSidebarHidden && (
+              <aside className="cv-sidebar d-none d-lg-flex flex-column" aria-label="Course curriculum">
                 <CurriculumNavigator
                   course={activeCourse}
                   modules={modules}
@@ -545,146 +531,177 @@ export default function StudentCourses() {
                   studentProgress={student?.progress || {}}
                   quizAttempts={student?.quizAttempts || {}}
                   progressPct={activeStats.progressPct}
-                  isOpen={mobileDrawerOpen}
-                  onClose={() => setMobileDrawerOpen(false)}
+                  isOpen={false}
+                  onClose={() => { }}
                 />
-              </div>
-            </>
-          )}
+              </aside>
+            )}
+
+            {/* ── Mobile Drawer ── */}
+            {mobileDrawerOpen && (
+              <>
+                <div
+                  className="cv-drawer-backdrop d-lg-none"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  aria-hidden="true"
+                />
+                <div
+                  className="cv-drawer d-lg-none"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Course curriculum navigator"
+                >
+                  <CurriculumNavigator
+                    course={activeCourse}
+                    modules={modules}
+                    currentModuleIndex={currentModuleIndex}
+                    currentTopicIndex={currentTopicIndex}
+                    expandedSections={expandedSections}
+                    onToggleSection={handleToggleSection}
+                    onSelectLecture={handleSelectLecture}
+                    studentProgress={student?.progress || {}}
+                    quizAttempts={student?.quizAttempts || {}}
+                    progressPct={activeStats.progressPct}
+                    isOpen={mobileDrawerOpen}
+                    onClose={() => setMobileDrawerOpen(false)}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* ── Mobile Sticky Bottom Dock ── */}
+          <div className="cv-bottom-dock d-lg-none" role="navigation" aria-label="Lecture navigation">
+            <button
+              type="button"
+              className="cv-dock-nav-btn"
+              onClick={handlePrevLecture}
+              disabled={isFirstLecture}
+              aria-label="Previous lecture"
+            >
+              <FaArrowLeft size={12} />
+              <span>Prev</span>
+            </button>
+
+            <button
+              type="button"
+              className={`cv-dock-complete-btn ${isCurrentTopicCompleted ? 'done' : 'active'}`}
+              onClick={handleToggleComplete}
+              aria-pressed={isCurrentTopicCompleted}
+            >
+              <FaCheckCircle size={14} />
+              <span>{isCurrentTopicCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="cv-dock-nav-btn"
+              onClick={handleNextLecture}
+              disabled={isLastLecture}
+              aria-label="Next lecture"
+            >
+              <span>Next</span>
+              <FaArrowRight size={12} />
+            </button>
+          </div>
         </div>
-
-        {/* ── Mobile Sticky Bottom Dock ── */}
-        <div className="cv-bottom-dock d-lg-none" role="navigation" aria-label="Lecture navigation">
-          <button
-            type="button"
-            className="cv-dock-nav-btn"
-            onClick={handlePrevLecture}
-            disabled={isFirstLecture}
-            aria-label="Previous lecture"
-          >
-            <FaArrowLeft size={12} />
-            <span>Prev</span>
-          </button>
-
-          <button
-            type="button"
-            className={`cv-dock-complete-btn ${isCurrentTopicCompleted ? 'done' : 'active'}`}
-            onClick={handleToggleComplete}
-            aria-pressed={isCurrentTopicCompleted}
-          >
-            <FaCheckCircle size={14} />
-            <span>{isCurrentTopicCompleted ? 'Completed ✓' : 'Mark Complete'}</span>
-          </button>
-
-          <button
-            type="button"
-            className="cv-dock-nav-btn"
-            onClick={handleNextLecture}
-            disabled={isLastLecture}
-            aria-label="Next lecture"
-          >
-            <span>Next</span>
-            <FaArrowRight size={12} />
-          </button>
-        </div>
-      </div>
-    );
+        );
   }
 
-  // ══════════════════════════════════════════════════════════
-  // VIEW 1 – MY COURSES HUB
-  // ══════════════════════════════════════════════════════════
-  return (
-    <div className="student-courses-hub pb-5">
-      {/* Header */}
-      <div className="mb-4 d-flex align-items-center gap-2">
-        <FaBook style={{ color: 'var(--bs-primary)', fontSize: '1.1rem' }} />
-        <h4 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>My Courses</h4>
-      </div>
+        // ══════════════════════════════════════════════════════════
+        // VIEW 1 – MY COURSES HUB
+        // ══════════════════════════════════════════════════════════
+        return (
+        <div className="student-courses-hub pb-5">
+          {/* Header */}
+          <div className="mb-4 d-flex align-items-center gap-2">
+            <FaBook style={{ color: 'var(--bs-primary)', fontSize: '1.1rem' }} />
+            <h4 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>My Courses</h4>
+          </div>
 
-      {allAvailableCourses.length === 0 ? (
-        <div className="cv-empty">
-          <FaBook size={48} className="cv-empty-icon" />
-          <div className="cv-empty-title">No Courses Yet</div>
-          <p className="cv-empty-text">Your cohort hasn't been assigned courses yet. Check back once your batch commences.</p>
-        </div>
-      ) : (
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
-          {allAvailableCourses.map(course => {
-            const stats = getCourseStats(course);
-            const isCompleted = stats.progressPct === 100;
-            const hasStarted = stats.completedTopics > 0;
+          {allAvailableCourses.length === 0 ? (
+            <div className="cv-empty">
+              <FaBook size={48} className="cv-empty-icon" />
+              <div className="cv-empty-title">No Courses Yet</div>
+              <p className="cv-empty-text">Your cohort hasn't been assigned courses yet. Check back once your batch commences.</p>
+            </div>
+          ) : (
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+              {allAvailableCourses.map(course => {
+                const stats = getCourseStats(course);
+                const isCompleted = stats.progressPct === 100;
+                const hasStarted = stats.completedTopics > 0;
 
-            return (
-              <div key={course.id} className="col d-flex">
-                <div className="cv-course-card w-100">
-                  {/* Thumbnail / Placeholder */}
-                  {course.thumbnail ? (
-                    <img
-                      src={course.thumbnail}
-                      alt={course.title}
-                      className="cv-course-thumb"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="cv-course-thumb-placeholder">
-                      <FaBookOpen />
-                    </div>
-                  )}
-
-                  {/* Body */}
-                  <div className="cv-course-body">
-                    {/* Badge row */}
-                    <div className="cv-course-badge-row">
-                      {isCompleted ? (
-                        <span className="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
-                          <FaCheck size={9} /> Completed
-                        </span>
-                      ) : hasStarted ? (
-                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
-                          <FaPlay size={8} /> In Progress
-                        </span>
+                return (
+                  <div key={course.id} className="col d-flex">
+                    <div className="cv-course-card w-100">
+                      {/* Thumbnail / Placeholder */}
+                      {course.thumbnail ? (
+                        <img
+                          src={course.thumbnail}
+                          alt={course.title}
+                          className="cv-course-thumb"
+                          loading="lazy"
+                        />
                       ) : (
-                        <span className="badge bg-secondary-subtle text-muted border border-secondary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
-                          Not Started
-                        </span>
+                        <div className="cv-course-thumb-placeholder">
+                          <FaBookOpen />
+                        </div>
                       )}
+
+                      {/* Body */}
+                      <div className="cv-course-body">
+                        {/* Badge row */}
+                        <div className="cv-course-badge-row">
+                          {isCompleted ? (
+                            <span className="badge bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                              <FaCheck size={9} /> Completed
+                            </span>
+                          ) : hasStarted ? (
+                            <span className="badge bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                              <FaPlay size={8} /> In Progress
+                            </span>
+                          ) : (
+                            <span className="badge bg-secondary-subtle text-muted border border-secondary-subtle d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill" style={{ fontSize: '0.72rem' }}>
+                              Not Started
+                            </span>
+                          )}
+                        </div>
+
+                        <h5 className="cv-course-title">{course.title}</h5>
+                        <p className="cv-course-desc">{course.description}</p>
+
+                        {/* Progress */}
+                        <div className="cv-course-progress-row">
+                          <div className="cv-course-progress-top">
+                            <span className="cv-course-progress-label">Progress</span>
+                            <span className="cv-course-progress-pct">{stats.progressPct}%</span>
+                          </div>
+                          <div className="cv-course-progress-bar">
+                            <div className="cv-course-progress-fill" style={{ width: `${stats.progressPct}%` }} />
+                          </div>
+                          <div className="cv-course-progress-sub">
+                            <span>{stats.completedTopics} of {stats.totalTopics} lectures</span>
+                            <span>{stats.totalModules} sections</span>
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <button
+                          type="button"
+                          className="cv-course-action-btn"
+                          onClick={() => handleSelectCourse(course.id)}
+                        >
+                          <FaPlay size={11} />
+                          <span>{hasStarted ? 'Continue Learning' : 'Start Course'}</span>
+                        </button>
+                      </div>
                     </div>
-
-                    <h5 className="cv-course-title">{course.title}</h5>
-                    <p className="cv-course-desc">{course.description}</p>
-
-                    {/* Progress */}
-                    <div className="cv-course-progress-row">
-                      <div className="cv-course-progress-top">
-                        <span className="cv-course-progress-label">Progress</span>
-                        <span className="cv-course-progress-pct">{stats.progressPct}%</span>
-                      </div>
-                      <div className="cv-course-progress-bar">
-                        <div className="cv-course-progress-fill" style={{ width: `${stats.progressPct}%` }} />
-                      </div>
-                      <div className="cv-course-progress-sub">
-                        <span>{stats.completedTopics} of {stats.totalTopics} lectures</span>
-                        <span>{stats.totalModules} sections</span>
-                      </div>
-                    </div>
-
-                    {/* CTA */}
-                    <button
-                      type="button"
-                      className="cv-course-action-btn"
-                      onClick={() => handleSelectCourse(course.id)}
-                    >
-                      <FaPlay size={11} />
-                      <span>{hasStarted ? 'Continue Learning' : 'Start Course'}</span>
-                    </button>
                   </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  );
+        );
 }

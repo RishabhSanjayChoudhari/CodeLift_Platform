@@ -98,7 +98,11 @@ export default function Layout({
         {/* ── Main content pane ── */}
         <main
           className="flex-grow-1 px-3 px-md-4 pt-2 pt-md-3 pb-4"
-          style={{ minWidth: 0, overflowX: 'hidden' }}
+          style={{
+            maxWidth: '100%',
+            overflowX: 'clip',
+            minWidth: 0
+          }}
         >
           {children || <Outlet />}
         </main>

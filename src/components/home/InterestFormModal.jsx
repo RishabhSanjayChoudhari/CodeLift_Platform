@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { FiX, FiSend, FiUser, FiMail, FiPhone, FiCompass, FiMessageSquare } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { ADMIN_WA as SERVICE_ADMIN_WA } from '../../services/notificationService';
 import './InterestFormModal.css';
 
-const ADMIN_WA = '919834671940';
+const ADMIN_WA = SERVICE_ADMIN_WA || '919834671940';
 
-export default function InterestFormModal({ show, onHide }) {
+export default function InterestFormModal({
+  show,
+  onHide,
+  title = '🎓 Sign Up for Upcoming Cohort',
+  subtitle = 'Fill in your details to register. Our admissions team will connect with you directly on WhatsApp.',
+  submitLabel = 'Submit Details on WhatsApp'
+}) {
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -91,25 +99,26 @@ export default function InterestFormModal({ show, onHide }) {
       return;
     }
 
-    // Format WhatsApp message
+    // Format WhatsApp message with all filled details
     const { cleanedPhone } = validatePhone(form.phone);
     const message = `Hello CodeLift Admissions,
 
-I would like to inquire about academic programs at CodeLift.
+I would like to sign up / register for upcoming cohorts at CodeLift.
 
-Applicant Name: ${form.name.trim()}
-Email Address: ${form.email.trim()}
-Phone Number: ${cleanedPhone}
-Program of Interest: ${form.interest}
-${form.message.trim() ? `Specific Inquiry: ${form.message.trim()}\n` : ''}
-Please share upcoming batch schedules, syllabus details, and admission criteria.
+📋 Registration / Application Details:
+• Full Name: ${form.name.trim()}
+• Email Address: ${form.email.trim()}
+• Phone Number: ${cleanedPhone}
+• Course / Track: ${form.interest}
+${form.message.trim() ? `• Notes / Questions: ${form.message.trim()}\n` : ''}
+Please share upcoming batch schedules, syllabus details, and enrollment steps.
 
-Thank you.`;
+Thank you!`;
 
     const waUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
 
-    toast.success('Opening WhatsApp...');
+    toast.success('Opening WhatsApp with your details...');
     handleClose();
   };
 
@@ -123,10 +132,8 @@ Thank you.`;
     >
       <div className="interest-modal-header">
         <div>
-          <h3 className="interest-modal-title">Share Your Interest</h3>
-          <p className="interest-modal-subtitle">
-            Fill in your details and connect with us directly on WhatsApp.
-          </p>
+          <h3 className="interest-modal-title">{title}</h3>
+          <p className="interest-modal-subtitle">{subtitle}</p>
         </div>
         <button
           type="button"
@@ -241,7 +248,7 @@ Thank you.`;
             Cancel
           </Button>
           <Button type="submit" className="interest-submit-btn">
-            <FiSend size={16} /> Send on WhatsApp
+            <FaWhatsapp size={17} /> {submitLabel}
           </Button>
         </div>
       </form>

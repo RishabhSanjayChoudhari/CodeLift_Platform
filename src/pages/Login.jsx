@@ -247,29 +247,15 @@ export default function Login() {
                 </span>
               </div>
 
-              <div className="d-flex flex-column flex-sm-row gap-2 mt-2">
+              <div className="mt-2">
                 <button
                   type="button"
                   onClick={() => setShowInterestModal(true)}
-                  className="btn btn-outline-success btn-sm w-100 py-2 d-inline-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3"
-                  style={{ minHeight: 42, fontSize: '0.82rem' }}
+                  className="btn btn-outline-success w-100 py-2 d-inline-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3"
+                  style={{ minHeight: 42, fontSize: '0.84rem' }}
                 >
-                  <FaGraduationCap size={15} />
-                  <span>Register for Course</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    openAdminWhatsApp(
-                      'Hello CodeLift Admissions,\n\nI would like to register for a course at CodeLift. Please share upcoming batch dates, syllabus, and enrollment steps.\n\nThank you!'
-                    );
-                  }}
-                  className="btn btn-success btn-sm w-100 py-2 d-inline-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3"
-                  style={{ minHeight: 42, fontSize: '0.82rem', backgroundColor: '#16a34a', borderColor: '#16a34a' }}
-                >
-                  <FaWhatsapp size={15} />
-                  <span>WhatsApp Admin</span>
+                  <FaGraduationCap size={16} />
+                  <span>Sign Up / Register for Cohort</span>
                 </button>
               </div>
 
@@ -467,10 +453,13 @@ export default function Login() {
         )}
       </Modal>
 
-      {/* Course Registration Modal */}
+      {/* Course Registration / Sign Up Modal */}
       <InterestFormModal
         show={showInterestModal}
         onHide={() => setShowInterestModal(false)}
+        title="🎓 Sign Up for Upcoming Cohort"
+        subtitle="Fill in your details to register. Our admissions team will receive your info directly on WhatsApp."
+        submitLabel="Send Details on WhatsApp"
       />
     </div>
   );

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FiShield, FiLock, FiUser, FiEye, FiEyeOff, FiArrowRight } from 'react-icons/fi';
+import { useTheme } from '../contexts/ThemeContext';
+import { FiShield, FiLock, FiUser, FiEye, FiEyeOff, FiArrowRight, FiArrowLeft, FiSun, FiMoon } from 'react-icons/fi';
+import { PLATFORM_VERSION } from '../config/version';
 import toast from 'react-hot-toast';
 
 export default function AdminLogin() {
@@ -12,6 +14,7 @@ export default function AdminLogin() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { loginAdmin } = useAuth();
+  const { currentTheme, setTheme, themes } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -38,53 +41,97 @@ export default function AdminLogin() {
 
   return (
     <div
-      className="min-vh-100 d-flex align-items-center justify-content-center p-3"
+      className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3 position-relative"
       style={{
-        background: 'radial-gradient(ellipse at top, #1e293b 0%, #0f172a 60%, #020617 100%)',
-        color: '#f8fafc',
-        fontFamily: 'inherit'
+        backgroundColor: 'var(--bg-body, #ffffff)',
+        color: 'var(--text-primary, #0f172a)',
+        fontFamily: "'Inter', system-ui, -apple-system, sans-serif"
       }}
     >
-      <div className="w-100" style={{ maxWidth: '440px' }}>
+      {/* Top Controls: Back link & Theme switcher */}
+      <div className="position-absolute top-0 start-0 end-0 p-3 p-md-4 d-flex justify-content-between align-items-center" style={{ zIndex: 10 }}>
+        <Link
+          to="/"
+          className="btn btn-sm d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 text-decoration-none shadow-sm"
+          style={{
+            background: 'var(--card-bg, #ffffff)',
+            color: 'var(--text-secondary, #64748b)',
+            border: '1px solid var(--border-color, #e2e8f0)',
+            fontSize: '0.84rem',
+            fontWeight: 600
+          }}
+        >
+          <FiArrowLeft size={14} />
+          <span>Home / Student Portal</span>
+        </Link>
+
+        {/* Theme selector */}
+        <div className="d-flex align-items-center gap-2">
+          <select
+            value={currentTheme}
+            onChange={(e) => setTheme(e.target.value)}
+            className="form-select form-select-sm rounded-pill shadow-sm"
+            style={{
+              background: 'var(--card-bg, #ffffff)',
+              color: 'var(--text-primary, #0f172a)',
+              borderColor: 'var(--border-color, #e2e8f0)',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              maxWidth: 160
+            }}
+            aria-label="Select Theme"
+          >
+            {themes.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Centered Login Card Container */}
+      <div className="w-100 my-auto py-5" style={{ maxWidth: '440px', zIndex: 5 }}>
         {/* Brand & Security Header */}
         <div className="text-center mb-4">
           <div
-            className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-lg"
+            className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-sm"
             style={{
               width: '68px',
               height: '68px',
-              background: 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)',
+              background: 'linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%)',
               color: '#ffffff',
-              boxShadow: '0 10px 25px -5px rgba(22, 163, 74, 0.4)'
+              boxShadow: '0 8px 24px color-mix(in srgb, var(--bs-primary, #15803d) 35%, transparent)'
             }}
           >
             <FiShield size={32} />
           </div>
-          <h2 className="fw-bold tracking-tight mb-1" style={{ color: '#ffffff', letterSpacing: '-0.025em' }}>
-            CodeLift Admin
+          <h2 className="fw-bold tracking-tight mb-1" style={{ color: 'var(--text-primary, #0f172a)', letterSpacing: '-0.025em' }}>
+            Code<span style={{ color: 'var(--bs-primary, #15803d)' }}>Lift</span> Admin
           </h2>
-          <p className="text-muted small mb-0" style={{ color: '#94a3b8' }}>
+          <p className="small mb-0" style={{ color: 'var(--text-secondary, #64748b)' }}>
             Restricted Institutional Infrastructure Portal
           </p>
         </div>
 
         {/* Login Card */}
         <div
-          className="card border rounded-4 shadow-2xl p-4 p-md-5"
+          className="card border rounded-4 shadow-lg p-4 p-md-5"
           style={{
-            background: 'rgba(30, 41, 59, 0.7)',
-            backdropFilter: 'blur(16px)',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+            background: 'color-mix(in srgb, var(--card-bg, #ffffff) 88%, transparent)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderColor: 'color-mix(in srgb, var(--bs-primary, #15803d) 25%, var(--border-color, #e2e8f0))',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.08)'
           }}
         >
           {errorMsg && (
             <div
               className="alert border-0 py-2.5 px-3 rounded-3 mb-4 small d-flex align-items-center gap-2"
               style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                color: '#fca5a5',
-                border: '1px solid rgba(239, 68, 68, 0.3)'
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                color: '#dc2626',
+                border: '1px solid rgba(239, 68, 68, 0.25)'
               }}
               role="alert"
             >
@@ -96,13 +143,17 @@ export default function AdminLogin() {
           <form onSubmit={handleSubmit}>
             {/* Username Input */}
             <div className="mb-3">
-              <label className="form-label small fw-semibold text-uppercase tracking-wider" style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>
+              <label className="form-label small fw-semibold text-uppercase tracking-wider" style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.74rem' }}>
                 Administrator Username
               </label>
               <div className="input-group">
                 <span
-                  className="input-group-text border-0"
-                  style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', color: '#94a3b8' }}
+                  className="input-group-text border"
+                  style={{
+                    backgroundColor: 'var(--bg-body, #f8fafc)',
+                    borderColor: 'var(--border-color, #e2e8f0)',
+                    color: 'var(--text-secondary, #64748b)'
+                  }}
                 >
                   <FiUser />
                 </span>
@@ -111,11 +162,13 @@ export default function AdminLogin() {
                   autoFocus
                   required
                   autoComplete="username"
-                  className="form-control border-0 text-white"
+                  className="form-control border"
                   style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backgroundColor: 'var(--card-bg, #ffffff)',
+                    borderColor: 'var(--border-color, #e2e8f0)',
+                    color: 'var(--text-primary, #0f172a)',
                     boxShadow: 'none',
-                    padding: '0.75rem 1rem'
+                    padding: '0.72rem 1rem'
                   }}
                   placeholder="e.g. rishabh"
                   value={username}
@@ -127,13 +180,17 @@ export default function AdminLogin() {
 
             {/* Password Input */}
             <div className="mb-4">
-              <label className="form-label small fw-semibold text-uppercase tracking-wider" style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>
+              <label className="form-label small fw-semibold text-uppercase tracking-wider" style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.74rem' }}>
                 Password
               </label>
               <div className="input-group">
                 <span
-                  className="input-group-text border-0"
-                  style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', color: '#94a3b8' }}
+                  className="input-group-text border"
+                  style={{
+                    backgroundColor: 'var(--bg-body, #f8fafc)',
+                    borderColor: 'var(--border-color, #e2e8f0)',
+                    color: 'var(--text-secondary, #64748b)'
+                  }}
                 >
                   <FiLock />
                 </span>
@@ -141,11 +198,13 @@ export default function AdminLogin() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
-                  className="form-control border-0 text-white"
+                  className="form-control border"
                   style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backgroundColor: 'var(--card-bg, #ffffff)',
+                    borderColor: 'var(--border-color, #e2e8f0)',
+                    color: 'var(--text-primary, #0f172a)',
                     boxShadow: 'none',
-                    padding: '0.75rem 1rem'
+                    padding: '0.72rem 1rem'
                   }}
                   placeholder="••••••••••••"
                   value={password}
@@ -154,8 +213,13 @@ export default function AdminLogin() {
                 />
                 <button
                   type="button"
-                  className="input-group-text border-0 text-muted"
-                  style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', cursor: 'pointer' }}
+                  className="input-group-text border"
+                  style={{
+                    backgroundColor: 'var(--bg-body, #f8fafc)',
+                    borderColor: 'var(--border-color, #e2e8f0)',
+                    color: 'var(--text-secondary, #64748b)',
+                    cursor: 'pointer'
+                  }}
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -168,28 +232,32 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn btn-success w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow"
+              className="btn btn-success w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
               style={{
-                background: 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)',
-                border: 'none',
-                boxShadow: '0 10px 15px -3px rgba(22, 163, 74, 0.3)'
+                background: 'linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 85%, #000) 100%)',
+                borderColor: 'var(--bs-primary, #15803d)',
+                color: '#ffffff',
+                boxShadow: '0 4px 14px color-mix(in srgb, var(--bs-primary, #15803d) 30%, transparent)'
               }}
             >
               {isLoading ? (
                 <span>Verifying credentials...</span>
               ) : (
                 <>
-                  <span>Sign In as Admin</span>
+                  <span>Sign In as Administrator</span>
                   <FiArrowRight />
                 </>
               )}
             </button>
           </form>
 
-          {/* Footer note */}
-          <div className="mt-4 pt-3 border-top text-center" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-            <span className="small text-muted" style={{ fontSize: '0.75rem' }}>
+          {/* Footer note & Platform Version */}
+          <div className="mt-4 pt-3 border-top text-center" style={{ borderColor: 'var(--border-color, #e2e8f0)' }}>
+            <div className="small mb-2" style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.74rem' }}>
               🔒 Protected by 256-bit encrypted security definer RPC
+            </div>
+            <span className="badge rounded-pill" style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.04))', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', fontSize: '0.70rem' }}>
+              {PLATFORM_VERSION}
             </span>
           </div>
         </div>

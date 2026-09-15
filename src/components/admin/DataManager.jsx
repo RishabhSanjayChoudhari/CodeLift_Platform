@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Button, Row, Col, Alert, Badge, Form } from 'react-bootstrap';
+import { Card, Button, Row, Col, Alert, Badge, Form, Spinner } from 'react-bootstrap';
 import { useData } from '../../contexts/DataContext';
+import { PLATFORM_VERSION } from '../../config/version';
+import { exportAllDatabaseData } from '../../services/supabaseDataService';
 import {
   FaDatabase,
   FaFileDownload,
@@ -18,38 +20,60 @@ export default function DataManager() {
   const { resetToDefaults, importAllData } = data;
   const [importJsonText, setImportJsonText] = useState('');
   const [jsonValidationErr, setJsonValidationErr] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
-  // Extract pure collections for export
-  const exportPayload = {
-    version: 'codelift_v4',
-    exportedAt: new Date().toISOString(),
-    batches: data.batches,
-    students: data.students,
-    fees: data.fees,
-    tests: data.tests,
-    testAttempts: data.testAttempts,
-    reviews: data.reviews,
-    courses: data.courses,
-    assignments: data.assignments,
-    submissions: data.submissions,
-    certificates: data.certificates,
-    activities: data.activities
-  };
-
-  // 1. Download Backup as .json file
-  const handleDownloadBackup = () => {
+  // 1. Download Unified Backup as .json file (Supabase tables + local state)
+  const handleDownloadBackup = async () => {
+    setIsExporting(true);
+    const toastId = toast.loading('Extracting full database snapshot from Supabase...');
     try {
+      // Query raw database tables from Supabase
+      const supaSnapshot = await exportAllDatabaseData();
+
+      // Formulate complete, backwards-compatible export payload
+      const exportPayload = {
+        version: PLATFORM_VERSION,
+        exportedAt: new Date().toISOString(),
+        engine: 'supabase + local',
+        // Complete raw Supabase database tables
+        database: supaSnapshot.tables || {},
+        // Static configuration & template metadata
+        static: {
+          platformSettings: data.platformSettings,
+          certificateTemplates: data.certificateTemplates
+        },
+        // Backwards-compatible root collections
+        batches: data.batches,
+        students: data.students,
+        fees: data.fees,
+        tests: data.tests,
+        testAttempts: data.testAttempts,
+        reviews: data.reviews,
+        courses: data.courses,
+        assignments: data.assignments,
+        submissions: data.submissions,
+        certificates: data.certificates,
+        activities: data.activities,
+        codingProblems: data.codingProblems,
+        codingAttempts: data.codingAttempts
+      };
+
       const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
       const downloadAnchor = document.createElement('a');
       const timestamp = new Date().toISOString().slice(0, 10);
       downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', `codelift-backup-${timestamp}.json`);
+      downloadAnchor.setAttribute('download', `codelift-full-db-${timestamp}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-      toast.success('Unified backup downloaded successfully.');
+
+      toast.success('Complete Supabase database snapshot exported successfully.', { id: toastId });
     } catch (err) {
-      toast.error('Failed to export JSON: ' + err.message);
+      console.error('Export failed:', err);
+      toast.error('Failed to export JSON: ' + err.message, { id: toastId });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -63,7 +87,7 @@ export default function DataManager() {
       try {
         const text = event.target?.result;
         setImportJsonText(text);
-        const parsed = JSON.parse(text);
+        JSON.parse(text);
         setJsonValidationErr('');
         toast.success(`Loaded "${file.name}" (${(file.size / 1024).toFixed(1)} KB)`);
       } catch (err) {
@@ -74,25 +98,38 @@ export default function DataManager() {
     reader.readAsText(file);
   };
 
-  // 3. Apply Import to State & LocalStorage
-  const handleApplyImport = () => {
+  // 3. Apply Import to Supabase DB & State
+  const handleApplyImport = async () => {
+    if (!importJsonText.trim()) {
+      toast.error('Please paste JSON or upload a file first');
+      return;
+    }
+
+    let parsed;
     try {
-      if (!importJsonText.trim()) {
-        toast.error('Please paste JSON or upload a file first');
-        return;
-      }
-      const parsed = JSON.parse(importJsonText);
+      parsed = JSON.parse(importJsonText);
       if (!parsed || typeof parsed !== 'object') {
         throw new Error('Payload is not a valid JSON object');
       }
-
-      importAllData(parsed);
-      toast.success('Data restored successfully from JSON backup.');
-      setImportJsonText('');
-      setJsonValidationErr('');
     } catch (err) {
       setJsonValidationErr(err.message);
       toast.error('Import failed: ' + err.message);
+      return;
+    }
+
+    setIsImporting(true);
+    const toastId = toast.loading('Restoring data to Supabase and platform state...');
+    try {
+      await importAllData(parsed);
+      toast.success('Data restored successfully into Supabase and local platform state.', { id: toastId });
+      setImportJsonText('');
+      setJsonValidationErr('');
+    } catch (err) {
+      console.error('Import failed:', err);
+      setJsonValidationErr(err.message);
+      toast.error('Import failed: ' + err.message, { id: toastId });
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -152,7 +189,7 @@ export default function DataManager() {
                   </div>
                   <div className="d-flex justify-content-between small py-1">
                     <span>Storage Engine</span>
-                    <Badge bg="success">Local-First (localStorage v4)</Badge>
+                    <Badge bg="primary">Supabase Database + Local Cache</Badge>
                   </div>
                 </div>
               </div>
@@ -160,10 +197,11 @@ export default function DataManager() {
               <Button
                 variant="success"
                 onClick={handleDownloadBackup}
+                disabled={isExporting}
                 className="w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-bold shadow-sm"
               >
-                <FaFileDownload />
-                <span>Download Full JSON Backup</span>
+                {isExporting ? <Spinner size="sm" animation="border" /> : <FaFileDownload />}
+                <span>{isExporting ? 'Exporting Supabase Snapshot...' : 'Download Full Supabase JSON Backup'}</span>
               </Button>
             </Card.Body>
           </Card>
@@ -197,6 +235,7 @@ export default function DataManager() {
                   accept=".json,application/json"
                   onChange={handleFileUpload}
                   size="sm"
+                  disabled={isImporting}
                 />
               </Form.Group>
 
@@ -210,19 +249,20 @@ export default function DataManager() {
                     setImportJsonText(e.target.value);
                     setJsonValidationErr('');
                   }}
-                  placeholder='{"version":"codelift_v4","students":[...]}'
+                  placeholder='{"version":"CodeLift Platform 1.0","database":{...}}'
                   className="font-monospace small"
+                  disabled={isImporting}
                 />
               </Form.Group>
 
               <Button
                 variant="primary"
                 onClick={handleApplyImport}
-                disabled={!importJsonText.trim()}
+                disabled={!importJsonText.trim() || isImporting}
                 className="w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-bold"
               >
-                <FaCheck />
-                <span>Verify & Restore Database</span>
+                {isImporting ? <Spinner size="sm" animation="border" /> : <FaCheck />}
+                <span>{isImporting ? 'Restoring to Supabase...' : 'Verify & Restore Database'}</span>
               </Button>
             </Card.Body>
           </Card>

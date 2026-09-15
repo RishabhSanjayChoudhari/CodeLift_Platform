@@ -428,8 +428,9 @@
   flex-shrink: 0;
   width: var(--cv-sidebar-w);
   position: sticky;
-  top: calc(var(--cv-topbar-h) + var(--cv-progress-h) + 20px);
-  height: calc(100vh - var(--cv-topbar-h) - var(--cv-progress-h) - 40px);
+  top: calc(var(--cv-topbar-h) + 16px);
+  height: calc(100vh - var(--cv-topbar-h) - 36px);
+  max-height: calc(100dvh - var(--cv-topbar-h) - 36px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -437,6 +438,8 @@
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: var(--cv-radius);
   box-shadow: var(--cv-shadow-soft);
+  align-self: flex-start;
+  z-index: 50;
 }
 
 /* ─── 10. Curriculum Drawer (Mobile Off-Canvas) ─────────────────── */

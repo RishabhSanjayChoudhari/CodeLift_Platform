@@ -226,6 +226,9 @@ export default function ContactHub() {
       <InterestFormModal
         show={showContactForm}
         onHide={() => setShowContactForm(false)}
+        title="Share Your Interest"
+        subtitle="Fill in your details and connect with us directly on WhatsApp."
+        submitLabel="Send on WhatsApp"
       />
     </section>
   );

@@ -254,14 +254,6 @@ export default function Navbar() {
                 >
                   Student Portal
                 </Link>
-                <Link
-                  to="/courses"
-                  className="btn btn-sm btn-primary rounded-pill px-3 fw-bold d-flex align-items-center gap-1.5"
-                  onClick={() => setNavExpanded(false)}
-                >
-                  <FaRocket size={11} />
-                  <span>Explore Cohorts</span>
-                </Link>
               </div>
             )}
           </div>

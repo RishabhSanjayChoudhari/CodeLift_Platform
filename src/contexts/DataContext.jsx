@@ -25,6 +25,22 @@ import codingAttemptsSeed from '../../data/codingAttempts.json';
 
 const DataContext = createContext(null);
 
+function isValidUUID(id) {
+  if (typeof id !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+}
+
+function genUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 function genId(prefix = '') {
   const p = prefix ? `${prefix}-` : '';
   return `${p}${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -186,8 +202,9 @@ export function DataProvider({ children }) {
 
   // ── STUDENT MANAGEMENT ───────────────────────────────────────────────────────
   const addStudent = (studentData) => {
+    const assignedId = studentData.id && isValidUUID(studentData.id) ? studentData.id : genUUID();
+    const legacyId = studentData.legacyId || (studentData.id && !isValidUUID(studentData.id) ? studentData.id : undefined);
     const newStudent = {
-      id: studentData.id || genId(),
       isActive: true,
       isGraduated: false,
       completedBatchIds: [],
@@ -195,10 +212,18 @@ export function DataProvider({ children }) {
       enrolledDate: new Date().toISOString().split('T')[0],
       paidFee: 0,
       feeStatus: 'Pending',
-      ...studentData
+      ...studentData,
+      id: assignedId,
+      ...(legacyId ? { legacyId } : {})
     };
     setStudents((prev) => [newStudent, ...prev]);
-    supabaseDataService.addStudent(newStudent).catch((e) => console.error('[DataContext] addStudent failed:', e));
+    supabaseDataService.addStudent(newStudent)
+      .then((created) => {
+        if (created && created.id && created.id !== assignedId) {
+          setStudents((prev) => prev.map((s) => s.id === assignedId ? { ...s, id: created.id } : s));
+        }
+      })
+      .catch((e) => console.error('[DataContext] addStudent failed:', e));
     return newStudent;
   };
 
@@ -1247,6 +1272,119 @@ export function DataProvider({ children }) {
     setPlatformSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
+  // ── BACKUP RESTORE & FACTORY RESET ──────────────────────────────────────────
+  const importAllData = async (payload) => {
+    if (!payload || typeof payload !== 'object') {
+      throw new Error('Invalid backup payload');
+    }
+
+    const dbSource = payload.database && typeof payload.database === 'object' ? payload.database : payload;
+    const staticSource = payload.static && typeof payload.static === 'object' ? payload.static : payload;
+
+    if (Array.isArray(dbSource.users || payload.users)) setUsers(dbSource.users || payload.users);
+    if (Array.isArray(dbSource.students || payload.students)) {
+      const st = dbSource.students || payload.students;
+      setStudents(st);
+      try {
+        localStorage.setItem('codelift_students_cache', JSON.stringify(st));
+      } catch (e) {}
+    }
+    if (Array.isArray(dbSource.categories || payload.categories)) setCategories(dbSource.categories || payload.categories);
+    if (Array.isArray(dbSource.courses || payload.courses)) setCourses(dbSource.courses || payload.courses);
+    if (Array.isArray(dbSource.batches || payload.batches)) setBatches(dbSource.batches || payload.batches);
+    if (Array.isArray(dbSource.fees || payload.fees)) setFees(dbSource.fees || payload.fees);
+    if (Array.isArray(dbSource.tests || payload.tests)) setTests(dbSource.tests || payload.tests);
+    if (Array.isArray(dbSource.testAttempts || dbSource.test_attempts || payload.testAttempts)) {
+      setTestAttempts(dbSource.testAttempts || dbSource.test_attempts || payload.testAttempts);
+    }
+    if (Array.isArray(dbSource.assignments || payload.assignments)) setAssignments(dbSource.assignments || payload.assignments);
+    if (Array.isArray(dbSource.submissions || payload.submissions)) setSubmissions(dbSource.submissions || payload.submissions);
+    if (Array.isArray(dbSource.certificates || payload.certificates)) setCertificates(dbSource.certificates || payload.certificates);
+    if (Array.isArray(dbSource.certificateTemplates || dbSource.certificate_templates || payload.certificateTemplates)) {
+      setCertificateTemplates(dbSource.certificateTemplates || dbSource.certificate_templates || payload.certificateTemplates);
+    }
+    if (Array.isArray(dbSource.completedBatches || dbSource.completed_batches || payload.completedBatches)) {
+      setCompletedBatches(dbSource.completedBatches || dbSource.completed_batches || payload.completedBatches);
+    }
+    if (Array.isArray(dbSource.problemAttempts || dbSource.problem_attempts || payload.problemAttempts)) {
+      setProblemAttempts(dbSource.problemAttempts || dbSource.problem_attempts || payload.problemAttempts);
+    }
+    if (Array.isArray(dbSource.codingProblems || dbSource.coding_problems || payload.codingProblems)) {
+      const cp = dbSource.codingProblems || dbSource.coding_problems || payload.codingProblems;
+      setCodingProblems(cp);
+      try {
+        localStorage.setItem('codelift_coding_problems', JSON.stringify(cp));
+      } catch (e) {}
+    }
+    if (Array.isArray(dbSource.codingAttempts || dbSource.coding_attempts || payload.codingAttempts)) {
+      const ca = dbSource.codingAttempts || dbSource.coding_attempts || payload.codingAttempts;
+      setCodingAttempts(ca);
+      try {
+        localStorage.setItem('codelift_coding_attempts', JSON.stringify(ca));
+      } catch (e) {}
+    }
+    if (Array.isArray(dbSource.enrollments || payload.enrollments)) setEnrollments(dbSource.enrollments || payload.enrollments);
+    if (Array.isArray(dbSource.coupons || payload.coupons)) setCoupons(dbSource.coupons || payload.coupons);
+    if (Array.isArray(dbSource.payments || payload.payments)) setPayments(dbSource.payments || payload.payments);
+    if (staticSource.platformSettings || payload.platformSettings) {
+      setPlatformSettings(staticSource.platformSettings || payload.platformSettings);
+    }
+
+    // Sync to Supabase tables
+    try {
+      const tablesToSync = payload.database || {
+        users: dbSource.users || payload.users,
+        students: dbSource.students || payload.students,
+        categories: dbSource.categories || payload.categories,
+        courses: dbSource.courses || payload.courses,
+        batches: dbSource.batches || payload.batches,
+        fees: dbSource.fees || payload.fees,
+        tests: dbSource.tests || payload.tests,
+        test_attempts: dbSource.testAttempts || dbSource.test_attempts || payload.testAttempts,
+        assignments: dbSource.assignments || payload.assignments,
+        submissions: dbSource.submissions || payload.submissions,
+        certificates: dbSource.certificates || payload.certificates,
+        completed_batches: dbSource.completedBatches || dbSource.completed_batches || payload.completedBatches,
+        coding_problems: dbSource.codingProblems || dbSource.coding_problems || payload.codingProblems,
+        coding_attempts: dbSource.codingAttempts || dbSource.coding_attempts || payload.codingAttempts
+      };
+      await supabaseDataService.importAllDatabaseData(tablesToSync);
+    } catch (err) {
+      console.warn('[DataContext] Background Supabase restore notice:', err.message);
+    }
+
+    return true;
+  };
+
+  const resetToDefaults = () => {
+    setUsers(usersSeed);
+    setStudents(studentsSeed);
+    setCategories(categoriesSeed);
+    setCourses(coursesSeed);
+    setEnrollments(enrollmentsSeed);
+    setCoupons(couponsSeed);
+    setPayments(paymentsSeed);
+    setBatches(batchesSeed);
+    setFees(feesSeed);
+    setTests(testsSeed);
+    setTestAttempts(attemptsSeed);
+    setAssignments(assignmentsSeed);
+    setSubmissions(submissionsSeed);
+    setCertificates(certificatesSeed);
+    setCertificateTemplates(certificateTemplatesSeed);
+    setCompletedBatches(completedBatchesSeed);
+    setProblemAttempts(problemAttemptsSeed);
+    setCodingProblems(codingProblemsSeed);
+    setCodingAttempts(codingAttemptsSeed);
+    setPlatformSettings(DEFAULT_PLATFORM_SETTINGS);
+
+    try {
+      localStorage.removeItem('codelift_students_cache');
+      localStorage.removeItem('codelift_coding_problems');
+      localStorage.removeItem('codelift_coding_attempts');
+    } catch (e) {}
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -1333,7 +1471,9 @@ export function DataProvider({ children }) {
         unassignTestFromBatch,
         assignStudentToBatch,
         removeStudentFromBatch,
-        updatePlatformSettings
+        updatePlatformSettings,
+        importAllData,
+        resetToDefaults
       }}
     >
       {children}

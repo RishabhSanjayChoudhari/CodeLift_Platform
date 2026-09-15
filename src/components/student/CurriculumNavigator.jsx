@@ -236,6 +236,22 @@ export default function CurriculumNavigator({
                             {originalTIdx + 1}. {topic.title}
                           </span>
 
+                          {/* Quiz Indicator Badge */}
+                          {Array.isArray(topic.quizQuestions) && topic.quizQuestions.length > 0 && (
+                            <span
+                              className="badge rounded-pill ms-auto me-1 flex-shrink-0"
+                              style={{
+                                fontSize: '0.65rem',
+                                background: quizAttempts[topic.id]?.passed ? 'rgba(22, 163, 74, 0.15)' : 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)',
+                                color: quizAttempts[topic.id]?.passed ? '#16a34a' : 'var(--bs-primary)',
+                                border: '1px solid currentColor',
+                                fontWeight: 700
+                              }}
+                            >
+                              {quizAttempts[topic.id]?.passed ? `✓ ${quizAttempts[topic.id]?.score}/${quizAttempts[topic.id]?.totalMarks}` : `Quiz (${topic.quizQuestions.length})`}
+                            </span>
+                          )}
+
                           {/* Duration */}
                           {topic.durationMinutes && (
                             <span className="cv-lec-duration">{topic.durationMinutes}m</span>

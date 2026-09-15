@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/copy-404.js",
+    "build": "node scripts/bump-version.js && vite build && node scripts/copy-404.js",
     "start": "vite preview --port 3000",
     "preview": "vite preview",
     "test": "node test/run-all-tests.js",
