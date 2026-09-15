@@ -4,6 +4,7 @@ import { useData } from '../contexts/DataContext';
 import Navbar from '../components/common/Navbar';
 import SEO from '../components/common/SEO';
 import CourseEnrollModal from '../components/common/CourseEnrollModal';
+import { resolveCourseFee } from '../utils/feeUtils';
 import {
   FaSearch,
   FaStar,
@@ -16,7 +17,7 @@ import {
 import './CourseCatalog.css';
 
 export default function CourseCatalog() {
-  const { courses, categories } = useData();
+  const { courses, categories, batches } = useData();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -39,8 +40,11 @@ export default function CourseCatalog() {
     if (selectedCategory !== 'all' && c.categoryId !== selectedCategory) return false;
 
     // Price filter
-    if (selectedType === 'free' && (!c.isFree && c.price > 0)) return false;
-    if (selectedType === 'paid' && (c.isFree || c.price === 0)) return false;
+    if (selectedType !== 'all') {
+      const feeInfo = resolveCourseFee(c, batches);
+      if (selectedType === 'free' && !feeInfo.isFree) return false;
+      if (selectedType === 'paid' && feeInfo.isFree) return false;
+    }
 
     // Search query
     if (searchQuery.trim()) {
@@ -57,8 +61,12 @@ export default function CourseCatalog() {
   // Sort courses
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
-    if (sortBy === 'price-low') return (a.price || 0) - (b.price || 0);
-    if (sortBy === 'price-high') return (b.price || 0) - (a.price || 0);
+    if (sortBy === 'price-low') {
+      return resolveCourseFee(a, batches).feeAmount - resolveCourseFee(b, batches).feeAmount;
+    }
+    if (sortBy === 'price-high') {
+      return resolveCourseFee(b, batches).feeAmount - resolveCourseFee(a, batches).feeAmount;
+    }
     if (sortBy === 'newest') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     return (b.rating || 0) - (a.rating || 0); // top rated default
   });
@@ -256,7 +264,9 @@ export default function CourseCatalog() {
           </div>
         ) : (
           <div className="row g-4">
-            {sortedCourses.map((c) => (
+            {sortedCourses.map((c) => {
+              const feeInfo = resolveCourseFee(c, batches);
+              return (
               <div key={c.id} className="col-md-6 col-lg-4">
                 <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cl-course-card">
                   {/* Thumbnail & Badges */}
@@ -282,11 +292,11 @@ export default function CourseCatalog() {
                     </div>
                     <span
                       className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-1.5 font-bold shadow-sm ${
-                        c.isFree || c.price === 0 ? 'bg-success' : 'bg-primary'
+                        feeInfo.isFree ? 'bg-success' : 'bg-primary'
                       }`}
                       style={{ fontSize: '0.75rem' }}
                     >
-                      {c.isFree || c.price === 0 ? 'FREE' : `₹${c.price}`}
+                      {feeInfo.feeFormatted}
                     </span>
                   </div>
 
@@ -358,7 +368,7 @@ export default function CourseCatalog() {
                             fontSize: '0.84rem',
                             minHeight: '44px'
                           }}
-                          onClick={() => setSelectedCourseForEnroll(c)}
+                          onClick={() => setSelectedCourseForEnroll({ ...c, price: feeInfo.feeAmount, originalPrice: feeInfo.originalPrice, isFree: feeInfo.isFree })}
                           title="Enroll via WhatsApp"
                         >
                           <FaWhatsapp size={15} />
@@ -369,7 +379,8 @@ export default function CourseCatalog() {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         )}
       </main>

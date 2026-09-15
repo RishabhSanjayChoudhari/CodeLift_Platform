@@ -14,13 +14,14 @@ import {
   FaChevronDown, FaChevronUp, FaPlay, FaShieldAlt, FaClock, FaLayerGroup,
   FaWhatsapp
 } from 'react-icons/fa';
+import { resolveCourseFee } from '../utils/feeUtils';
 import '../styles/CourseView.css';
 
 export default function CourseDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { auth, currentUser } = useAuth();
-  const { courses, enrollments, payments } = useData();
+  const { courses, enrollments, payments, batches } = useData();
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
@@ -29,6 +30,13 @@ export default function CourseDetail() {
   const heroRef = useRef(null);
 
   const course = courses.find(c => c.slug === slug || c.id === slug);
+  const feeInfo = resolveCourseFee(course, batches);
+  const courseForEnroll = course ? {
+    ...course,
+    price: feeInfo.feeAmount,
+    originalPrice: feeInfo.originalPrice,
+    isFree: feeInfo.isFree
+  } : null;
 
   // Show sticky bar when hero action card scrolls out of view
   useEffect(() => {
@@ -106,11 +114,16 @@ export default function CourseDetail() {
     ) : (
       <button
         className="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow d-flex align-items-center justify-content-center gap-2"
-        style={{ fontSize: '1rem', background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)', border: 'none', boxShadow: '0 6px 24px rgba(21,128,61,0.35)' }}
+        style={{
+          fontSize: '1rem',
+          background: 'linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%)',
+          border: 'none',
+          boxShadow: '0 6px 24px rgba(var(--bs-primary-rgb, 21,128,61), 0.35)'
+        }}
         onClick={handleEnrollClick}
       >
         <FaWhatsapp size={19} />
-        <span>{course.isFree || course.price === 0 ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
+        <span>{feeInfo.isFree ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
       </button>
     )
   );
@@ -134,48 +147,60 @@ export default function CourseDetail() {
               <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
                 <span
                   className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
-                  style={{ background: 'rgba(34,197,94,0.18)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
+                  style={{
+                    background: 'rgba(var(--bs-primary-rgb, 21,128,61), 0.12)',
+                    color: 'var(--bs-primary, #15803d)',
+                    border: '1px solid rgba(var(--bs-primary-rgb, 21,128,61), 0.3)',
+                    fontSize: '0.72rem',
+                    letterSpacing: '0.06em'
+                  }}
                 >
-                  {course.isFree || course.price === 0 ? 'Free Program' : `Tuition: ₹${course.price}`}
+                  {feeInfo.feeFormatted ? `Tuition: ${feeInfo.feeFormatted}` : (feeInfo.isFree ? 'Free Program' : `Tuition: ₹${feeInfo.feeAmount}`)}
                 </span>
                 {course.courseType && (
                   <span
                     className="badge px-3 py-2 rounded-pill fw-bold text-uppercase"
-                    style={{ background: 'rgba(99,102,241,0.18)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)', fontSize: '0.72rem', letterSpacing: '0.06em' }}
+                    style={{
+                      background: 'rgba(var(--bs-info-rgb, 8,145,178), 0.12)',
+                      color: 'var(--bs-info, #0891b2)',
+                      border: '1px solid rgba(var(--bs-info-rgb, 8,145,178), 0.3)',
+                      fontSize: '0.72rem',
+                      letterSpacing: '0.06em'
+                    }}
                   >
                     {course.courseType === 'cohort' ? 'Live Cohort Bootcamp' : 'Specialized Elective'}
                   </span>
                 )}
               </div>
 
-              <h1 className="fw-extrabold mb-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', lineHeight: 1.25 }}>
+              <h1 className="fw-extrabold mb-3" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', lineHeight: 1.25, color: 'var(--text-primary)' }}>
                 {course.title}
               </h1>
-              <p className="mb-4" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, maxWidth: 600 }}>
+              <p className="mb-4" style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7, maxWidth: 600 }}>
                 {course.description}
               </p>
 
               {/* Stats Row */}
-              <div className="d-flex flex-wrap align-items-center gap-3" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+              <div className="d-flex flex-wrap align-items-center gap-3" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 <div className="d-flex align-items-center gap-1">
                   <FaStar style={{ color: '#fbbf24' }} />
                   <strong style={{ color: '#fbbf24' }}>{course.rating || 5.0}</strong>
                   <span> rating</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
-                  <FaLayerGroup style={{ color: '#a78bfa' }} />
-                  <span><strong style={{ color: '#fff' }}>{course.modules?.length || 0}</strong> sections</span>
+                  <FaLayerGroup style={{ color: 'var(--bs-primary, #15803d)' }} />
+                  <span><strong style={{ color: 'var(--text-primary)' }}>{course.modules?.length || 0}</strong> sections</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
-                  <FaBookOpen style={{ color: '#34d399' }} />
-                  <span><strong style={{ color: '#fff' }}>{totalTopics}</strong> lectures</span>
+                  <FaBookOpen style={{ color: 'var(--bs-primary, #15803d)' }} />
+                  <span><strong style={{ color: 'var(--text-primary)' }}>{totalTopics}</strong> lectures</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <FaClock style={{ color: '#f472b6' }} />
-                  <span><strong style={{ color: '#fff' }}>{durationStr}</strong> total</span>
+                  <span><strong style={{ color: 'var(--text-primary)' }}>{durationStr}</strong> total</span>
                 </div>
                 <div className="d-flex align-items-center gap-1">
-                  <FaCertificate style={{ color: '#4ade80' }} />
+                  <FaCertificate style={{ color: 'var(--bs-primary, #15803d)' }} />
                   <span>Certificate Included</span>
                 </div>
               </div>
@@ -185,7 +210,7 @@ export default function CourseDetail() {
             <div className="col-lg-5" ref={heroRef}>
               <div
                 className="rounded-4 overflow-hidden shadow-lg"
-                style={{ background: 'var(--card-bg, #fff)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ background: 'var(--card-bg, #fff)', border: '1px solid var(--border-color)' }}
               >
                 {/* Thumbnail */}
                 <img
@@ -197,11 +222,11 @@ export default function CourseDetail() {
 
                 <div className="p-4">
                   <div className="mb-4 text-center">
-                    <span style={{ fontSize: '2rem', fontWeight: 900, color: '#15803d' }}>
-                      {course.isFree || course.price === 0 ? 'FREE' : `₹${course.price}`}
+                    <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--bs-primary, #15803d)' }}>
+                      {feeInfo.feeFormatted}
                     </span>
-                    {!course.isFree && course.originalPrice && course.originalPrice > course.price && (
-                      <span className="ms-2 text-muted text-decoration-line-through small">₹{course.originalPrice}</span>
+                    {!feeInfo.isFree && feeInfo.originalPrice && feeInfo.originalPrice > feeInfo.feeAmount && (
+                      <span className="ms-2 text-muted text-decoration-line-through small">₹{feeInfo.originalPrice.toLocaleString('en-IN')}</span>
                     )}
                   </div>
 
@@ -274,7 +299,7 @@ export default function CourseDetail() {
               <div className="d-flex align-items-center gap-3 mb-3">
                 <div
                   className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
-                  style={{ width: 52, height: 52, background: 'linear-gradient(135deg, var(--bs-primary, #15803d), #166534)', fontSize: '1.2rem' }}
+                  style={{ width: 52, height: 52, background: 'linear-gradient(135deg, var(--bs-primary, #15803d), color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000))', fontSize: '1.2rem' }}
                 >
                   <FaGraduationCap size={22} />
                 </div>
@@ -283,9 +308,6 @@ export default function CourseDetail() {
                   <div className="text-muted small">support@codelift.dev</div>
                 </div>
               </div>
-              <p className="text-secondary small mb-3" style={{ lineHeight: 1.65 }}>
-                Industry-proven senior engineering mentorship with rigorous project reviews, hands-on debugging sessions, and career interview preparation.
-              </p>
               <div className="d-flex gap-2 flex-wrap">
                 {['Live Mentorship', 'Code Reviews', 'Verified Certificate', 'Job Assistance'].map((sk, i) => (
                   <span
@@ -320,18 +342,18 @@ export default function CourseDetail() {
       {!isEnrolled && !isPending && (
         <div className={`cd-sticky-enroll d-lg-none ${stickyVisible ? 'visible' : ''}`}>
           <div className="cd-sticky-price">
-            {course.isFree || course.price === 0 ? 'Free' : `₹${course.price}`}
+            {feeInfo.feeFormatted}
           </div>
           <button className="cd-sticky-enroll-btn" onClick={handleEnrollClick}>
             <FaWhatsapp size={18} />
-            <span>{course.isFree || course.price === 0 ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
+            <span>{feeInfo.isFree ? 'Enroll on WhatsApp' : 'Enroll via WhatsApp'}</span>
           </button>
         </div>
       )}
 
       {/* Modals */}
       <CourseEnrollModal
-        course={course}
+        course={courseForEnroll}
         show={showEnrollModal}
         onClose={() => setShowEnrollModal(false)}
         onPortalEnroll={() => {
@@ -343,10 +365,10 @@ export default function CourseDetail() {
         }}
       />
       {showCheckout && (
-        <CheckoutModal course={course} onClose={() => setShowCheckout(false)} onSuccess={() => setShowCheckout(false)} />
+        <CheckoutModal course={courseForEnroll} onClose={() => setShowCheckout(false)} onSuccess={() => setShowCheckout(false)} />
       )}
       {showInvoice && (
-        <InvoiceModal payment={userPayment} enrollment={userEnrollment} course={course} onClose={() => setShowInvoice(false)} />
+        <InvoiceModal payment={userPayment} enrollment={userEnrollment} course={courseForEnroll} onClose={() => setShowInvoice(false)} />
       )}
     </div>
   );

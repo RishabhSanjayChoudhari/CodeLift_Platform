@@ -276,7 +276,7 @@ interface Review {
 
 ---
 
-## 5. Security & Authentication Architecture
+## 5. Security & Authentication Architecture  
 
 Authentication is governed by `AuthContext.jsx` and backed by `localStorage` (`codelift_auth`).
 
@@ -336,7 +336,7 @@ export function RequireAdmin() {
   - *Modern Executive*: Dark gradient palette, mint accents, sans-serif typography.
   - *Honorary Distinction*: Regal purple styling with honor seals.
 - **Live Canvas Preview**: Real-time rendering of certificate text, signatures, and credentials.
-- **Referral Code Generator**: Automatically computes `LIFT-<NAME>2026` granting a ₹1,000 discount.
+- **Referral Code Generator**: Automatically computes `LIFT-<NAME>2026` granting a ₹500 discount.
 - **Bulk Cohort Issuance**: Issues certificates to an entire batch simultaneously.
 
 #### 7. Unified Data Manager (`DataManager.jsx`)
@@ -421,9 +421,29 @@ The application features **13 built-in themes** managed through `ThemeContext.js
 }
 ```
 
+### Course & Curriculum View Theme Harmonization
+All course-facing screens (`CourseDetail.jsx`, `CourseView.css`, `CurriculumNavigator.jsx`, `StudentCourses.jsx`, `TopicQuiz.jsx`) dynamically adapt to all 13 themes:
+- Replaced hardcoded `#fff` and `rgba(255,255,255,...)` with semantic variables `var(--text-primary)`, `var(--text-secondary)`, `var(--card-bg)`, and `var(--card-bg-alt)`.
+- Replaced hardcoded `#166534` green gradients with `color-mix(in srgb, var(--bs-primary) 80%, #000)`, ensuring brand consistency across red, amber, teal, purple, navy, and dark themes.
+- Replaced `[data-theme="dark"]` selectors with `[data-bs-theme="dark"], [data-theme-mode="dark"], [data-theme*="dark"]` for complete compatibility.
+
 ---
 
-## 8. Build & Verification Instructions
+## 8. Institutional Fee Resolution Engine (`feeUtils.js`)
+
+Tuition fees are dynamically resolved by cross-referencing attached institutional batches (`batches` from `DataContext`):
+```javascript
+import { resolveCourseFee } from '../utils/feeUtils';
+
+const feeInfo = resolveCourseFee(course, batches);
+// feeInfo: { isFree, price, feeAmount, feeFormatted, originalPrice, batchName }
+```
+- **Batch Cross-Referencing**: When an admin updates batch tuition fees in institutional batch management (e.g. ₹45,000 for Full Stack Web Dev, ₹35,000 for Data Analytics), the changes are reflected across the Home Cohorts section, Course Marketplace, Course Detail page, and WhatsApp enrollment modals.
+- **WhatsApp Pre-Filled Text**: Guarantees that when a prospective student clicks "Enroll via WhatsApp", the dispatched message contains the true tuition fee rather than legacy placeholder pricing.
+
+---
+
+## 9. Build & Verification Instructions
 
 ### Prerequisites
 - Node.js version 18+ or 20+

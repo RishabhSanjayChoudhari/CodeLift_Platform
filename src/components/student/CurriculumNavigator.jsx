@@ -118,7 +118,7 @@ export default function CurriculumNavigator({
               {progressPct}%
             </span>
           </div>
-          <div style={{ height: 6, background: 'rgba(0,0,0,0.07)', borderRadius: 999, overflow: 'hidden' }}>
+          <div style={{ height: 6, background: 'var(--border-color, rgba(128,128,128,0.2))', borderRadius: 999, overflow: 'hidden' }}>
             <div style={{
               height: '100%',
               width: `${progressPct}%`,
@@ -242,8 +242,8 @@ export default function CurriculumNavigator({
                               className="badge rounded-pill ms-auto me-1 flex-shrink-0"
                               style={{
                                 fontSize: '0.65rem',
-                                background: quizAttempts[topic.id]?.passed ? 'rgba(22, 163, 74, 0.15)' : 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)',
-                                color: quizAttempts[topic.id]?.passed ? '#16a34a' : 'var(--bs-primary)',
+                                background: quizAttempts[topic.id]?.passed ? 'rgba(var(--bs-success-rgb, 22, 163, 74), 0.16)' : 'rgba(var(--bs-primary-rgb, 21, 128, 61), 0.12)',
+                                color: quizAttempts[topic.id]?.passed ? 'var(--bs-success, #16a34a)' : 'var(--bs-primary)',
                                 border: '1px solid currentColor',
                                 fontWeight: 700
                               }}

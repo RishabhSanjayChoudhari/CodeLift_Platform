@@ -112,15 +112,15 @@ function LectureMarkdown({ content }) {
 
     // ── Headings ─────────────────────────────────────────
     if (line.startsWith('# ')) {
-      elements.push(<h1 className="cv-md-body" key={i} style={{ fontSize: '1.45rem', fontWeight: 800, marginTop: 28, marginBottom: 12 }}>{line.slice(2)}</h1>);
+      elements.push(<h1 className="cv-md-body" key={i} style={{ fontSize: '1.45rem', fontWeight: 800, marginTop: 28, marginBottom: 12, color: 'var(--text-primary)' }}>{line.slice(2)}</h1>);
       i++; continue;
     }
     if (line.startsWith('## ')) {
-      elements.push(<h2 className="cv-md-body" key={i} style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: 24, marginBottom: 10 }}>{line.slice(3)}</h2>);
+      elements.push(<h2 className="cv-md-body" key={i} style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: 24, marginBottom: 10, color: 'var(--text-primary)' }}>{line.slice(3)}</h2>);
       i++; continue;
     }
     if (line.startsWith('### ')) {
-      elements.push(<h3 className="cv-md-body" key={i} style={{ fontSize: '1.05rem', fontWeight: 700, marginTop: 20, marginBottom: 8 }}>{line.slice(4)}</h3>);
+      elements.push(<h3 className="cv-md-body" key={i} style={{ fontSize: '1.05rem', fontWeight: 700, marginTop: 20, marginBottom: 8, color: 'var(--text-primary)' }}>{line.slice(4)}</h3>);
       i++; continue;
     }
 
@@ -134,7 +134,7 @@ function LectureMarkdown({ content }) {
       elements.push(
         <ul key={`ul-${i}`} style={{ paddingLeft: 20, marginBottom: 14 }}>
           {items.map((item, idx) => (
-            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65 }}>{item}</li>
+            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65, color: 'var(--text-primary)' }}>{item}</li>
           ))}
         </ul>
       );
@@ -150,7 +150,7 @@ function LectureMarkdown({ content }) {
       elements.push(
         <ol key={`ol-${i}`} style={{ paddingLeft: 20, marginBottom: 14 }}>
           {items.map((item, idx) => (
-            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65 }}>{item}</li>
+            <li key={idx} className="cv-md-body" style={{ marginBottom: 5, lineHeight: 1.65, color: 'var(--text-primary)' }}>{item}</li>
           ))}
         </ol>
       );
@@ -166,7 +166,7 @@ function LectureMarkdown({ content }) {
     // ── Paragraph ─────────────────────────────────────────
     if (line.trim().length > 0) {
       elements.push(
-        <p key={i} className="cv-md-body" style={{ marginBottom: 14, lineHeight: 1.72 }}>
+        <p key={i} className="cv-md-body" style={{ marginBottom: 14, lineHeight: 1.72, color: 'var(--text-primary)' }}>
           {line}
         </p>
       );

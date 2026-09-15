@@ -238,15 +238,6 @@ export default function Login() {
 
             {/* Need an Account Section */}
             <div className="login-register-card mt-4 pt-3 border-top" style={{ borderColor: 'var(--border-color)' }}>
-              <div className="text-center mb-2">
-                <span className="fw-bold d-block text-body" style={{ fontSize: '0.85rem' }}>
-                  🎓 New to CodeLift? Join Upcoming Cohorts
-                </span>
-                <span className="small text-muted d-block" style={{ fontSize: '0.78rem' }}>
-                  Register for a course or connect directly with admissions on WhatsApp.
-                </span>
-              </div>
-
               <div className="mt-2">
                 <button
                   type="button"

@@ -21,6 +21,7 @@ import ContactHub from '../components/home/ContactHub';
 import FloatingWhatsApp from '../components/common/FloatingWhatsApp';
 import CourseEnrollModal from '../components/common/CourseEnrollModal';
 import { useData } from '../contexts/DataContext';
+import { resolveCourseFee } from '../utils/feeUtils';
 import '../styles/HomeElevated.css';
 
 /* ─── Helpers ──────────────────────────────────────────────────────── */
@@ -79,7 +80,7 @@ export const ARENA_PREVIEW_PROBLEMS = [
 
 export default function Home() {
 
-  const { courses } = useData();
+  const { courses, batches } = useData();
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState(null);
   const [selectedCohortTrack, setSelectedCohortTrack] = useState('all');
 
@@ -241,7 +242,8 @@ export default function Home() {
             <div className="row g-4">
               {filteredCohorts.map((c, idx) => {
                 const { icon, boxClass } = getCourseIconMeta(c);
-                const isFree = c.isFree || c.price === 0;
+                const feeInfo = resolveCourseFee(c, batches);
+                const isFree = feeInfo.isFree;
                 const tags   = Array.isArray(c.tags) ? c.tags.slice(0, 4) : [];
                 const catLabel = c.categoryId
                   ? c.categoryId.replace('cat-', '').replace(/-/g, ' ').toUpperCase()
@@ -259,7 +261,7 @@ export default function Home() {
                             <span className="live-dot" /> Live
                           </span>
                           <span className={`cl-badge-price ${isFree ? 'free' : 'paid'}`}>
-                            {isFree ? 'Free' : `₹${c.price}`}
+                            {feeInfo.feeFormatted}
                           </span>
                         </div>
                       </div>
@@ -319,7 +321,7 @@ export default function Home() {
                             <button
                               type="button"
                               className="cl-btn-enroll"
-                              onClick={() => setSelectedCourseForEnroll(c)}
+                              onClick={() => setSelectedCourseForEnroll({ ...c, price: feeInfo.price, isFree: feeInfo.isFree })}
                               title="Enroll via WhatsApp"
                             >
                               <FaWhatsapp size={15} />

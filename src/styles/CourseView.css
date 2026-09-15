@@ -23,7 +23,7 @@
   left: 0;
   right: 0;
   height: var(--cv-progress-h);
-  background: rgba(0,0,0,0.08);
+  background: var(--border-color, rgba(128,128,128,0.2));
   z-index: 2000;
 }
 .cv-progress-fill {
@@ -114,7 +114,7 @@
 .cv-progress-pill-bar {
   width: 52px;
   height: 5px;
-  background: rgba(0,0,0,0.08);
+  background: var(--border-color, rgba(128,128,128,0.2));
   border-radius: 999px;
   overflow: hidden;
 }
@@ -380,9 +380,9 @@
   border: none;
 }
 .cv-dock-complete-btn.active {
-  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, #166534 100%);
+  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(21,128,61,0.32);
+  box-shadow: 0 4px 16px rgba(var(--bs-primary-rgb, 21,128,61), 0.32);
 }
 .cv-dock-complete-btn.done {
   background: rgba(34, 197, 94, 0.12);
@@ -651,7 +651,7 @@
   height: 160px;
   object-fit: cover;
   display: block;
-  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, #166534 100%);
+  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%);
 }
 .cv-course-thumb-placeholder {
   width: 100%;
@@ -690,7 +690,7 @@
 .cv-course-progress-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; margin-bottom: 5px; }
 .cv-course-progress-label { color: var(--text-secondary); font-weight: 600; }
 .cv-course-progress-pct { color: var(--bs-primary, #15803d); font-weight: 800; }
-.cv-course-progress-bar { height: 6px; background: var(--hover-bg, rgba(0,0,0,0.07)); border-radius: 999px; overflow: hidden; }
+.cv-course-progress-bar { height: 6px; background: var(--border-color, rgba(128,128,128,0.2)); border-radius: 999px; overflow: hidden; }
 .cv-course-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--bs-primary, #15803d) 0%, #22d3a5 100%);
@@ -711,12 +711,12 @@
   justify-content: center;
   gap: 8px;
   transition: all var(--cv-transition);
-  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, #166534 100%);
+  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%);
   color: #fff;
-  box-shadow: 0 2px 12px rgba(21,128,61,0.2);
+  box-shadow: 0 2px 12px rgba(var(--bs-primary-rgb, 21,128,61), 0.2);
 }
 .cv-course-action-btn:hover {
-  box-shadow: 0 4px 20px rgba(21,128,61,0.35);
+  box-shadow: 0 4px 20px rgba(var(--bs-primary-rgb, 21,128,61), 0.35);
   transform: translateY(-1px);
 }
 
@@ -755,9 +755,9 @@
   font-weight: 800;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, #166534 100%);
+  background: linear-gradient(135deg, var(--bs-primary, #15803d) 0%, color-mix(in srgb, var(--bs-primary, #15803d) 80%, #000) 100%);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(21,128,61,0.3);
+  box-shadow: 0 4px 16px rgba(var(--bs-primary-rgb, 21,128,61), 0.3);
   transition: all var(--cv-transition);
   display: flex;
   align-items: center;
@@ -765,7 +765,7 @@
   gap: 8px;
 }
 .cd-sticky-enroll-btn:hover {
-  box-shadow: 0 6px 24px rgba(21,128,61,0.45);
+  box-shadow: 0 6px 24px rgba(var(--bs-primary-rgb, 21,128,61), 0.45);
   transform: translateY(-1px);
 }
 
@@ -862,13 +862,17 @@
 }
 
 /* ─── 19. Dark-mode adjustments ─────────────────────────────────── */
-[data-theme="dark"] .cv-bottom-dock,
+[data-bs-theme="dark"] .cv-bottom-dock,
+[data-theme-mode="dark"] .cv-bottom-dock,
+[data-theme*="dark"] .cv-bottom-dock,
 .dark .cv-bottom-dock {
-  background: rgba(15, 23, 42, 0.9);
+  background: color-mix(in srgb, var(--card-bg, #0f172a) 90%, transparent);
 }
-[data-theme="dark"] .cd-sticky-enroll,
+[data-bs-theme="dark"] .cd-sticky-enroll,
+[data-theme-mode="dark"] .cd-sticky-enroll,
+[data-theme*="dark"] .cd-sticky-enroll,
 .dark .cd-sticky-enroll {
-  background: rgba(15, 23, 42, 0.92);
+  background: color-mix(in srgb, var(--card-bg, #0f172a) 92%, transparent);
 }
 
 /* ─── 20. Reduced motion ─────────────────────────────────────────── */

@@ -167,10 +167,10 @@ export default function TopicQuiz({
                 </div>
               </div>
             </div>
-            <Button variant="outline-dark" size="sm" onClick={handleRetake} className="d-flex align-items-center gap-1.5 rounded-2 shadow-sm">
+            <button type="button" onClick={handleRetake} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1.5 rounded-2 shadow-sm">
               <FaRedo size={12} />
               <span>Retake Quiz</span>
-            </Button>
+            </button>
           </div>
         )}
 
@@ -235,16 +235,16 @@ export default function TopicQuiz({
                     if (isSubmitted) {
                       if (isOptionCorrect) {
                         optStyle = {
-                          background: 'rgba(22, 163, 74, 0.12)',
-                          borderColor: '#16a34a',
-                          color: '#15803d',
+                          background: 'rgba(var(--bs-success-rgb, 22, 163, 74), 0.15)',
+                          borderColor: 'var(--bs-success, #16a34a)',
+                          color: 'var(--bs-success, #16a34a)',
                           fontWeight: 700
                         };
                       } else if (isSelected && !isOptionCorrect) {
                         optStyle = {
-                          background: 'rgba(239, 68, 68, 0.12)',
-                          borderColor: '#ef4444',
-                          color: '#b91c1c',
+                          background: 'rgba(var(--bs-danger-rgb, 220, 38, 38), 0.15)',
+                          borderColor: 'var(--bs-danger, #dc2626)',
+                          color: 'var(--bs-danger, #dc2626)',
                           fontWeight: 600
                         };
                       }
@@ -286,7 +286,7 @@ export default function TopicQuiz({
 
                 {/* Explanation if submitted */}
                 {isSubmitted && q.explanation && (
-                  <div className="mt-3 p-2.5 rounded-3 bg-light border small text-muted" style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.02))' }}>
+                  <div className="mt-3 p-2.5 rounded-3 border small" style={{ background: 'var(--card-bg-alt, rgba(0,0,0,0.02))', color: 'var(--text-secondary)' }}>
                     <strong>💡 Explanation:</strong> {q.explanation}
                   </div>
                 )}
